@@ -13,7 +13,7 @@ use starknet_eth_bridge_client::deploy_starknet_eth_bridge_behind_unsafe_proxy;
 use starknet_eth_bridge_client::interfaces::eth_bridge::StarknetEthBridgeTrait;
 use starknet_ff::FieldElement;
 use starknet_proxy_client::proxy_support::ProxySupportTrait;
-use crate::bridge_deploy_utils::lib::constants::{CAIRO_1_ACCOUNT_CONTRACT, LEGACY_BRIDGE_PATH, SIGNER_PRIVATE};
+use crate::bridge_deploy_utils::lib::constants::{CAIRO_1_ACCOUNT_CONTRACT, LEGACY_BRIDGE_PATH};
 use crate::bridge_deploy_utils::lib::fixtures::ThreadSafeMadaraClient;
 use crate::bridge_deploy_utils::lib::utils::{build_single_owner_account, AccountActions};
 use crate::bridge_deploy_utils::lib::Transaction;

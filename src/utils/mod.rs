@@ -4,6 +4,8 @@ use starknet_api::hash::StarkFelt;
 pub mod arg_config;
 pub mod deploy_utils;
 pub mod deploy_eth_bridge;
+pub mod deploy_erc20_bridge;
+pub mod token_bridge;
 pub mod eth_bridge;
 pub mod utils;
 
