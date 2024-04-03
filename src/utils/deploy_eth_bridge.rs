@@ -4,7 +4,7 @@ use crate::{bridge_deploy_utils::lib::fixtures::madara_from, utils::utils::deplo
 use super::{arg_config::ArgConfig, deploy_utils::DeployClients, eth_bridge::{BridgeDeployable, StarknetLegacyEthBridge}};
 use url::Url;
 
-pub async fn deploy_eth_bridge(deploy_clients: DeployClients, config: ArgConfig) {
+pub async fn deploy_eth_bridge(deploy_clients: &DeployClients, config: ArgConfig) {
 
     let madara = madara_from(Url::from_str(&config.rollup_seq_url).expect("utils::deploy_eth_bridge => Error parsing the sequencer url. Please check the env vars"));
 
@@ -25,7 +25,7 @@ pub async fn deploy_eth_bridge(deploy_clients: DeployClients, config: ArgConfig)
 
     eth_bridge.initialize(deploy_clients.address()).await;
     println!("ETH Bridge initialized");
-    eth_bridge.setup_l2_bridge(&madara, l2_bridge_address, l2_eth_address).await;
+    eth_bridge.setup_l2_bridge(&madara, l2_bridge_address, l2_eth_address, &config.rollup_priv_key).await;
     println!("ETH Bridge L2 setup complete ✅");
     eth_bridge.setup_l1_bridge("10000000000000000", "10000000000000000", l2_bridge_address).await;
     println!("ETH Bridge L1 setup complete ✅");

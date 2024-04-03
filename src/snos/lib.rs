@@ -7,8 +7,6 @@ pub extern crate alloc;
 mod codec;
 mod felt_reader;
 
-#[cfg(test)]
-mod tests;
 
 use crate::messages::lib::{MessageL1ToL2, MessageL2ToL1};
 use starknet_api::hash::StarkFelt;

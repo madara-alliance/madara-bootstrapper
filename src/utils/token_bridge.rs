@@ -164,7 +164,7 @@ impl StarknetTokenBridge {
         self.manager.enroll_token_bridge(self.address(), fee).await.unwrap();
     }
 
-    pub async fn setup_l2_bridge(&self, madara: &ThreadSafeMadaraClient, l2_bridge: FieldElement) {
+    pub async fn setup_l2_bridge(&self, madara: &ThreadSafeMadaraClient, l2_bridge: FieldElement, priv_key: &str) {
         invoke_contract(
             madara,
             FieldElement::from_hex_be("0x5").unwrap(),
@@ -175,6 +175,7 @@ impl StarknetTokenBridge {
                 FieldElement::ONE,                                          // calldata_len
                 FieldElement::from_hex_be("0x4").unwrap(),                  // admin_address
             ],
+            priv_key
         )
         .await;
 
@@ -183,6 +184,7 @@ impl StarknetTokenBridge {
             l2_bridge,
             "register_app_governor",
             vec![FieldElement::from_hex_be(CAIRO_1_ACCOUNT_CONTRACT).unwrap()],
+            priv_key
         )
         .await;
 
@@ -191,6 +193,7 @@ impl StarknetTokenBridge {
             l2_bridge,
             "set_l2_token_governance",
             vec![FieldElement::from_hex_be(CAIRO_1_ACCOUNT_CONTRACT).unwrap()],
+            priv_key
         )
         .await;
 
@@ -202,6 +205,7 @@ impl StarknetTokenBridge {
                 FieldElement::from_hex_be("0x008b150cfa4db35ed9d685d79f6daa590ff2bb10c295cd656fcbf176c4bd8365")
                     .unwrap(), // class hash
             ],
+            priv_key
         )
         .await;
 
@@ -210,6 +214,7 @@ impl StarknetTokenBridge {
             l2_bridge,
             "set_l1_bridge",
             vec![FieldElement::from_byte_slice_be(self.token_bridge.address().as_bytes()).unwrap()],
+            priv_key
         )
         .await;
     }

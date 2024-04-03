@@ -1,5 +1,3 @@
-#![feature(assert_matches)]
-
 use std::cell::Cell;
 use std::fmt::Debug;
 

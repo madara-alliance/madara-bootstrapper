@@ -1,8 +1,5 @@
 #[doc(hidden)]
 pub extern crate alloc;
-
-use alloc::vec::Vec;
-
 use crate::messages::lib::conversions::eth_address_to_felt;
 use crate::messages::lib::{MessageL1ToL2, MessageL2ToL1};
 use starknet_api::api_core::{ContractAddress, EthAddress, Nonce, PatriciaKey};

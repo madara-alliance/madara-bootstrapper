@@ -13,17 +13,7 @@
 pub extern crate alloc;
 
 mod starkware_types_conversions;
-
-#[cfg(feature = "serde")]
-pub mod with_serde;
-
-use alloc::string::{String, ToString};
-
 use cairo_vm::felt::Felt252;
-#[cfg(feature = "parity-scale-codec")]
-use parity_scale_codec::{Decode, Encode, EncodeLike, Error, Input, MaxEncodedLen, Output};
-#[cfg(feature = "scale-info")]
-use scale_info::{build::Fields, Path, Type, TypeInfo};
 use sp_core::{H256, U256};
 use starknet_api::hash::StarkFelt;
 use starknet_ff::{FieldElement, FromByteSliceError, FromStrError};

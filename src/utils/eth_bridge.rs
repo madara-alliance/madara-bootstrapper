@@ -103,6 +103,7 @@ impl StarknetLegacyEthBridge {
         madara: &ThreadSafeMadaraClient,
         l2_bridge_address: FieldElement,
         erc20_address: FieldElement,
+        priv_key: &str
     ) {
         invoke_contract(
             madara,
@@ -112,16 +113,18 @@ impl StarknetLegacyEthBridge {
                 FieldElement::from_dec_str("1").unwrap(),
                 FieldElement::from_hex_be(CAIRO_1_ACCOUNT_CONTRACT).unwrap(),
             ],
+            priv_key
         )
         .await;
 
-        invoke_contract(madara, l2_bridge_address, "set_l2_token", vec![erc20_address]).await;
+        invoke_contract(madara, l2_bridge_address, "set_l2_token", vec![erc20_address], priv_key).await;
 
         invoke_contract(
             madara,
             l2_bridge_address,
             "set_l1_bridge",
             vec![FieldElement::from_byte_slice_be(self.eth_bridge.address().as_bytes()).unwrap()],
+            priv_key
         )
         .await;
     }

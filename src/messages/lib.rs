@@ -3,9 +3,6 @@
 
 #[doc(hidden)]
 pub extern crate alloc;
-
-use alloc::vec::Vec;
-
 use starknet_api::api_core::{ContractAddress, EthAddress, Nonce};
 use starknet_api::hash::{StarkFelt, StarkHash};
 

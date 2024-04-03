@@ -11,8 +11,8 @@ use crate::bridge_deploy_utils::lib::utils::{build_single_owner_account, Account
 use crate::bridge_deploy_utils::lib::Transaction;
 use tokio::time::sleep;
 
-const ERC20_SIERRA_PATH: &str = "../starknet-e2e-test/contracts/erc20.sierra.json";
-const ERC20_CASM_PATH: &str = "../starknet-e2e-test/contracts/erc20.casm.json";
+const ERC20_SIERRA_PATH: &str = "../contracts/erc20.sierra.json";
+const ERC20_CASM_PATH: &str = "../contracts/erc20.casm.json";
 
 pub async fn deploy_eth_token_on_l2(madara: &ThreadSafeMadaraClient, minter: FieldElement, private_key: &str) -> FieldElement {
     let rpc = madara.get_starknet_client().await;
@@ -57,9 +57,10 @@ pub async fn invoke_contract(
     contract: FieldElement,
     method: &str,
     calldata: Vec<FieldElement>,
+    priv_key: &str
 ) {
     let rpc = madara.get_starknet_client().await;
-    let account = build_single_owner_account(&rpc, SIGNER_PRIVATE, CAIRO_1_ACCOUNT_CONTRACT, false);
+    let account = build_single_owner_account(&rpc, priv_key, CAIRO_1_ACCOUNT_CONTRACT, false);
     let mut madara_write_lock = madara.write().await;
 
     let call = account.invoke_contract(contract, method, calldata, None);

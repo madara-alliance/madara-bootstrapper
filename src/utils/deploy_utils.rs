@@ -33,8 +33,8 @@ impl DeployClients {
     }
 
     /// To deploy the instance of ethereum and starknet and returning the struct.
-    pub async fn deploy(config: ArgConfig) -> Self {
-        let client_instance = EthereumInstance::spawn(config.eth_rpc, config.eth_priv_key, config.eth_chain_id);
+    pub async fn deploy(config: &ArgConfig) -> Self {
+        let client_instance = EthereumInstance::spawn(config.eth_rpc.clone(), config.eth_priv_key.clone(), config.eth_chain_id);
 
         let client = deploy_starknet_sovereign_behind_unsafe_proxy(client_instance.client()).await.expect("Failed to deploy the starknet contact");
 
