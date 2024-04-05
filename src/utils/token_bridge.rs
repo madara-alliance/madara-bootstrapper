@@ -92,15 +92,17 @@ impl StarknetTokenBridge {
         let account = build_single_owner_account(&rpc, priv_key, CAIRO_1_ACCOUNT_CONTRACT, false);
         let mut madara_write_lock = madara.write().await;
 
-        let (erc20_declare_tx, _, _) = account.declare_contract(ERC20_SIERRA_PATH, ERC20_CASM_PATH);
+        // ! not needed already declared
+        // let (erc20_declare_tx, _, _) = account.declare_contract(ERC20_SIERRA_PATH, ERC20_CASM_PATH);
 
         let (bridge_declare_tx, _, _) = account.declare_contract(TOKEN_BRIDGE_SIERRA_PATH, TOKEN_BRIDGE_CASM_PATH);
 
         let nonce = account.get_nonce().await.unwrap();
         madara_write_lock
             .create_block_with_txs(vec![
-                Transaction::Declaration(erc20_declare_tx.nonce(nonce)),
-                Transaction::Declaration(bridge_declare_tx.nonce(nonce + FieldElement::ONE)),
+                // Transaction::Declaration(erc20_declare_tx.nonce(nonce)),
+                // Transaction::Declaration(bridge_declare_tx.nonce(nonce + FieldElement::ONE)),
+                Transaction::Declaration(bridge_declare_tx.nonce(nonce)),
             ])
             .await
             .expect("Failed to declare token bridge contract on l2");
@@ -109,7 +111,7 @@ impl StarknetTokenBridge {
         let random: u32 = rng.gen();
 
         let deploy_tx = account.invoke_contract(
-            FieldElement::from_hex_be("0x5").unwrap(),
+            FieldElement::from_hex_be("0x1").unwrap(),
             "deploy_contract",
             vec![
                 FieldElement::from_hex_be("0x0358663e6ed9d37efd33d4661e20b2bad143e0f92076b0c91fe65f31ccf55046")

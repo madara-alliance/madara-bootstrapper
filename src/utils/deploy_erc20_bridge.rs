@@ -22,6 +22,5 @@ pub async fn deploy_erc20_bridge(deploy_clients: &DeployClients, config: ArgConf
 
     token_bridge.initialize(deploy_clients.address()).await;
     token_bridge.setup_l2_bridge(&madara, l2_bridge_address, &config.rollup_priv_key).await;
-
     token_bridge.setup_l1_bridge(H160::from_str(&config.l1_deployer_address).unwrap(), l2_bridge_address, U256::from_dec_str("100000000000000").unwrap()).await;
 }
