@@ -11,7 +11,7 @@ pub struct ArgConfig {
 impl ArgConfig {
     pub fn new(args: &[String]) -> Result<ArgConfig, &str> {
         if args.len() < 4 {
-            return Err("Not Enough params. Required params : eth_rpc, eth_priv_key, rollup_seq_url, rollup_priv_key")
+            return Err("Not Enough params. Required params : eth_rpc, eth_priv_key, rollup_seq_url, rollup_priv_key, l1_deployer_address")
         }
 
         let eth_rpc = args[1].clone();

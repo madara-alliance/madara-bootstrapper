@@ -41,9 +41,9 @@ pub const SN_GOERLI_CHAIN_ID: FieldElement =
 pub const SPEC_VERSION: &str = "0.4.0";
 
 pub const ANVIL_DEFAULT_PUBLIC_ADDRESS: &str = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
-pub const ERC20_SIERRA_PATH: &str = "../../contracts/erc20.sierra.json";
-pub const ERC20_CASM_PATH: &str = "../../contracts/erc20.casm.json";
+pub const ERC20_SIERRA_PATH: &str = "src/contracts/erc20.sierra.json";
+pub const ERC20_CASM_PATH: &str = "src/contracts/erc20.casm.json";
 
-pub const LEGACY_BRIDGE_PATH: &str = "../../contracts/legacy_token_bridge.json";
-pub const TOKEN_BRIDGE_SIERRA_PATH: &str = "../../contracts/token_bridge.sierra.json";
-pub const TOKEN_BRIDGE_CASM_PATH: &str = "../../contracts/token_bridge.casm.json";
+pub const LEGACY_BRIDGE_PATH: &str = "src/contracts/legacy_token_bridge.json";
+pub const TOKEN_BRIDGE_SIERRA_PATH: &str = "src/contracts/token_bridge.sierra.json";
+pub const TOKEN_BRIDGE_CASM_PATH: &str = "src/contracts/token_bridge.casm.json";

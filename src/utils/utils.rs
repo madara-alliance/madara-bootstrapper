@@ -5,14 +5,14 @@ use ethers::addressbook::Address;
 use starknet_accounts::{Account, Execution};
 use starknet_contract::ContractFactory;
 use starknet_ff::FieldElement;
-use crate::bridge_deploy_utils::lib::constants::{CAIRO_1_ACCOUNT_CONTRACT, SIGNER_PRIVATE};
+use crate::bridge_deploy_utils::lib::constants::CAIRO_1_ACCOUNT_CONTRACT;
 use crate::bridge_deploy_utils::lib::fixtures::ThreadSafeMadaraClient;
 use crate::bridge_deploy_utils::lib::utils::{build_single_owner_account, AccountActions};
 use crate::bridge_deploy_utils::lib::Transaction;
 use tokio::time::sleep;
 
-const ERC20_SIERRA_PATH: &str = "../contracts/erc20.sierra.json";
-const ERC20_CASM_PATH: &str = "../contracts/erc20.casm.json";
+const ERC20_SIERRA_PATH: &str = "src/contracts/erc20.sierra.json";
+const ERC20_CASM_PATH: &str = "src/contracts/erc20.casm.json";
 
 pub async fn deploy_eth_token_on_l2(madara: &ThreadSafeMadaraClient, minter: FieldElement, private_key: &str) -> FieldElement {
     let rpc = madara.get_starknet_client().await;
