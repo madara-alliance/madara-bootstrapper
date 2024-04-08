@@ -11,6 +11,7 @@ ARGS:
 - rollup_sequencer_url
 - rollup_priv_key
 - L1 deployer address : will be used as a governor in bridge contracts
+- L2 deployer address
 ```
 
 ## To test
