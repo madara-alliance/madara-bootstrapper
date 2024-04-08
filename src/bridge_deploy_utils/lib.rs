@@ -134,6 +134,8 @@ impl MadaraClient {
             .send()
             .await?;
 
+        // println!(">>>> Response : call_rpc : {:?}", response);
+
         // Increment rpc_request_count
         let previous = self.rpc_request_count.get();
         self.rpc_request_count.set(previous + 1);
@@ -158,8 +160,11 @@ impl MadaraClient {
             "method": "engine_createBlock",
             "params": [empty, finalize],
         });
+        // println!(">>>> body : create_block_with_parent : {:?}", body);
 
         let response = self.call_rpc(body).await?;
+        // println!(">>>> Response : create_block_with_parent : {:?}", response);
+
         // TODO: read actual error from response
         response.status().is_success().then_some(()).ok_or(anyhow!("failed to create a new block"))
     }

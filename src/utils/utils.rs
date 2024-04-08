@@ -5,7 +5,6 @@ use ethers::addressbook::Address;
 use starknet_accounts::{Account, Execution};
 use starknet_contract::ContractFactory;
 use starknet_ff::FieldElement;
-use crate::bridge_deploy_utils::lib::constants::CAIRO_1_ACCOUNT_CONTRACT;
 use crate::bridge_deploy_utils::lib::fixtures::ThreadSafeMadaraClient;
 use crate::bridge_deploy_utils::lib::utils::{build_single_owner_account, AccountActions};
 use crate::bridge_deploy_utils::lib::Transaction;
@@ -14,9 +13,9 @@ use tokio::time::sleep;
 const ERC20_SIERRA_PATH: &str = "src/contracts/erc20.sierra.json";
 const ERC20_CASM_PATH: &str = "src/contracts/erc20.casm.json";
 
-pub async fn deploy_eth_token_on_l2(madara: &ThreadSafeMadaraClient, minter: FieldElement, private_key: &str) -> FieldElement {
+pub async fn deploy_eth_token_on_l2(madara: &ThreadSafeMadaraClient, minter: FieldElement, private_key: &str, address: &str) -> FieldElement {
     let rpc = madara.get_starknet_client().await;
-    let account = build_single_owner_account(&rpc, private_key, CAIRO_1_ACCOUNT_CONTRACT, false);
+    let account = build_single_owner_account(&rpc, private_key, address, false);
 
     let (declare_tx, class_hash, _) = account.declare_contract(ERC20_SIERRA_PATH, ERC20_CASM_PATH);
 
@@ -57,10 +56,11 @@ pub async fn invoke_contract(
     contract: FieldElement,
     method: &str,
     calldata: Vec<FieldElement>,
-    priv_key: &str
+    priv_key: &str,
+    address: &str
 ) {
     let rpc = madara.get_starknet_client().await;
-    let account = build_single_owner_account(&rpc, priv_key, CAIRO_1_ACCOUNT_CONTRACT, false);
+    let account = build_single_owner_account(&rpc, priv_key, address, false);
     let mut madara_write_lock = madara.write().await;
 
     let call = account.invoke_contract(contract, method, calldata, None);
@@ -73,9 +73,10 @@ pub async fn invoke_contract(
 
 pub async fn catch_and_execute_l1_messages(madara: &ThreadSafeMadaraClient) {
     // Wait for worker to catch L1 messages
-    sleep(Duration::from_millis(12000)).await;
+    sleep(Duration::from_millis(20000)).await;
     let mut madara_write_lock = madara.write().await;
     madara_write_lock.create_block_with_pending_txs().await.expect("Failed to execute L1 Messages");
+    println!("    <<>> l1 messages executed on l2 ✅");
 }
 
 pub fn pad_bytes(address: Address) -> Vec<u8> {

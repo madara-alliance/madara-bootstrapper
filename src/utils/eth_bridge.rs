@@ -13,7 +13,7 @@ use starknet_eth_bridge_client::deploy_starknet_eth_bridge_behind_unsafe_proxy;
 use starknet_eth_bridge_client::interfaces::eth_bridge::StarknetEthBridgeTrait;
 use starknet_ff::FieldElement;
 use starknet_proxy_client::proxy_support::ProxySupportTrait;
-use crate::bridge_deploy_utils::lib::constants::{CAIRO_1_ACCOUNT_CONTRACT, LEGACY_BRIDGE_PATH};
+use crate::bridge_deploy_utils::lib::constants::LEGACY_BRIDGE_PATH;
 use crate::bridge_deploy_utils::lib::fixtures::ThreadSafeMadaraClient;
 use crate::bridge_deploy_utils::lib::utils::{build_single_owner_account, AccountActions};
 use crate::bridge_deploy_utils::lib::Transaction;
@@ -50,9 +50,9 @@ impl StarknetLegacyEthBridge {
         self.eth_bridge.client()
     }
 
-    pub async fn deploy_l2_contracts(madara: &ThreadSafeMadaraClient, private_key: &str) -> FieldElement {
+    pub async fn deploy_l2_contracts(madara: &ThreadSafeMadaraClient, private_key: &str, l2_deployer_address: &str) -> FieldElement {
         let rpc = madara.get_starknet_client().await;
-        let account = build_single_owner_account(&rpc, private_key, CAIRO_1_ACCOUNT_CONTRACT, false);
+        let account = build_single_owner_account(&rpc, private_key, l2_deployer_address, false);
 
         let (declare_tx, class_hash) = account.declare_legacy_contract(LEGACY_BRIDGE_PATH);
 
@@ -103,7 +103,8 @@ impl StarknetLegacyEthBridge {
         madara: &ThreadSafeMadaraClient,
         l2_bridge_address: FieldElement,
         erc20_address: FieldElement,
-        priv_key: &str
+        priv_key: &str,
+        l2_deployer_address: &str
     ) {
         invoke_contract(
             madara,
@@ -111,20 +112,22 @@ impl StarknetLegacyEthBridge {
             "initialize",
             vec![
                 FieldElement::from_dec_str("1").unwrap(),
-                FieldElement::from_hex_be(CAIRO_1_ACCOUNT_CONTRACT).unwrap(),
+                FieldElement::from_hex_be(l2_deployer_address).unwrap(),
             ],
-            priv_key
+            priv_key,
+            l2_deployer_address
         )
         .await;
 
-        invoke_contract(madara, l2_bridge_address, "set_l2_token", vec![erc20_address], priv_key).await;
-
+        invoke_contract(madara, l2_bridge_address, "set_l2_token", vec![erc20_address], priv_key, l2_deployer_address).await;
+    
         invoke_contract(
             madara,
             l2_bridge_address,
             "set_l1_bridge",
             vec![FieldElement::from_byte_slice_be(self.eth_bridge.address().as_bytes()).unwrap()],
-            priv_key
+            priv_key,
+            l2_deployer_address
         )
         .await;
     }
