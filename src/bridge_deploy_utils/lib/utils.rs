@@ -9,10 +9,7 @@ use starknet_accounts::{
 use starknet_core::chain_id;
 use starknet_core::types::contract::legacy::LegacyContractClass;
 use starknet_core::types::contract::{CompiledClass, SierraClass};
-use starknet_core::types::{
-    BlockId, BlockTag, BroadcastedInvokeTransaction, FieldElement, FunctionCall, MaybePendingTransactionReceipt,
-    MsgToL1, TransactionReceipt,
-};
+use starknet_core::types::{BlockId, BlockTag, BroadcastedInvokeTransaction, FieldElement, FunctionCall, InvokeTransactionResult, MaybePendingTransactionReceipt, MsgToL1, TransactionReceipt};
 use starknet_core::utils::get_selector_from_name;
 use starknet_providers::jsonrpc::{HttpTransport, JsonRpcClient};
 use starknet_providers::{Provider, ProviderError};
@@ -111,6 +108,9 @@ pub trait AccountActions {
 
     fn declare_legacy_contract(&self, path_to_compiled_contract: &str) -> (TransactionLegacyDeclaration, FieldElement);
 
+    fn declare_contract_params_sierra(&self,path_to_sierra: &str, path_to_casm: &str) -> (FieldElement, SierraClass);
+    fn declare_contract_params_legacy(&self, path_to_compiled_contract: &str) -> (LegacyContractClass);
+
     async fn prepare_invoke(
         &self,
         calls: Vec<Call>,
@@ -191,17 +191,43 @@ impl AccountActions for SingleOwnerAccount<&JsonRpcClient<HttpTransport>, LocalW
         )
     }
 
-    fn declare_legacy_contract(&self, path_to_compiled_contract: &str) -> (TransactionLegacyDeclaration, FieldElement) {
+    fn declare_legacy_contract(&self, path_to_compiled_contract: &str) -> (TransactionLegacyDeclaration, FieldElement, LegacyContractClass) {
         let contract_artifact: LegacyContractClass = serde_json::from_reader(
             std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + path_to_compiled_contract).unwrap(),
         )
         .unwrap();
+
         (
             self.declare_legacy(Arc::new(contract_artifact.clone()))
 			 // starknet-rs calls estimateFee with incorrect version which throws an error
 			 .max_fee(FieldElement::from_hex_be(MAX_FEE_OVERRIDE).unwrap()),
             contract_artifact.class_hash().unwrap(),
+            contract_artifact
         )
+    }
+
+    fn declare_contract_params_sierra(&self,path_to_sierra: &str, path_to_casm: &str) -> (FieldElement, SierraClass) {
+        let sierra: SierraClass = serde_json::from_reader(
+            std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + path_to_sierra).unwrap(),
+        )
+            .unwrap();
+        // let casm: CompiledClass = serde_json::from_reader(
+        //     std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + path_to_casm).unwrap(),
+        // )
+        //     .unwrap();
+
+        (
+            sierra.class_hash().unwrap(),
+            sierra
+        )
+    }
+
+    fn declare_contract_params_legacy(&self, path_to_compiled_contract: &str) -> (LegacyContractClass) {
+        let contract_artifact: LegacyContractClass = serde_json::from_reader(
+            std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + path_to_compiled_contract).unwrap(),
+        ).unwrap();
+
+        contract_artifact
     }
 }
 
@@ -245,7 +271,7 @@ pub async fn get_transaction_receipt(
 
 pub async fn get_contract_address_from_deploy_tx(
     rpc: &JsonRpcClient<HttpTransport>,
-    tx: Result<TransactionResult, SendTransactionError>,
+    tx: InvokeTransactionResult,
 ) -> Result<FieldElement, ProviderError> {
     let deploy_tx_hash = assert_matches!(
         &tx,

@@ -4,8 +4,10 @@ use async_trait::async_trait;
 use ethers::addressbook::Address;
 use ethers::providers::Middleware;
 use ethers::types::{Bytes, U256};
+use starknet_providers::jsonrpc::HttpTransport;
+use starknet_providers::JsonRpcClient;
 use crate::felt::lib::Felt252Wrapper;
-use starknet_accounts::Execution;
+use starknet_accounts::{Account, Execution, ExecutionEncoder};
 use starknet_contract::ContractFactory;
 use starknet_eth_bridge_client::clients::eth_bridge::StarknetEthBridgeContractClient;
 // zaun imports
@@ -50,26 +52,16 @@ impl StarknetLegacyEthBridge {
         self.eth_bridge.client()
     }
 
-    pub async fn deploy_l2_contracts(madara: &ThreadSafeMadaraClient, private_key: &str, l2_deployer_address: &str) -> FieldElement {
-        let rpc = madara.get_starknet_client().await;
-        let account = build_single_owner_account(&rpc, private_key, l2_deployer_address, false);
+    pub async fn deploy_l2_contracts(rpc_provider_l2: &JsonRpcClient<HttpTransport>, private_key: &str, l2_deployer_address: &str) -> FieldElement {
+        let account = build_single_owner_account(&rpc_provider_l2, private_key, l2_deployer_address, false);
 
-        let (declare_tx, class_hash) = account.declare_legacy_contract(LEGACY_BRIDGE_PATH);
-
-        let mut madara_write_lock = madara.write().await;
-
-        madara_write_lock
-            .create_block_with_txs(vec![Transaction::LegacyDeclaration(declare_tx)])
-            .await
-            .expect("Unable to declare legacy token bridge on l2");
+        let (contract_artifact) = account.declare_contract_params_legacy(LEGACY_BRIDGE_PATH);
+        let class_hash = contract_artifact.class_hash().unwrap();
+        account.declare_legacy(Arc::new(contract_artifact)).send().await.expect("Unable to declare legacy token bridge on l2");
 
         let contract_factory = ContractFactory::new(class_hash, account.clone());
-        let deploy_tx = &contract_factory.deploy(vec![], FieldElement::ZERO, true);
+        let deploy_tx = &contract_factory.deploy(vec![], FieldElement::ZERO, true).send().await.expect("Unable to deploy legacy token bridge on l2");
 
-        madara_write_lock
-            .create_block_with_txs(vec![Transaction::Execution(Execution::from(deploy_tx))])
-            .await
-            .expect("Unable to deploy legacy token bridge on l2");
         deploy_tx.deployed_address()
     }
 
@@ -100,14 +92,14 @@ impl StarknetLegacyEthBridge {
 
     pub async fn setup_l2_bridge(
         &self,
-        madara: &ThreadSafeMadaraClient,
+        rpc_provider: &JsonRpcClient<HttpTransport>,
         l2_bridge_address: FieldElement,
         erc20_address: FieldElement,
         priv_key: &str,
         l2_deployer_address: &str
     ) {
         invoke_contract(
-            madara,
+            rpc_provider,
             l2_bridge_address,
             "initialize",
             vec![
@@ -119,10 +111,10 @@ impl StarknetLegacyEthBridge {
         )
         .await;
 
-        invoke_contract(madara, l2_bridge_address, "set_l2_token", vec![erc20_address], priv_key, l2_deployer_address).await;
+        invoke_contract(rpc_provider, l2_bridge_address, "set_l2_token", vec![erc20_address], priv_key, l2_deployer_address).await;
     
         invoke_contract(
-            madara,
+            rpc_provider,
             l2_bridge_address,
             "set_l1_bridge",
             vec![FieldElement::from_byte_slice_be(self.eth_bridge.address().as_bytes()).unwrap()],

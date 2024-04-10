@@ -11,12 +11,15 @@ use starkgate_manager_client::deploy_starkgate_manager_behind_unsafe_proxy;
 use starkgate_manager_client::interfaces::manager::StarkgateManagerTrait;
 use starkgate_registry_client::clients::starkgate_registry::StarkgateRegistryContractClient;
 use starkgate_registry_client::deploy_starkgate_registry_behind_unsafe_proxy;
-use starknet_accounts::ConnectedAccount;
+use starknet_accounts::{Account, ConnectedAccount};
+use starknet_contract::ContractFactory;
 use starknet_core::utils::get_selector_from_name;
 use starknet_erc20_client::clients::erc20::ERC20ContractClient;
 use starknet_erc20_client::deploy_dai_erc20_behind_unsafe_proxy;
 use starknet_erc20_client::interfaces::erc20::ERC20TokenTrait;
 use starknet_ff::FieldElement;
+use starknet_providers::jsonrpc::HttpTransport;
+use starknet_providers::JsonRpcClient;
 use starknet_proxy_client::proxy_support::ProxySupportTrait;
 use crate::bridge_deploy_utils::lib::constants::{
     ERC20_CASM_PATH, ERC20_SIERRA_PATH, TOKEN_BRIDGE_CASM_PATH, TOKEN_BRIDGE_SIERRA_PATH
@@ -86,25 +89,18 @@ impl StarknetTokenBridge {
         self.erc20.client()
     }
 
-    pub async fn deploy_l2_contracts(madara: &ThreadSafeMadaraClient, priv_key: &str, l2_deployer_address: &str) -> FieldElement {
-        let rpc = madara.get_starknet_client().await;
-        let account = build_single_owner_account(&rpc, priv_key, l2_deployer_address, false);
-        let mut madara_write_lock = madara.write().await;
-
+    pub async fn deploy_l2_contracts(rpc_provider_l2: &JsonRpcClient<HttpTransport>, priv_key: &str, l2_deployer_address: &str) -> FieldElement {
+        let account = build_single_owner_account(&rpc_provider_l2, priv_key, l2_deployer_address, false);
         // ! not needed already declared
-        let (erc20_declare_tx, _, _) = account.declare_contract(ERC20_SIERRA_PATH, ERC20_CASM_PATH);
+        let (class_hash_erc20, contract_artifact_erc20) = account.declare_contract_params_sierra(ERC20_SIERRA_PATH, ERC20_CASM_PATH);
+        let (class_hash_bridge, contract_artifact_bridge) = account.declare_contract_params_sierra(TOKEN_BRIDGE_SIERRA_PATH, TOKEN_BRIDGE_CASM_PATH);
 
-        let (bridge_declare_tx, _, _) = account.declare_contract(TOKEN_BRIDGE_SIERRA_PATH, TOKEN_BRIDGE_CASM_PATH);
+        let flattened_class_erc20 = contract_artifact_erc20.flatten().unwrap();
+        let flattened_class_bridge = contract_artifact_bridge.flatten().unwrap();
 
-        let nonce = account.get_nonce().await.unwrap();
-        madara_write_lock
-            .create_block_with_txs(vec![
-                Transaction::Declaration(erc20_declare_tx.nonce(nonce)),
-                Transaction::Declaration(bridge_declare_tx.nonce(nonce + FieldElement::ONE)),
-                // Transaction::Declaration(bridge_declare_tx.nonce(nonce)),
-            ])
-            .await
-            .expect("Failed to declare token bridge contract on l2");
+        account.declare(Arc::new(flattened_class_bridge), class_hash_bridge).send().await.expect("L2 Bridge initiation failed");
+        // for individual test :
+        // account.declare(Arc::new(flattened_class_erc20), class_hash_erc20).send().await.expect("L2 Bridge initiation failed");
 
         let mut rng = rand::thread_rng();
         let random: u32 = rng.gen();
@@ -120,13 +116,9 @@ impl StarknetTokenBridge {
                 FieldElement::ZERO,                                       // constructor_calldata (upgrade_delay)
             ],
             None,
-        );
+        ).send().await.expect("");
 
-        let mut txs = madara_write_lock.create_block_with_txs(vec![Transaction::Execution(deploy_tx)]).await.unwrap();
-
-        let deploy_tx_result = txs.pop().unwrap();
-
-        get_contract_address_from_deploy_tx(&rpc, deploy_tx_result).await.unwrap()
+        get_contract_address_from_deploy_tx(&rpc_provider_l2, deploy_tx).await.unwrap()
     }
 
     /// Initialize Starknet Token Bridge.
@@ -166,9 +158,9 @@ impl StarknetTokenBridge {
         self.manager.enroll_token_bridge(self.address(), fee).await.unwrap();
     }
 
-    pub async fn setup_l2_bridge(&self, madara: &ThreadSafeMadaraClient, l2_bridge: FieldElement, priv_key: &str, l2_address: &str) {
+    pub async fn setup_l2_bridge(&self, rpc_provider_l2: &JsonRpcClient<HttpTransport>, l2_bridge: FieldElement, priv_key: &str, l2_address: &str) {
         invoke_contract(
-            madara,
+            rpc_provider_l2,
             FieldElement::from_hex_be("0x1").unwrap(),
             "__execute__",
             vec![
@@ -183,7 +175,7 @@ impl StarknetTokenBridge {
         .await;
 
         invoke_contract(
-            madara,
+            rpc_provider_l2,
             l2_bridge,
             "register_app_governor",
             vec![FieldElement::from_hex_be(l2_address).unwrap()],
@@ -193,7 +185,7 @@ impl StarknetTokenBridge {
         .await;
 
         invoke_contract(
-            madara,
+            rpc_provider_l2,
             l2_bridge,
             "set_l2_token_governance",
             vec![FieldElement::from_hex_be(l2_address).unwrap()],
@@ -203,7 +195,7 @@ impl StarknetTokenBridge {
         .await;
 
         invoke_contract(
-            madara,
+            rpc_provider_l2,
             l2_bridge,
             "set_erc20_class_hash",
             vec![
@@ -216,7 +208,7 @@ impl StarknetTokenBridge {
         .await;
 
         invoke_contract(
-            madara,
+            rpc_provider_l2,
             l2_bridge,
             "set_l1_bridge",
             vec![FieldElement::from_byte_slice_be(self.token_bridge.address().as_bytes()).unwrap()],
