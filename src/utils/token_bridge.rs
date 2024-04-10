@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use std::time::Duration;
 
 use async_trait::async_trait;
 use ethers::addressbook::Address;
@@ -30,6 +31,7 @@ use crate::bridge_deploy_utils::lib::Transaction;
 use starknet_token_bridge_client::clients::token_bridge::StarknetTokenBridgeContractClient;
 use starknet_token_bridge_client::deploy_starknet_token_bridge_behind_unsafe_proxy;
 use starknet_token_bridge_client::interfaces::token_bridge::StarknetTokenBridgeTrait;
+use tokio::time::sleep;
 use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
 
 use crate::felt::lib::Felt252Wrapper;
@@ -99,8 +101,10 @@ impl StarknetTokenBridge {
         let flattened_class_bridge = contract_artifact_bridge.flatten().unwrap();
 
         account.declare(Arc::new(flattened_class_bridge), class_hash_bridge).send().await.expect("L2 Bridge initiation failed");
+        sleep(Duration::from_secs(7)).await;
         // for individual test :
         // account.declare(Arc::new(flattened_class_erc20), class_hash_erc20).send().await.expect("L2 Bridge initiation failed");
+        // sleep(Duration::from_secs(7)).await;
 
         let mut rng = rand::thread_rng();
         let random: u32 = rng.gen();
@@ -117,6 +121,8 @@ impl StarknetTokenBridge {
             ],
             None,
         ).send().await.expect("");
+
+        sleep(Duration::from_secs(7)).await;
 
         get_contract_address_from_deploy_tx(&rpc_provider_l2, &deploy_tx).await.unwrap()
     }
@@ -174,6 +180,9 @@ impl StarknetTokenBridge {
         )
         .await;
 
+        println!(">>>> setup_l2_bridge : register_app_role_admin //");
+        sleep(Duration::from_secs(7)).await;
+
         invoke_contract(
             rpc_provider_l2,
             l2_bridge,
@@ -184,6 +193,9 @@ impl StarknetTokenBridge {
         )
         .await;
 
+        println!(">>>> setup_l2_bridge : register_app_governor //");
+        sleep(Duration::from_secs(7)).await;
+
         invoke_contract(
             rpc_provider_l2,
             l2_bridge,
@@ -193,6 +205,9 @@ impl StarknetTokenBridge {
             l2_address
         )
         .await;
+
+        println!(">>>> setup_l2_bridge : set_l2_token_governance //");
+        sleep(Duration::from_secs(7)).await;
 
         invoke_contract(
             rpc_provider_l2,
@@ -207,6 +222,9 @@ impl StarknetTokenBridge {
         )
         .await;
 
+        println!(">>>> setup_l2_bridge : set_erc20_class_hash //");
+        sleep(Duration::from_secs(7)).await;
+
         invoke_contract(
             rpc_provider_l2,
             l2_bridge,
@@ -216,6 +234,8 @@ impl StarknetTokenBridge {
             l2_address
         )
         .await;
+
+        println!(">>>> setup_l2_bridge : set_l1_bridge //");
     }
 
     pub async fn register_app_role_admin(&self, address: Address) {

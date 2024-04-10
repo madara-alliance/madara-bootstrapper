@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use std::time::Duration;
 
 use async_trait::async_trait;
 use ethers::addressbook::Address;
@@ -15,6 +16,7 @@ use starknet_eth_bridge_client::deploy_starknet_eth_bridge_behind_unsafe_proxy;
 use starknet_eth_bridge_client::interfaces::eth_bridge::StarknetEthBridgeTrait;
 use starknet_ff::FieldElement;
 use starknet_proxy_client::proxy_support::ProxySupportTrait;
+use tokio::time::sleep;
 use crate::bridge_deploy_utils::lib::constants::LEGACY_BRIDGE_PATH;
 use crate::bridge_deploy_utils::lib::fixtures::ThreadSafeMadaraClient;
 use crate::bridge_deploy_utils::lib::utils::{build_single_owner_account, AccountActions, get_contract_address_from_deploy_tx};
@@ -57,10 +59,15 @@ impl StarknetLegacyEthBridge {
 
         let (contract_artifact) = account.declare_contract_params_legacy(LEGACY_BRIDGE_PATH);
         let class_hash = contract_artifact.class_hash().unwrap();
+
         account.declare_legacy(Arc::new(contract_artifact)).send().await.expect("Unable to declare legacy token bridge on l2");
+
+        sleep(Duration::from_secs(7)).await;
 
         let contract_factory = ContractFactory::new(class_hash, account.clone());
         let deploy_tx = &contract_factory.deploy(vec![], FieldElement::ZERO, true).send().await.expect("Unable to deploy legacy token bridge on l2");
+
+        sleep(Duration::from_secs(7)).await;
 
         let address = get_contract_address_from_deploy_tx(&rpc_provider_l2, deploy_tx).await.expect("Error getting contract address from transaction hash");
         address
@@ -112,8 +119,16 @@ impl StarknetLegacyEthBridge {
         )
         .await;
 
+        println!(">>>> setup_l2_bridge : l2 bridge initialized //");
+
+        sleep(Duration::from_secs(7)).await;
+
         invoke_contract(rpc_provider, l2_bridge_address, "set_l2_token", vec![erc20_address], priv_key, l2_deployer_address).await;
-    
+
+        println!(">>>> setup_l2_bridge : l2 token set //");
+
+        sleep(Duration::from_secs(7)).await;
+
         invoke_contract(
             rpc_provider,
             l2_bridge_address,
@@ -123,6 +138,8 @@ impl StarknetLegacyEthBridge {
             l2_deployer_address
         )
         .await;
+
+        println!(">>>> setup_l2_bridge : l1 bridge set //");
     }
 
     pub async fn set_max_total_balance(&self, amount: U256) {

@@ -210,13 +210,13 @@ impl AccountActions for SingleOwnerAccount<&JsonRpcClient<HttpTransport>, LocalW
             std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + path_to_sierra).unwrap(),
         )
             .unwrap();
-        // let casm: CompiledClass = serde_json::from_reader(
-        //     std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + path_to_casm).unwrap(),
-        // )
-        //     .unwrap();
+        let casm: CompiledClass = serde_json::from_reader(
+            std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + path_to_casm).unwrap(),
+        )
+            .unwrap();
 
         (
-            sierra.class_hash().unwrap(),
+            casm.class_hash().unwrap(),
             sierra
         )
     }

@@ -31,7 +31,7 @@ pub async fn deploy_eth_bridge(deploy_clients: &DeployClients, config: ArgConfig
     println!("ETH Bridge initialized");
     eth_bridge.setup_l2_bridge(&rpc_provider_l2, l2_bridge_address, l2_eth_address, &config.rollup_priv_key, &config.l2_deployer_address).await;
     println!("ETH Bridge L2 setup complete ✅");
-    
+
     eth_bridge.setup_l1_bridge("10000000000000000", "10000000000000000", l2_bridge_address).await;
     println!("ETH Bridge L1 setup complete ✅");
 }
@@ -69,6 +69,7 @@ pub async fn eth_bridge_test_helper(deploy_clients: &DeployClients, config: ArgC
 
     eth_bridge.deposit(10.into(), U256::from_str(&config.l2_deployer_address).unwrap(), 1000.into()).await;
     println!(">>>> ETH deposited on l1 💰");
+    sleep(Duration::from_secs(60)).await;
     sleep(Duration::from_secs((&config.l1_wait_time).parse()?)).await;
     println!(">>>> L1 message executed on L2 //");
 
@@ -85,13 +86,12 @@ pub async fn eth_bridge_test_helper(deploy_clients: &DeployClients, config: ArgC
     println!(">>>> ETH withdrawal initiated on l2 💰");
     println!(">>>> Waiting for message to be consumed on l2");
     sleep(Duration::from_secs(60)).await;
-
-    sleep(Duration::from_millis(12000)).await;
+    sleep(Duration::from_secs((&config.l1_wait_time).parse()?)).await;
 
     let balance_before = eth_bridge.eth_balance(Address::from_str(&config.l1_deployer_address).unwrap()).await;
-    println!("eth_bridge : withdraw : init");
+    println!(">>>> eth_bridge : withdraw : init");
     eth_bridge.withdraw(5.into(), Address::from_str(&config.l1_deployer_address).unwrap()).await;
-    println!("eth_bridge : withdraw : done");
+    println!(">>>> eth_bridge : withdraw : done");
     let balance_after = eth_bridge.eth_balance(Address::from_str(&config.l1_deployer_address).unwrap()).await;
 
     let decimals_eth = U256::from_dec_str("1000000000000000000").unwrap();

@@ -57,7 +57,7 @@ pub async fn erc20_bridge_test_helper(deploy_clients: &DeployClients, config: Ar
 
     sleep(Duration::from_secs(config.l1_wait_time.parse().unwrap())).await;
     println!(">>>> Waiting for message to be consumed on l2");
-    sleep(Duration::from_millis(60000)).await;
+    sleep(Duration::from_secs(60)).await;
 
     let l2_erc20_token_address = get_l2_token_address(&rpc_provider_l2, &l2_bridge_address, &token_bridge.address()).await;
     println!("L2 ERC 20 Token Address : {:?}", l2_erc20_token_address);
@@ -100,9 +100,8 @@ pub async fn erc20_bridge_test_helper(deploy_clients: &DeployClients, config: Ar
 
     sleep(Duration::from_secs(config.l1_wait_time.parse().unwrap())).await;
     println!(">>>> Waiting for message to be consumed on l2");
-    sleep(Duration::from_secs(60)).await;
-
-    sleep(Duration::from_millis(12000)).await;
+    sleep(Duration::from_secs(80)).await;
+    sleep(Duration::from_secs(config.l1_wait_time.parse().unwrap())).await;
 
     let l1_recipient: Address = Address::from_str(&config.l1_deployer_address).unwrap();
     let balance_before = token_bridge.token_balance(l1_recipient).await;
@@ -112,7 +111,6 @@ pub async fn erc20_bridge_test_helper(deploy_clients: &DeployClients, config: Ar
     assert_eq!(balance_before + U256::from_dec_str("5").unwrap(), balance_after);
 
     Ok(())
-
 }
 
 async fn get_l2_token_address(rpc_provider_l2: &JsonRpcClient<HttpTransport>, l2_bridge_address : &FieldElement, l1_erc_20_address: &H160) -> FieldElement {
