@@ -8,7 +8,7 @@ use ethers::types::{Bytes, U256};
 use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::JsonRpcClient;
 use crate::felt::lib::Felt252Wrapper;
-use starknet_accounts::{Account, Execution, ExecutionEncoder};
+use starknet_accounts::{Account};
 use starknet_contract::ContractFactory;
 use starknet_eth_bridge_client::clients::eth_bridge::StarknetEthBridgeContractClient;
 // zaun imports
@@ -18,9 +18,7 @@ use starknet_ff::FieldElement;
 use starknet_proxy_client::proxy_support::ProxySupportTrait;
 use tokio::time::sleep;
 use crate::bridge_deploy_utils::lib::constants::LEGACY_BRIDGE_PATH;
-use crate::bridge_deploy_utils::lib::fixtures::ThreadSafeMadaraClient;
 use crate::bridge_deploy_utils::lib::utils::{build_single_owner_account, AccountActions, get_contract_address_from_deploy_tx};
-use crate::bridge_deploy_utils::lib::Transaction;
 use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
 
 use super::utils::invoke_contract;
@@ -57,7 +55,7 @@ impl StarknetLegacyEthBridge {
     pub async fn deploy_l2_contracts(rpc_provider_l2: &JsonRpcClient<HttpTransport>, private_key: &str, l2_deployer_address: &str) -> FieldElement {
         let account = build_single_owner_account(&rpc_provider_l2, private_key, l2_deployer_address, false);
 
-        let (contract_artifact) = account.declare_contract_params_legacy(LEGACY_BRIDGE_PATH);
+        let contract_artifact = account.declare_contract_params_legacy(LEGACY_BRIDGE_PATH);
         let class_hash = contract_artifact.class_hash().unwrap();
 
         account.declare_legacy(Arc::new(contract_artifact)).send().await.expect("Unable to declare legacy token bridge on l2");

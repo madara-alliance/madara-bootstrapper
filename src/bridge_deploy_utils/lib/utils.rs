@@ -17,8 +17,8 @@ use starknet_signers::{LocalWallet, SigningKey};
 
 use crate::bridge_deploy_utils::lib::constants::{FEE_TOKEN_ADDRESS, MAX_FEE_OVERRIDE};
 use crate::bridge_deploy_utils::lib::{
-    RpcAccount, RpcOzAccountFactory, SendTransactionError, TransactionAccountDeployment, TransactionDeclaration,
-    TransactionExecution, TransactionLegacyDeclaration, TransactionResult,
+    RpcAccount, RpcOzAccountFactory, TransactionAccountDeployment, TransactionDeclaration,
+    TransactionExecution, TransactionLegacyDeclaration,
 };
 
 pub struct U256 {
@@ -108,7 +108,7 @@ pub trait AccountActions {
 
     fn declare_legacy_contract(&self, path_to_compiled_contract: &str) -> (TransactionLegacyDeclaration, FieldElement, LegacyContractClass);
     fn declare_contract_params_sierra(&self,path_to_sierra: &str, path_to_casm: &str) -> (FieldElement, SierraClass);
-    fn declare_contract_params_legacy(&self, path_to_compiled_contract: &str) -> (LegacyContractClass);
+    fn declare_contract_params_legacy(&self, path_to_compiled_contract: &str) -> LegacyContractClass;
 
     async fn prepare_invoke(
         &self,
@@ -221,7 +221,7 @@ impl AccountActions for SingleOwnerAccount<&JsonRpcClient<HttpTransport>, LocalW
         )
     }
 
-    fn declare_contract_params_legacy(&self, path_to_compiled_contract: &str) -> (LegacyContractClass) {
+    fn declare_contract_params_legacy(&self, path_to_compiled_contract: &str) -> LegacyContractClass {
         let contract_artifact: LegacyContractClass = serde_json::from_reader(
             std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + path_to_compiled_contract).unwrap(),
         ).unwrap();

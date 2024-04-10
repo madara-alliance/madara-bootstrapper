@@ -3,27 +3,25 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use ethers::addressbook::Address;
-use starknet_accounts::{Account, Execution};
+use starknet_accounts::{Account};
 use starknet_contract::ContractFactory;
-use starknet_core::types::{BlockId, BlockTag};
 use starknet_ff::FieldElement;
 use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::JsonRpcClient;
 use crate::bridge_deploy_utils::lib::fixtures::ThreadSafeMadaraClient;
 use crate::bridge_deploy_utils::lib::utils::{build_single_owner_account, AccountActions, get_contract_address_from_deploy_tx};
-use crate::bridge_deploy_utils::lib::Transaction;
 use tokio::time::sleep;
 
 const ERC20_SIERRA_PATH: &str = "src/contracts/erc20.sierra.json";
 const ERC20_CASM_PATH: &str = "src/contracts/erc20.casm.json";
 
 pub async fn deploy_eth_token_on_l2(rpc_provider_l2: &JsonRpcClient<HttpTransport>, minter: FieldElement, private_key: &str, address: &str) -> FieldElement {
-    let mut account = build_single_owner_account(&rpc_provider_l2, private_key, address, false);
+    let account = build_single_owner_account(&rpc_provider_l2, private_key, address, false);
 
     let (class_hash, contract_artifact) = account.declare_contract_params_sierra(ERC20_SIERRA_PATH, ERC20_CASM_PATH);
     let flattened_class = contract_artifact.clone().flatten().unwrap();
 
-    let res = account.declare(Arc::new(flattened_class), class_hash).send().await.expect("Unable to declare ERC20 token on L2");
+    account.declare(Arc::new(flattened_class), class_hash).send().await.expect("Unable to declare ERC20 token on L2");
     let sierra_class_hash = contract_artifact.class_hash().unwrap();
 
     sleep(Duration::from_secs(7)).await;

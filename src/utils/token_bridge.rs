@@ -12,8 +12,7 @@ use starkgate_manager_client::deploy_starkgate_manager_behind_unsafe_proxy;
 use starkgate_manager_client::interfaces::manager::StarkgateManagerTrait;
 use starkgate_registry_client::clients::starkgate_registry::StarkgateRegistryContractClient;
 use starkgate_registry_client::deploy_starkgate_registry_behind_unsafe_proxy;
-use starknet_accounts::{Account, ConnectedAccount};
-use starknet_contract::ContractFactory;
+use starknet_accounts::{Account};
 use starknet_core::utils::get_selector_from_name;
 use starknet_erc20_client::clients::erc20::ERC20ContractClient;
 use starknet_erc20_client::deploy_dai_erc20_behind_unsafe_proxy;
@@ -25,9 +24,7 @@ use starknet_proxy_client::proxy_support::ProxySupportTrait;
 use crate::bridge_deploy_utils::lib::constants::{
     ERC20_CASM_PATH, ERC20_SIERRA_PATH, TOKEN_BRIDGE_CASM_PATH, TOKEN_BRIDGE_SIERRA_PATH
 };
-use crate::bridge_deploy_utils::lib::fixtures::ThreadSafeMadaraClient;
 use crate::bridge_deploy_utils::lib::utils::{build_single_owner_account, get_contract_address_from_deploy_tx, AccountActions};
-use crate::bridge_deploy_utils::lib::Transaction;
 use starknet_token_bridge_client::clients::token_bridge::StarknetTokenBridgeContractClient;
 use starknet_token_bridge_client::deploy_starknet_token_bridge_behind_unsafe_proxy;
 use starknet_token_bridge_client::interfaces::token_bridge::StarknetTokenBridgeTrait;
