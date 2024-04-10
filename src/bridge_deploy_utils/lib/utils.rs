@@ -106,8 +106,7 @@ pub trait AccountActions {
         path_to_casm: &str,
     ) -> (TransactionDeclaration, FieldElement, FieldElement);
 
-    fn declare_legacy_contract(&self, path_to_compiled_contract: &str) -> (TransactionLegacyDeclaration, FieldElement);
-
+    fn declare_legacy_contract(&self, path_to_compiled_contract: &str) -> (TransactionLegacyDeclaration, FieldElement, LegacyContractClass);
     fn declare_contract_params_sierra(&self,path_to_sierra: &str, path_to_casm: &str) -> (FieldElement, SierraClass);
     fn declare_contract_params_legacy(&self, path_to_compiled_contract: &str) -> (LegacyContractClass);
 
@@ -271,12 +270,9 @@ pub async fn get_transaction_receipt(
 
 pub async fn get_contract_address_from_deploy_tx(
     rpc: &JsonRpcClient<HttpTransport>,
-    tx: InvokeTransactionResult,
+    tx: &InvokeTransactionResult,
 ) -> Result<FieldElement, ProviderError> {
-    let deploy_tx_hash = assert_matches!(
-        &tx,
-        Ok(TransactionResult::Execution(rpc_response)) => rpc_response.transaction_hash
-    );
+    let deploy_tx_hash = tx.transaction_hash;
 
     let deploy_tx_receipt = get_transaction_receipt(rpc, deploy_tx_hash).await?;
 

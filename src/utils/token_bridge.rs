@@ -118,7 +118,7 @@ impl StarknetTokenBridge {
             None,
         ).send().await.expect("");
 
-        get_contract_address_from_deploy_tx(&rpc_provider_l2, deploy_tx).await.unwrap()
+        get_contract_address_from_deploy_tx(&rpc_provider_l2, &deploy_tx).await.unwrap()
     }
 
     /// Initialize Starknet Token Bridge.

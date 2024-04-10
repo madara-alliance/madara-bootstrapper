@@ -30,7 +30,7 @@ pub async fn deploy_erc20_bridge(deploy_clients: &DeployClients, config: ArgConf
     token_bridge.setup_l2_bridge(&rpc_provider_l2, l2_bridge_address, &config.rollup_priv_key, &config.l2_deployer_address).await;
     token_bridge.setup_l1_bridge(H160::from_str(&config.l1_deployer_address).unwrap(), l2_bridge_address, U256::from_dec_str("100000000000000").unwrap()).await;
 
-    sleep(Duration::from_secs((&config.l1_wait_time).parse()?)).await;
+    sleep(Duration::from_secs(config.l1_wait_time.parse().unwrap())).await;
     sleep(Duration::from_millis(60000)).await;
 
     let l2_erc20_token_address = get_l2_token_address(&rpc_provider_l2, &l2_bridge_address, &token_bridge.address()).await;
@@ -55,7 +55,7 @@ pub async fn erc20_bridge_test_helper(deploy_clients: &DeployClients, config: Ar
     token_bridge.setup_l2_bridge(&rpc_provider_l2, l2_bridge_address, &config.rollup_priv_key, &config.l2_deployer_address).await;
     token_bridge.setup_l1_bridge(H160::from_str(&config.l1_deployer_address).unwrap(), l2_bridge_address, U256::from_dec_str("100000000000000").unwrap()).await;
 
-    sleep(Duration::from_secs((&config.l1_wait_time).parse()?)).await;
+    sleep(Duration::from_secs(config.l1_wait_time.parse().unwrap())).await;
     println!(">>>> Waiting for message to be consumed on l2");
     sleep(Duration::from_millis(60000)).await;
 
@@ -63,7 +63,7 @@ pub async fn erc20_bridge_test_helper(deploy_clients: &DeployClients, config: Ar
     println!("L2 ERC 20 Token Address : {:?}", l2_erc20_token_address);
 
     token_bridge.approve(token_bridge.bridge_address(), 100000000.into()).await;
-    sleep(Duration::from_secs((&config.l1_wait_time).parse()?)).await;
+    sleep(Duration::from_secs(config.l1_wait_time.parse().unwrap())).await;
     println!(">>>> Approval done ✅");
     println!(">>>> Waiting for message to be consumed on l2");
     sleep(Duration::from_secs(60)).await;
@@ -71,7 +71,7 @@ pub async fn erc20_bridge_test_helper(deploy_clients: &DeployClients, config: Ar
     let balance_before = read_erc20_balance(&rpc_provider_l2,l2_erc20_token_address, FieldElement::from_str(&config.l2_deployer_address).unwrap()).await;
 
     token_bridge.deposit(token_bridge.address(), 10.into(), U256::from_str(&config.l2_deployer_address).unwrap(), U256::from_dec_str("100000000000000").unwrap(),).await;
-    sleep(Duration::from_secs((&config.l1_wait_time).parse()?)).await;
+    sleep(Duration::from_secs(config.l1_wait_time.parse().unwrap())).await;
     println!(">>>> Deposit done 💰");
     println!(">>>> Waiting for message to be consumed on l2");
     sleep(Duration::from_secs(60)).await;
@@ -98,7 +98,7 @@ pub async fn erc20_bridge_test_helper(deploy_clients: &DeployClients, config: Ar
     )
     .await;
 
-    sleep(Duration::from_secs((&config.l1_wait_time).parse()?)).await;
+    sleep(Duration::from_secs(config.l1_wait_time.parse().unwrap())).await;
     println!(">>>> Waiting for message to be consumed on l2");
     sleep(Duration::from_secs(60)).await;
 

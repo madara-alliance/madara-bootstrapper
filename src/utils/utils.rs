@@ -9,7 +9,7 @@ use starknet_ff::FieldElement;
 use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::JsonRpcClient;
 use crate::bridge_deploy_utils::lib::fixtures::ThreadSafeMadaraClient;
-use crate::bridge_deploy_utils::lib::utils::{build_single_owner_account, AccountActions};
+use crate::bridge_deploy_utils::lib::utils::{build_single_owner_account, AccountActions, get_contract_address_from_deploy_tx};
 use crate::bridge_deploy_utils::lib::Transaction;
 use tokio::time::sleep;
 
@@ -41,7 +41,9 @@ pub async fn deploy_eth_token_on_l2(rpc_provider_l2: &JsonRpcClient<HttpTranspor
         true,
     ).send().await.expect("Unable to deploy ERC20 token on L2");
 
-    deploy_tx.deployed_address()
+    let address = get_contract_address_from_deploy_tx(&rpc_provider_l2, deploy_tx).await.expect("Error getting contract address from transaction hash");
+
+    address
 }
 
 pub async fn invoke_contract(

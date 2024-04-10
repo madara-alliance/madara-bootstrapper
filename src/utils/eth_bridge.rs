@@ -17,7 +17,7 @@ use starknet_ff::FieldElement;
 use starknet_proxy_client::proxy_support::ProxySupportTrait;
 use crate::bridge_deploy_utils::lib::constants::LEGACY_BRIDGE_PATH;
 use crate::bridge_deploy_utils::lib::fixtures::ThreadSafeMadaraClient;
-use crate::bridge_deploy_utils::lib::utils::{build_single_owner_account, AccountActions};
+use crate::bridge_deploy_utils::lib::utils::{build_single_owner_account, AccountActions, get_contract_address_from_deploy_tx};
 use crate::bridge_deploy_utils::lib::Transaction;
 use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
 
@@ -62,7 +62,8 @@ impl StarknetLegacyEthBridge {
         let contract_factory = ContractFactory::new(class_hash, account.clone());
         let deploy_tx = &contract_factory.deploy(vec![], FieldElement::ZERO, true).send().await.expect("Unable to deploy legacy token bridge on l2");
 
-        deploy_tx.deployed_address()
+        let address = get_contract_address_from_deploy_tx(&rpc_provider_l2, deploy_tx).await.expect("Error getting contract address from transaction hash");
+        address
     }
 
     /// Initialize Starknet Legacy Eth Bridge
