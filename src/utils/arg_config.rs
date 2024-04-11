@@ -9,6 +9,7 @@ pub struct ArgConfig {
     pub eth_chain_id: u64,
     pub l1_deployer_address: String,
     pub l2_deployer_address: String,
+    pub l1_wait_time: String,
 }
 
 impl ArgConfig {
@@ -24,8 +25,9 @@ impl ArgConfig {
         let eth_chain_id = args[5].clone().parse::<u64>().unwrap();
         let l1_deployer_address = args[6].clone();
         let l2_deployer_address = args[7].clone();
+        let l1_wait_time = args[8].clone();
 
-        Ok(ArgConfig {eth_rpc, eth_priv_key, rollup_seq_url, rollup_priv_key, eth_chain_id, l1_deployer_address, l2_deployer_address})
+        Ok(ArgConfig {eth_rpc, eth_priv_key, rollup_seq_url, rollup_priv_key, eth_chain_id, l1_deployer_address, l2_deployer_address, l1_wait_time})
     }
 }
 

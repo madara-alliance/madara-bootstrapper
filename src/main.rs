@@ -14,16 +14,6 @@ use utils::deploy_utils::DeployClients;
 
 #[tokio::main]
 pub async fn main() {
-
-    // Reqs : 
-    // ----
-    // - Args :
-    //      - eth_rpc
-    //      - eth_priv_key
-    //      - rollup_sequencer_url
-    //      - rollup_priv_key
-    //      - L1 deployer address : will be used as a governor in bridge contracts
-
     let args: Vec<String> = env::args().collect();
 
     // args config
@@ -39,7 +29,10 @@ async fn deploy_bridges(config: ArgConfig) {
     let deploy_clients = DeployClients::deploy(&config).await;
     println!(">>>>> core address : {:?}", deploy_clients.address());
     deploy_clients.initialize_for_goerli(0u64.into(), 0u64.into()).await;
+    println!(">>>>> bridge init for goerli");
+    println!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>[ETH BRIDGE]");
     deploy_eth_bridge(&deploy_clients, config.clone()).await;
+    println!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>[ERC20 BRIDGE]");
     deploy_erc20_bridge(&deploy_clients, config.clone()).await;
 }
 
@@ -57,7 +50,9 @@ async fn deploy_bridge() -> Result<(), anyhow::Error> {
     const L1_DEPLOYER_ADDRESS: &str = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
     const L2_DEPLOYER_ADDRESS: &str = CAIRO_1_ACCOUNT_CONTRACT;
 
-    let args: Vec<String> = vec![String::from("temp"), String::from(ETH_RPC), String::from(ETH_PRIV_KEY), String::from(ROLLUP_SEQ_URL), String::from(ROLLUP_PRIV_KEY), String::from(ETH_CHAIN_ID), String::from(L1_DEPLOYER_ADDRESS), String::from(L2_DEPLOYER_ADDRESS)];
+    const L1_WAIT_TIME: &str = "15";
+
+    let args: Vec<String> = vec![String::from("temp"), String::from(ETH_RPC), String::from(ETH_PRIV_KEY), String::from(ROLLUP_SEQ_URL), String::from(ROLLUP_PRIV_KEY), String::from(ETH_CHAIN_ID), String::from(L1_DEPLOYER_ADDRESS), String::from(L2_DEPLOYER_ADDRESS), String::from(L1_WAIT_TIME)];
 
     let config = ArgConfig::new(&args).unwrap_or_else(|err| {
         eprintln!("Problem parsing args : {}", err);
@@ -84,7 +79,10 @@ async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
     const L1_DEPLOYER_ADDRESS: &str = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
     const L2_DEPLOYER_ADDRESS: &str = CAIRO_1_ACCOUNT_CONTRACT;
 
-    let args: Vec<String> = vec![String::from("temp"), String::from(ETH_RPC), String::from(ETH_PRIV_KEY), String::from(ROLLUP_SEQ_URL), String::from(ROLLUP_PRIV_KEY), String::from(ETH_CHAIN_ID), String::from(L1_DEPLOYER_ADDRESS), String::from(L2_DEPLOYER_ADDRESS)];
+    const L1_WAIT_TIME: &str = "15";
+
+
+    let args: Vec<String> = vec![String::from("temp"), String::from(ETH_RPC), String::from(ETH_PRIV_KEY), String::from(ROLLUP_SEQ_URL), String::from(ROLLUP_PRIV_KEY), String::from(ETH_CHAIN_ID), String::from(L1_DEPLOYER_ADDRESS), String::from(L2_DEPLOYER_ADDRESS), String::from(L1_WAIT_TIME)];
 
     let config = ArgConfig::new(&args).unwrap_or_else(|err| {
         eprintln!("Problem parsing args : {}", err);
@@ -94,6 +92,7 @@ async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
     let deploy_clients = DeployClients::deploy(&config).await;
     println!(">>>>> core address : {:?}", deploy_clients.address());
     deploy_clients.initialize_for_goerli(0u64.into(), 0u64.into()).await;
+    println!(">>>>> bridge init for goerli");
 
     let _ = eth_bridge_test_helper(&deploy_clients, config).await;
     
@@ -115,7 +114,10 @@ async fn deposit_and_withdraw_erc20_bridge() -> Result<(), anyhow::Error> {
     const L1_DEPLOYER_ADDRESS: &str = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
     const L2_DEPLOYER_ADDRESS: &str = CAIRO_1_ACCOUNT_CONTRACT;
 
-    let args: Vec<String> = vec![String::from("temp"), String::from(ETH_RPC), String::from(ETH_PRIV_KEY), String::from(ROLLUP_SEQ_URL), String::from(ROLLUP_PRIV_KEY), String::from(ETH_CHAIN_ID), String::from(L1_DEPLOYER_ADDRESS), String::from(L2_DEPLOYER_ADDRESS)];
+    const L1_WAIT_TIME: &str = "20";
+
+
+    let args: Vec<String> = vec![String::from("temp"), String::from(ETH_RPC), String::from(ETH_PRIV_KEY), String::from(ROLLUP_SEQ_URL), String::from(ROLLUP_PRIV_KEY), String::from(ETH_CHAIN_ID), String::from(L1_DEPLOYER_ADDRESS), String::from(L2_DEPLOYER_ADDRESS), String::from(L1_WAIT_TIME)];
 
     let config = ArgConfig::new(&args).unwrap_or_else(|err| {
         eprintln!("Problem parsing args : {}", err);
@@ -125,6 +127,7 @@ async fn deposit_and_withdraw_erc20_bridge() -> Result<(), anyhow::Error> {
     let deploy_clients = DeployClients::deploy(&config).await;
     println!(">>>>> core address : {:?}", deploy_clients.address());
     deploy_clients.initialize_for_goerli(0u64.into(), 0u64.into()).await;
+    println!(">>>>> bridge init for goerli");
 
     let _ = erc20_bridge_test_helper(&deploy_clients, config).await;
     
