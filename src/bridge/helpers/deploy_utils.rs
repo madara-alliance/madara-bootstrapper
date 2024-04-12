@@ -1,28 +1,72 @@
 use std::sync::Arc;
-use crate::snos::lib::SnosCodec;
-use crate::utils::convert_felt_to_u256;
 use crate::felt::lib::Felt252Wrapper;
-use crate::messages::lib::{MessageL1ToL2, MessageL2ToL1};
-use starknet_api::hash::StarkFelt;
+use starknet_api::hash::{StarkFelt};
 use starknet_core_contract_client::clients::StarknetSovereignContractClient;
 use starknet_core_contract_client::deploy_starknet_sovereign_behind_unsafe_proxy;
-use starknet_core_contract_client::interfaces::{OperatorTrait, StarknetMessagingTrait};
+use starknet_core_contract_client::interfaces::{OperatorTrait};
 use starknet_proxy_client::proxy_support::{
     CoreContractInitData, CoreContractState, ProxyInitializeData, ProxySupportTrait,
 };
 use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
 use ethereum_instance::EthereumInstance;
-use ethers::{types::{Address, I256, U256}, utils::keccak256};
-use super::arg_config::ArgConfig;
+use ethers::{types::{Address, I256}};
+use starknet_accounts::SingleOwnerAccount;
+use starknet_core::chain_id;
+use starknet_core::types::{BlockId, BlockTag, FunctionCall};
+use starknet_core::utils::get_selector_from_name;
+use crate::ArgConfig;
 use starknet_ff::FieldElement;
+use starknet_providers::jsonrpc::HttpTransport;
+use starknet_providers::JsonRpcClient;
+use starknet_signers::{LocalWallet, SigningKey};
+use url::Url;
+use crate::utils::convert_felt_to_u256;
+use starknet_providers::Provider;
 
 
-pub struct DeployClients {
-    eth_client: EthereumInstance,
-    client: StarknetSovereignContractClient
+pub type RpcAccount<'a> = SingleOwnerAccount<&'a JsonRpcClient<HttpTransport>, LocalWallet>;
+pub fn build_single_owner_account<'a>(
+    rpc: &'a JsonRpcClient<HttpTransport>,
+    private_key: &str,
+    account_address: &str,
+    is_legacy: bool,
+) -> RpcAccount<'a> {
+    let signer = LocalWallet::from(SigningKey::from_secret_scalar(FieldElement::from_hex_be(private_key).unwrap()));
+    let account_address = FieldElement::from_hex_be(account_address).expect("Invalid Contract Address");
+    let execution_encoding = if is_legacy {
+        starknet_accounts::ExecutionEncoding::Legacy
+    } else {
+        starknet_accounts::ExecutionEncoding::New
+    };
+    SingleOwnerAccount::new(rpc, signer, account_address, chain_id::TESTNET, execution_encoding)
 }
 
-impl DeployClients {
+
+pub async fn read_erc20_balance(
+    rpc: &JsonRpcClient<HttpTransport>,
+    contract_address: FieldElement,
+    account_address: FieldElement,
+) -> Vec<FieldElement> {
+    let balance = rpc.call(
+        FunctionCall {
+            contract_address,
+            entry_point_selector: get_selector_from_name("balanceOf").unwrap(),
+            calldata: vec![account_address],
+        },
+        BlockId::Tag(BlockTag::Latest)
+    ).await.unwrap();
+
+    balance
+}
+
+#[allow(dead_code)]
+pub struct Config {
+    eth_client: EthereumInstance,
+    client: StarknetSovereignContractClient,
+    provider_l2: JsonRpcClient<HttpTransport>
+}
+
+impl Config {
 
     pub fn address(&self) -> Address {
         self.client.address()
@@ -32,15 +76,18 @@ impl DeployClients {
         self.client.client()
     }
 
+    pub fn provider_l2(&self) -> &JsonRpcClient<HttpTransport> { &self.provider_l2 }
+
     /// To deploy the instance of ethereum and starknet and returning the struct.
     pub async fn deploy(config: &ArgConfig) -> Self {
         let client_instance = EthereumInstance::spawn(config.eth_rpc.clone(), config.eth_priv_key.clone(), config.eth_chain_id);
-
+        let provider_l2 = JsonRpcClient::new(HttpTransport::new(Url::parse(&config.rollup_seq_url).expect("Failed to declare provider for app chain")));
         let client = deploy_starknet_sovereign_behind_unsafe_proxy(client_instance.client()).await.expect("Failed to deploy the starknet contact");
 
         Self {
             eth_client: client_instance,
             client,
+            provider_l2
         }
     }
 
@@ -85,6 +132,8 @@ impl DeployClients {
         let init_data = CoreContractInitData {
             program_hash: convert_felt_to_u256(program_hash), // zero program hash would be deemed invalid
             config_hash: convert_felt_to_u256(config_hash),
+            // TODO :
+            // Figure out the exact params for production env
             initial_state: CoreContractState {
                 block_number: I256::from_raw(convert_felt_to_u256(block_number)),
                 state_root: convert_felt_to_u256(state_root),
@@ -94,39 +143,5 @@ impl DeployClients {
         };
 
         self.initialize_with(init_data).await;
-    }
-
-    
-    pub async fn send_message_to_l2(&self, message: &MessageL1ToL2) {
-        self.client
-            .send_message_to_l2(
-                convert_felt_to_u256(message.to_address.0.0),
-                convert_felt_to_u256(message.selector),
-                message.payload.clone().into_iter().map(convert_felt_to_u256).collect(),
-                1.into(),
-            )
-            .await
-            .expect("Failed to call `send_message_to_l2`");
-    }
-
-    pub async fn message_to_l1_exists(&self, message: &MessageL2ToL1) -> bool {
-        let message_felt_size = message.size_in_felts();
-        let mut payload: Vec<u8> = Vec::with_capacity(32 * message_felt_size);
-        message.clone().into_encoded_vec().into_iter().for_each(|felt| payload.append(&mut felt.bytes().to_vec()));
-
-        let msg_hash = keccak256(payload);
-        let res = self.client.l2_to_l1_messages(msg_hash).await.expect("Failed to call `l2_to_l1_messages`");
-
-        res != U256::zero()
-    }
-
-    pub async fn message_to_l2_exists(&self, message: &MessageL1ToL2) -> bool {
-        let mut payload: Vec<u8> = Vec::new();
-        message.clone().into_encoded_vec().into_iter().for_each(|felt| payload.append(&mut felt.bytes().to_vec()));
-
-        let msg_hash = keccak256(payload);
-        let res = self.client.l1_to_l2_messages(msg_hash).await.expect("Failed to call `l2_to_l1_messages`");
-
-        res != U256::zero()
     }
 }

@@ -1,4 +1,6 @@
 use starknet_ff::FieldElement;
+use crate::CliArgs;
+
 
 #[derive(Clone)]
 pub struct ArgConfig {
@@ -13,19 +15,15 @@ pub struct ArgConfig {
 }
 
 impl ArgConfig {
-    pub fn new(args: &[String]) -> Result<ArgConfig, &str> {
-        if args.len() < 4 {
-            return Err("Not Enough params. Required params : eth_rpc, eth_priv_key, rollup_seq_url, rollup_priv_key, l1_deployer_address")
-        }
-
-        let eth_rpc = args[1].clone();
-        let eth_priv_key = args[2].clone();
-        let rollup_seq_url = args[3].clone();
-        let rollup_priv_key = args[4].clone();
-        let eth_chain_id = args[5].clone().parse::<u64>().unwrap();
-        let l1_deployer_address = args[6].clone();
-        let l2_deployer_address = args[7].clone();
-        let l1_wait_time = args[8].clone();
+    pub fn new(args: &CliArgs) -> Result<ArgConfig, &str> {
+        let eth_rpc = args.eth_rpc.clone();
+        let eth_priv_key = args.eth_priv_key.clone();
+        let rollup_seq_url = args.rollup_seq_url.clone();
+        let rollup_priv_key = args.rollup_priv_key.clone();
+        let eth_chain_id = args.eth_chain_id.clone();
+        let l1_deployer_address = args.l1_deployer_address.clone();
+        let l2_deployer_address = args.l2_deployer_address.clone();
+        let l1_wait_time = args.l1_wait_time.clone();
 
         Ok(ArgConfig {eth_rpc, eth_priv_key, rollup_seq_url, rollup_priv_key, eth_chain_id, l1_deployer_address, l2_deployer_address, l1_wait_time})
     }

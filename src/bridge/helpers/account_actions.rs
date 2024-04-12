@@ -1,80 +1,27 @@
 use std::future::Future;
 use std::sync::Arc;
-
 use assert_matches::assert_matches;
 use async_trait::async_trait;
-use starknet_accounts::{
-    Account, AccountFactory, Call, ConnectedAccount, Execution, OpenZeppelinAccountFactory, SingleOwnerAccount,
-};
-use starknet_core::chain_id;
-use starknet_core::types::contract::legacy::LegacyContractClass;
+use starknet_accounts::{Account, Call, ConnectedAccount, Declaration, Execution, LegacyDeclaration, SingleOwnerAccount};
+use starknet_core::types::{BroadcastedInvokeTransaction, InvokeTransactionResult, MaybePendingTransactionReceipt, TransactionReceipt};
 use starknet_core::types::contract::{CompiledClass, SierraClass};
-use starknet_core::types::{BlockId, BlockTag, BroadcastedInvokeTransaction, FieldElement, FunctionCall, InvokeTransactionResult, MaybePendingTransactionReceipt, MsgToL1, TransactionReceipt};
+use starknet_core::types::contract::legacy::LegacyContractClass;
 use starknet_core::utils::get_selector_from_name;
-use starknet_providers::jsonrpc::{HttpTransport, JsonRpcClient};
-use starknet_providers::{Provider, ProviderError};
-use starknet_signers::{LocalWallet, SigningKey};
-
-use crate::bridge_deploy_utils::lib::constants::{FEE_TOKEN_ADDRESS, MAX_FEE_OVERRIDE};
-use crate::bridge_deploy_utils::lib::{
-    RpcAccount, RpcOzAccountFactory, TransactionAccountDeployment, TransactionDeclaration,
-    TransactionExecution, TransactionLegacyDeclaration,
-};
+use starknet_ff::FieldElement;
+use starknet_providers::jsonrpc::HttpTransport;
+use starknet_providers::{JsonRpcClient, Provider, ProviderError};
+use starknet_signers::LocalWallet;
+use crate::bridge::helpers::deploy_utils::RpcAccount;
+use crate::utils::constants::{FEE_TOKEN_ADDRESS, MAX_FEE_OVERRIDE};
 
 pub struct U256 {
     pub high: FieldElement,
     pub low: FieldElement,
 }
 
-pub fn build_single_owner_account<'a>(
-    rpc: &'a JsonRpcClient<HttpTransport>,
-    private_key: &str,
-    account_address: &str,
-    is_legacy: bool,
-) -> RpcAccount<'a> {
-    let signer = LocalWallet::from(SigningKey::from_secret_scalar(FieldElement::from_hex_be(private_key).unwrap()));
-    let account_address = FieldElement::from_hex_be(account_address).expect("Invalid Contract Address");
-    let execution_encoding = if is_legacy {
-        starknet_accounts::ExecutionEncoding::Legacy
-    } else {
-        starknet_accounts::ExecutionEncoding::New
-    };
-    SingleOwnerAccount::new(rpc, signer, account_address, chain_id::TESTNET, execution_encoding)
-}
-
-pub async fn read_erc20_balance(
-    rpc: &JsonRpcClient<HttpTransport>,
-    contract_address: FieldElement,
-    account_address: FieldElement,
-) -> Vec<FieldElement> {
-    rpc.call(
-        FunctionCall {
-            contract_address,
-            entry_point_selector: get_selector_from_name("balanceOf").unwrap(),
-            calldata: vec![account_address],
-        },
-        BlockId::Tag(BlockTag::Latest),
-    )
-    .await
-    .unwrap()
-}
-
-pub async fn build_oz_account_factory<'a>(
-    rpc: &'a JsonRpcClient<HttpTransport>,
-    private_key: &str,
-    class_hash: FieldElement,
-) -> RpcOzAccountFactory<'a> {
-    let signer = LocalWallet::from(SigningKey::from_secret_scalar(FieldElement::from_hex_be(private_key).unwrap()));
-    OpenZeppelinAccountFactory::new(class_hash, chain_id::TESTNET, signer, rpc).await.unwrap()
-}
-
-pub fn build_deploy_account_tx<'a>(
-    oz_factory: &'a RpcOzAccountFactory,
-    contract_address_salt: FieldElement,
-) -> TransactionAccountDeployment<'a> {
-    let max_fee = FieldElement::from_hex_be(MAX_FEE_OVERRIDE).unwrap();
-    oz_factory.deploy(contract_address_salt).max_fee(max_fee)
-}
+pub type TransactionExecution<'a> = Execution<'a, RpcAccount<'a>>;
+type TransactionLegacyDeclaration<'a> = LegacyDeclaration<'a, RpcAccount<'a>>;
+type TransactionDeclaration<'a> = Declaration<'a, RpcAccount<'a>>;
 
 #[async_trait]
 pub trait AccountActions {
@@ -117,8 +64,8 @@ pub trait AccountActions {
         max_fee: FieldElement,
         query_only: bool,
     ) -> BroadcastedInvokeTransaction
-    where
-        Self: Account + ConnectedAccount,
+        where
+            Self: Account + ConnectedAccount,
     {
         let prepared_execution = Execution::new(calls, self).nonce(nonce).max_fee(max_fee).prepared().unwrap();
         prepared_execution.get_invoke_request(query_only).await.unwrap()
@@ -175,15 +122,15 @@ impl AccountActions for SingleOwnerAccount<&JsonRpcClient<HttpTransport>, LocalW
         let sierra: SierraClass = serde_json::from_reader(
             std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + path_to_sierra).unwrap(),
         )
-        .unwrap();
+            .unwrap();
         let casm: CompiledClass = serde_json::from_reader(
             std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + path_to_casm).unwrap(),
         )
-        .unwrap();
+            .unwrap();
         let compiled_class_hash = casm.class_hash().unwrap();
         (
             self.declare(sierra.clone().flatten().unwrap().into(), compiled_class_hash)
-				// starknet-rs calls estimateFee with incorrect version which throws an error
+                // starknet-rs calls estimateFee with incorrect version which throws an error
                 .max_fee(FieldElement::from_hex_be(MAX_FEE_OVERRIDE).unwrap()),
             sierra.class_hash().unwrap(),
             compiled_class_hash,
@@ -194,12 +141,12 @@ impl AccountActions for SingleOwnerAccount<&JsonRpcClient<HttpTransport>, LocalW
         let contract_artifact: LegacyContractClass = serde_json::from_reader(
             std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + path_to_compiled_contract).unwrap(),
         )
-        .unwrap();
+            .unwrap();
 
         (
             self.declare_legacy(Arc::new(contract_artifact.clone()))
-			 // starknet-rs calls estimateFee with incorrect version which throws an error
-			 .max_fee(FieldElement::from_hex_be(MAX_FEE_OVERRIDE).unwrap()),
+                // starknet-rs calls estimateFee with incorrect version which throws an error
+                .max_fee(FieldElement::from_hex_be(MAX_FEE_OVERRIDE).unwrap()),
             contract_artifact.class_hash().unwrap(),
             contract_artifact
         )
@@ -230,19 +177,10 @@ impl AccountActions for SingleOwnerAccount<&JsonRpcClient<HttpTransport>, LocalW
     }
 }
 
-pub fn assert_eq_msg_to_l1(l1: Vec<MsgToL1>, l2: Vec<MsgToL1>) {
-    assert_eq!(l1.len(), l2.len());
-    for (m1, m2) in l1.iter().zip(l2.iter()) {
-        assert_eq!(m1.from_address, m2.from_address);
-        assert_eq!(m1.payload, m2.payload);
-        assert_eq!(m1.to_address, m2.to_address);
-    }
-}
-
 pub async fn assert_poll<F, Fut>(f: F, polling_time_ms: u64, max_poll_count: u32)
-where
-    F: Fn() -> Fut,
-    Fut: Future<Output = bool>,
+    where
+        F: Fn() -> Fut,
+        Fut: Future<Output = bool>,
 {
     for _poll_count in 0..max_poll_count {
         if f().await {

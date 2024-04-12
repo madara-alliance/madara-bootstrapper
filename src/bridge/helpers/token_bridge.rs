@@ -1,6 +1,5 @@
 use std::sync::Arc;
 use std::time::Duration;
-
 use async_trait::async_trait;
 use ethers::addressbook::Address;
 use ethers::core::rand;
@@ -21,19 +20,19 @@ use starknet_ff::FieldElement;
 use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::JsonRpcClient;
 use starknet_proxy_client::proxy_support::ProxySupportTrait;
-use crate::bridge_deploy_utils::lib::constants::{
+use crate::utils::constants::{
     ERC20_CASM_PATH, ERC20_SIERRA_PATH, TOKEN_BRIDGE_CASM_PATH, TOKEN_BRIDGE_SIERRA_PATH
 };
-use crate::bridge_deploy_utils::lib::utils::{build_single_owner_account, get_contract_address_from_deploy_tx, AccountActions};
 use starknet_token_bridge_client::clients::token_bridge::StarknetTokenBridgeContractClient;
 use starknet_token_bridge_client::deploy_starknet_token_bridge_behind_unsafe_proxy;
 use starknet_token_bridge_client::interfaces::token_bridge::StarknetTokenBridgeTrait;
 use tokio::time::sleep;
 use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
-
+use crate::bridge::helpers::account_actions::{AccountActions, get_contract_address_from_deploy_tx};
+use crate::bridge::helpers::deploy_utils::build_single_owner_account;
+use crate::bridge::helpers::eth_bridge::BridgeDeployable;
 use crate::felt::lib::Felt252Wrapper;
-use super::utils::{invoke_contract, pad_bytes};
-use crate::utils::eth_bridge::BridgeDeployable;
+use crate::utils::utils::{invoke_contract, pad_bytes};
 
 pub struct StarknetTokenBridge {
     manager: StarkgateManagerContractClient,
@@ -91,10 +90,10 @@ impl StarknetTokenBridge {
     pub async fn deploy_l2_contracts(rpc_provider_l2: &JsonRpcClient<HttpTransport>, priv_key: &str, l2_deployer_address: &str) -> FieldElement {
         let account = build_single_owner_account(&rpc_provider_l2, priv_key, l2_deployer_address, false);
         // ! not needed already declared
-        let (class_hash_erc20, contract_artifact_erc20) = account.declare_contract_params_sierra(ERC20_SIERRA_PATH, ERC20_CASM_PATH);
+        let (_class_hash_erc20, contract_artifact_erc20) = account.declare_contract_params_sierra(ERC20_SIERRA_PATH, ERC20_CASM_PATH);
         let (class_hash_bridge, contract_artifact_bridge) = account.declare_contract_params_sierra(TOKEN_BRIDGE_SIERRA_PATH, TOKEN_BRIDGE_CASM_PATH);
 
-        let flattened_class_erc20 = contract_artifact_erc20.flatten().unwrap();
+        let _flattened_class_erc20 = contract_artifact_erc20.flatten().unwrap();
         let flattened_class_bridge = contract_artifact_bridge.flatten().unwrap();
 
         account.declare(Arc::new(flattened_class_bridge), class_hash_bridge).send().await.expect("L2 Bridge initiation failed");
@@ -177,7 +176,7 @@ impl StarknetTokenBridge {
         )
         .await;
 
-        println!(">>>> setup_l2_bridge : register_app_role_admin //");
+        log::debug!("setup_l2_bridge : register_app_role_admin //");
         sleep(Duration::from_secs(7)).await;
 
         invoke_contract(
@@ -190,7 +189,7 @@ impl StarknetTokenBridge {
         )
         .await;
 
-        println!(">>>> setup_l2_bridge : register_app_governor //");
+        log::debug!("setup_l2_bridge : register_app_governor //");
         sleep(Duration::from_secs(7)).await;
 
         invoke_contract(
@@ -203,7 +202,7 @@ impl StarknetTokenBridge {
         )
         .await;
 
-        println!(">>>> setup_l2_bridge : set_l2_token_governance //");
+        log::debug!("setup_l2_bridge : set_l2_token_governance //");
         sleep(Duration::from_secs(7)).await;
 
         invoke_contract(
@@ -219,7 +218,7 @@ impl StarknetTokenBridge {
         )
         .await;
 
-        println!(">>>> setup_l2_bridge : set_erc20_class_hash //");
+        log::debug!("setup_l2_bridge : set_erc20_class_hash //");
         sleep(Duration::from_secs(7)).await;
 
         invoke_contract(
@@ -232,7 +231,7 @@ impl StarknetTokenBridge {
         )
         .await;
 
-        println!(">>>> setup_l2_bridge : set_l1_bridge //");
+        log::debug!("setup_l2_bridge : set_l1_bridge //");
     }
 
     pub async fn register_app_role_admin(&self, address: Address) {

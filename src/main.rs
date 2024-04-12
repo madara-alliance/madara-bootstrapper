@@ -1,24 +1,45 @@
 pub mod utils;
 pub mod felt;
-pub mod messages;
-pub mod snos;
-pub mod bridge_deploy_utils;
+pub mod bridge;
 
-use std::env;
 use std::process;
+use clap::Parser;
 use rstest::rstest;
 use utils::arg_config::ArgConfig;
-use utils::deploy_erc20_bridge::deploy_erc20_bridge;
-use utils::deploy_eth_bridge::deploy_eth_bridge;
-use utils::deploy_utils::DeployClients;
+use crate::bridge::deploy_erc20_bridge::deploy_erc20_bridge;
+use crate::bridge::deploy_eth_bridge::deploy_eth_bridge;
+use crate::bridge::helpers::deploy_utils::Config;
+
+
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+pub struct CliArgs {
+    #[arg(long, default_value = "http://127.0.0.1:8545")]
+    eth_rpc: String,
+    #[arg(long, default_value = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80")]
+    eth_priv_key: String,
+    #[arg(long, default_value = "http://127.0.0.1:9944")]
+    rollup_seq_url: String,
+    #[arg(long, default_value = "")]
+    rollup_priv_key: String,
+    #[arg(long, default_value_t = 31337)]
+    eth_chain_id: u64,
+    #[arg(long, default_value = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")]
+    l1_deployer_address: String,
+    #[arg(long, default_value = "0x0000000000000000000000000000000000000000000000000000000000000004")]
+    l2_deployer_address: String,
+    #[arg(long, default_value = "15")]
+    l1_wait_time: String,
+}
 
 #[tokio::main]
 pub async fn main() {
-    let args: Vec<String> = env::args().collect();
+    let args = CliArgs::parse();
+    println!("{:?}", &args);
 
     // args config
     let config = ArgConfig::new(&args).unwrap_or_else(|err| {
-        eprintln!("Problem parsing args : {}", err);
+        log::error!("Problem parsing args : {}", err);
         process::exit(1)
     });
 
@@ -26,36 +47,25 @@ pub async fn main() {
 }
 
 async fn deploy_bridges(config: ArgConfig) {
-    let deploy_clients = DeployClients::deploy(&config).await;
-    println!(">>>>> core address : {:?}", deploy_clients.address());
+    let deploy_clients = Config::deploy(&config).await;
+    log::info!("core address : {:?}", deploy_clients.address());
     deploy_clients.initialize_for_goerli(0u64.into(), 0u64.into()).await;
-    println!(">>>>> bridge init for goerli");
-    println!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>[ETH BRIDGE]");
-    deploy_eth_bridge(&deploy_clients, config.clone()).await;
-    println!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>[ERC20 BRIDGE]");
-    deploy_erc20_bridge(&deploy_clients, config.clone()).await;
+    log::info!("bridge init for goerli");
+    log::info!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>[ETH BRIDGE]");
+    deploy_eth_bridge(&deploy_clients, config.clone()).await.expect("Error in deploying ETH bridge");
+    log::info!("ETH BRIDGE DEPLOYED");
+    log::info!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>[ERC20 BRIDGE]");
+    deploy_erc20_bridge(&deploy_clients, config.clone()).await.expect("Error in deploying ERC20 bridge");
+    log::info!("ERC20 BRIDGE DEPLOYED");
 }
 
 #[rstest]
 #[tokio::test]
 async fn deploy_bridge() -> Result<(), anyhow::Error> {
-    use bridge_deploy_utils::lib::constants::CAIRO_1_ACCOUNT_CONTRACT;
-
-
-    const ETH_RPC: &str = "http://127.0.0.1:8545";
-    const ETH_PRIV_KEY: &str = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
-    const ROLLUP_SEQ_URL: &str = "http://127.0.0.1:9944";
-    const ROLLUP_PRIV_KEY: &str = "";
-    const ETH_CHAIN_ID: &str = "31337";
-    const L1_DEPLOYER_ADDRESS: &str = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
-    const L2_DEPLOYER_ADDRESS: &str = CAIRO_1_ACCOUNT_CONTRACT;
-
-    const L1_WAIT_TIME: &str = "15";
-
-    let args: Vec<String> = vec![String::from("temp"), String::from(ETH_RPC), String::from(ETH_PRIV_KEY), String::from(ROLLUP_SEQ_URL), String::from(ROLLUP_PRIV_KEY), String::from(ETH_CHAIN_ID), String::from(L1_DEPLOYER_ADDRESS), String::from(L2_DEPLOYER_ADDRESS), String::from(L1_WAIT_TIME)];
+    let args = CliArgs::parse();
 
     let config = ArgConfig::new(&args).unwrap_or_else(|err| {
-        eprintln!("Problem parsing args : {}", err);
+        log::error!("Problem parsing args : {}", err);
         process::exit(1)
     });
     
@@ -67,32 +77,19 @@ async fn deploy_bridge() -> Result<(), anyhow::Error> {
 #[rstest]
 #[tokio::test]
 async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
-    use bridge_deploy_utils::lib::constants::CAIRO_1_ACCOUNT_CONTRACT;
-    use utils::deploy_eth_bridge::eth_bridge_test_helper;
-    
-    const ETH_RPC: &str = "http://127.0.0.1:8545";
-    const ETH_PRIV_KEY: &str = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
-    const ROLLUP_SEQ_URL: &str = "http://127.0.0.1:9944";
-    // const ROLLUP_PRIV_KEY: &str = "0x00c1cf1490de1352865301bb8705143f3ef938f97fdf892f1090dcb5ac7bcd1d";
-    const ROLLUP_PRIV_KEY: &str = "";
-    const ETH_CHAIN_ID: &str = "31337";
-    const L1_DEPLOYER_ADDRESS: &str = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
-    const L2_DEPLOYER_ADDRESS: &str = CAIRO_1_ACCOUNT_CONTRACT;
+    use crate::bridge::deploy_eth_bridge::eth_bridge_test_helper;
 
-    const L1_WAIT_TIME: &str = "15";
-
-
-    let args: Vec<String> = vec![String::from("temp"), String::from(ETH_RPC), String::from(ETH_PRIV_KEY), String::from(ROLLUP_SEQ_URL), String::from(ROLLUP_PRIV_KEY), String::from(ETH_CHAIN_ID), String::from(L1_DEPLOYER_ADDRESS), String::from(L2_DEPLOYER_ADDRESS), String::from(L1_WAIT_TIME)];
+    let args = CliArgs::parse();
 
     let config = ArgConfig::new(&args).unwrap_or_else(|err| {
-        eprintln!("Problem parsing args : {}", err);
+        log::error!("Problem parsing args : {}", err);
         process::exit(1)
     });
     
-    let deploy_clients = DeployClients::deploy(&config).await;
-    println!(">>>>> core address : {:?}", deploy_clients.address());
+    let deploy_clients = Config::deploy(&config).await;
+    log::debug!("core address : {:?}", deploy_clients.address());
     deploy_clients.initialize_for_goerli(0u64.into(), 0u64.into()).await;
-    println!(">>>>> bridge init for goerli");
+    log::trace!("bridge init for goerli");
 
     let _ = eth_bridge_test_helper(&deploy_clients, config).await;
     
@@ -102,32 +99,19 @@ async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
 #[rstest]
 #[tokio::test]
 async fn deposit_and_withdraw_erc20_bridge() -> Result<(), anyhow::Error> {
-    use bridge_deploy_utils::lib::constants::CAIRO_1_ACCOUNT_CONTRACT;
-    use utils::deploy_erc20_bridge::erc20_bridge_test_helper;
-    
-    const ETH_RPC: &str = "http://127.0.0.1:8545";
-    const ETH_PRIV_KEY: &str = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
-    const ROLLUP_SEQ_URL: &str = "http://127.0.0.1:9944";
-    // const ROLLUP_PRIV_KEY: &str = "0x00c1cf1490de1352865301bb8705143f3ef938f97fdf892f1090dcb5ac7bcd1d";
-    const ROLLUP_PRIV_KEY: &str = "";
-    const ETH_CHAIN_ID: &str = "31337";
-    const L1_DEPLOYER_ADDRESS: &str = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
-    const L2_DEPLOYER_ADDRESS: &str = CAIRO_1_ACCOUNT_CONTRACT;
+    use crate::bridge::deploy_erc20_bridge::erc20_bridge_test_helper;
 
-    const L1_WAIT_TIME: &str = "20";
-
-
-    let args: Vec<String> = vec![String::from("temp"), String::from(ETH_RPC), String::from(ETH_PRIV_KEY), String::from(ROLLUP_SEQ_URL), String::from(ROLLUP_PRIV_KEY), String::from(ETH_CHAIN_ID), String::from(L1_DEPLOYER_ADDRESS), String::from(L2_DEPLOYER_ADDRESS), String::from(L1_WAIT_TIME)];
+    let args = CliArgs::parse();
 
     let config = ArgConfig::new(&args).unwrap_or_else(|err| {
-        eprintln!("Problem parsing args : {}", err);
+        log::error!("Problem parsing args : {}", err);
         process::exit(1)
     });
     
-    let deploy_clients = DeployClients::deploy(&config).await;
-    println!(">>>>> core address : {:?}", deploy_clients.address());
+    let deploy_clients = Config::deploy(&config).await;
+    log::debug!("core address : {:?}", deploy_clients.address());
     deploy_clients.initialize_for_goerli(0u64.into(), 0u64.into()).await;
-    println!(">>>>> bridge init for goerli");
+    log::trace!("bridge init for goerli");
 
     let _ = erc20_bridge_test_helper(&deploy_clients, config).await;
     
