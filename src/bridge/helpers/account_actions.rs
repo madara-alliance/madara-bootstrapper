@@ -13,6 +13,7 @@ use starknet_providers::{JsonRpcClient, Provider, ProviderError};
 use starknet_signers::LocalWallet;
 use crate::bridge::helpers::deploy_utils::RpcAccount;
 use crate::utils::constants::{FEE_TOKEN_ADDRESS, MAX_FEE_OVERRIDE};
+use crate::utils::utils::wait_for_transaction;
 
 pub struct U256 {
     pub high: FieldElement,
@@ -211,6 +212,8 @@ pub async fn get_contract_address_from_deploy_tx(
     tx: &InvokeTransactionResult,
 ) -> Result<FieldElement, ProviderError> {
     let deploy_tx_hash = tx.transaction_hash;
+
+    wait_for_transaction(rpc, deploy_tx_hash).await.unwrap();
 
     let deploy_tx_receipt = get_transaction_receipt(rpc, deploy_tx_hash).await?;
 

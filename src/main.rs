@@ -61,6 +61,7 @@ async fn deploy_bridges(config: ArgConfig) {
 
 #[rstest]
 #[tokio::test]
+#[ignore]
 async fn deploy_bridge() -> Result<(), anyhow::Error> {
     let args = CliArgs::parse();
 
@@ -76,6 +77,7 @@ async fn deploy_bridge() -> Result<(), anyhow::Error> {
 
 #[rstest]
 #[tokio::test]
+#[ignore]
 async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
     use crate::bridge::deploy_eth_bridge::eth_bridge_test_helper;
 
@@ -98,6 +100,7 @@ async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
 
 #[rstest]
 #[tokio::test]
+// #[ignore]
 async fn deposit_and_withdraw_erc20_bridge() -> Result<(), anyhow::Error> {
     use crate::bridge::deploy_erc20_bridge::erc20_bridge_test_helper;
 

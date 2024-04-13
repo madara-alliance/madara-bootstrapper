@@ -1,5 +1,4 @@
 use std::sync::Arc;
-use std::time::Duration;
 use async_trait::async_trait;
 use ethers::addressbook::Address;
 use ethers::providers::Middleware;
@@ -14,12 +13,11 @@ use starknet_eth_bridge_client::deploy_starknet_eth_bridge_behind_unsafe_proxy;
 use starknet_eth_bridge_client::interfaces::eth_bridge::StarknetEthBridgeTrait;
 use starknet_ff::FieldElement;
 use starknet_proxy_client::proxy_support::ProxySupportTrait;
-use tokio::time::sleep;
 use crate::utils::constants::LEGACY_BRIDGE_PATH;
 use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
 use crate::bridge::helpers::account_actions::{AccountActions, get_contract_address_from_deploy_tx};
 use crate::bridge::helpers::deploy_utils::build_single_owner_account;
-use crate::utils::utils::invoke_contract;
+use crate::utils::utils::{invoke_contract, wait_for_transaction};
 
 #[async_trait]
 pub trait BridgeDeployable {
@@ -56,14 +54,13 @@ impl StarknetLegacyEthBridge {
         let contract_artifact = account.declare_contract_params_legacy(LEGACY_BRIDGE_PATH);
         let class_hash = contract_artifact.class_hash().unwrap();
 
-        account.declare_legacy(Arc::new(contract_artifact)).send().await.expect("Unable to declare legacy eth bridge on l2");
-
-        sleep(Duration::from_secs(7)).await;
+        let declare_txn = account.declare_legacy(Arc::new(contract_artifact)).send().await.expect("Unable to declare legacy eth bridge on l2");
+        wait_for_transaction(rpc_provider_l2, declare_txn.transaction_hash).await.unwrap();
 
         let contract_factory = ContractFactory::new(class_hash, account.clone());
         let deploy_tx = &contract_factory.deploy(vec![], FieldElement::ZERO, true).send().await.expect("Unable to deploy legacy eth bridge on l2");
 
-        sleep(Duration::from_secs(7)).await;
+        wait_for_transaction(rpc_provider_l2, deploy_tx.transaction_hash).await.unwrap();
 
         let address = get_contract_address_from_deploy_tx(&rpc_provider_l2, deploy_tx).await.expect("Error getting contract address from transaction hash");
         address
@@ -102,7 +99,7 @@ impl StarknetLegacyEthBridge {
         priv_key: &str,
         l2_deployer_address: &str
     ) {
-        invoke_contract(
+        let tx = invoke_contract(
             rpc_provider,
             l2_bridge_address,
             "initialize",
@@ -116,16 +113,16 @@ impl StarknetLegacyEthBridge {
         .await;
 
         log::debug!("setup_l2_bridge : l2 bridge initialized //");
+        wait_for_transaction(rpc_provider, tx.transaction_hash).await.unwrap();
+        // sleep(Duration::from_secs(7)).await;
 
-        sleep(Duration::from_secs(7)).await;
-
-        invoke_contract(rpc_provider, l2_bridge_address, "set_l2_token", vec![erc20_address], priv_key, l2_deployer_address).await;
+        let tx = invoke_contract(rpc_provider, l2_bridge_address, "set_l2_token", vec![erc20_address], priv_key, l2_deployer_address).await;
 
         log::debug!("setup_l2_bridge : l2 token set //");
+        wait_for_transaction(rpc_provider, tx.transaction_hash).await.unwrap();
+        // sleep(Duration::from_secs(7)).await;
 
-        sleep(Duration::from_secs(7)).await;
-
-        invoke_contract(
+        let tx = invoke_contract(
             rpc_provider,
             l2_bridge_address,
             "set_l1_bridge",
@@ -136,6 +133,7 @@ impl StarknetLegacyEthBridge {
         .await;
 
         log::debug!("setup_l2_bridge : l1 bridge set //");
+        wait_for_transaction(rpc_provider, tx.transaction_hash).await.unwrap();
     }
 
     pub async fn set_max_total_balance(&self, amount: U256) {

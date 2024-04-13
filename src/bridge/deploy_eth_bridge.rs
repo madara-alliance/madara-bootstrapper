@@ -12,7 +12,7 @@ use crate::bridge::helpers::deploy_utils::{build_single_owner_account, Config, r
 use crate::bridge::helpers::eth_bridge::{BridgeDeployable, StarknetLegacyEthBridge};
 use crate::utils::arg_config::ArgConfig;
 use crate::utils::constants::{ERC20_CASM_PATH, ERC20_SIERRA_PATH};
-use crate::utils::utils::invoke_contract;
+use crate::utils::utils::{invoke_contract, wait_for_transaction};
 
 pub async fn deploy_eth_bridge(deploy_config: &Config, arg_config: ArgConfig) -> Result<(StarknetLegacyEthBridge, FieldElement, FieldElement), anyhow::Error> {
     let eth_bridge = StarknetLegacyEthBridge::deploy(deploy_config.client().clone()).await;
@@ -92,10 +92,10 @@ pub async fn deploy_eth_token_on_l2(rpc_provider_l2: &JsonRpcClient<HttpTranspor
     let (class_hash, contract_artifact) = account.declare_contract_params_sierra(ERC20_SIERRA_PATH, ERC20_CASM_PATH);
     let flattened_class = contract_artifact.clone().flatten().unwrap();
 
-    account.declare(Arc::new(flattened_class), class_hash).send().await.expect("Unable to declare ERC20 token on L2");
+    let declare_txn = account.declare(Arc::new(flattened_class), class_hash).send().await.expect("Unable to declare ERC20 token on L2");
     let sierra_class_hash = contract_artifact.class_hash().unwrap();
 
-    sleep(Duration::from_secs(7)).await;
+    wait_for_transaction(rpc_provider_l2, declare_txn.transaction_hash).await.unwrap();
 
     let contract_factory = ContractFactory::new(sierra_class_hash, account.clone());
 
@@ -115,7 +115,7 @@ pub async fn deploy_eth_token_on_l2(rpc_provider_l2: &JsonRpcClient<HttpTranspor
         true,
     ).send().await.expect("Unable to deploy ERC20 token on L2");
 
-    sleep(Duration::from_secs(7)).await;
+    wait_for_transaction(rpc_provider_l2, declare_txn.transaction_hash).await.unwrap();
 
     let address = get_contract_address_from_deploy_tx(&rpc_provider_l2, deploy_tx).await.expect("Error getting contract address from transaction hash");
 

@@ -126,7 +126,7 @@ impl Config {
         // Fee token address:   0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7 (genesis
         // config)
         let config_hash = StarkFelt::from(Felt252Wrapper::from(
-            FieldElement::from_hex_be("0x036f5e4ea4dd042801c8841e3db8e654124305da0f11824fc1db60c405dbb39f").unwrap(),
+            FieldElement::from_hex_be("0x05ac6b99d1ab6d37202e29e2c887ace63cc594b40f900cf2c47398272bef412c").unwrap(),
         ));
 
         let init_data = CoreContractInitData {
