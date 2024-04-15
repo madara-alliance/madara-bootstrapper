@@ -8,9 +8,9 @@ use crate::bridge::contract_clients::starknet_sovereign::StarknetSovereignContra
 use crate::bridge::deploy_erc20_bridge::deploy_erc20_bridge;
 use crate::bridge::deploy_eth_bridge::deploy_eth_bridge;
 use clap::Parser;
+use dotenv::dotenv;
 use std::process;
 use utils::arg_config::ArgConfig;
-use dotenv::dotenv;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -29,7 +29,11 @@ pub struct CliArgs {
     rollup_priv_key: String,
     #[clap(long, env, default_value_t = 31337)]
     eth_chain_id: u64,
-    #[clap(long, env, default_value = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")]
+    #[clap(
+        long,
+        env,
+        default_value = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+    )]
     l1_deployer_address: String,
     #[clap(
         long,
