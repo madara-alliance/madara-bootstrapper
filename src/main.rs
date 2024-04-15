@@ -1,14 +1,10 @@
 pub mod bridge;
 pub mod contract_clients;
 #[cfg(test)]
-pub mod tests;
+mod tests;
 pub mod utils;
-
-use std::process;
-
 use clap::Parser;
 use dotenv::dotenv;
-use utils::arg_config::ArgConfig;
 
 use crate::bridge::deploy_erc20_bridge::deploy_erc20_bridge;
 use crate::bridge::deploy_eth_bridge::deploy_eth_bridge;
@@ -43,6 +39,8 @@ pub struct CliArgs {
     app_chain_id: String,
     #[clap(long, env, default_value = "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7")]
     fee_token_address: String,
+    #[clap(long, env, default_value_t = 80)]
+    cross_chain_wait_time: u64,
 }
 
 #[tokio::main]
@@ -63,11 +61,9 @@ pub async fn deploy_bridges(config: &CliArgs) {
     core_contract_client.initialize_core_contract(0u64.into(), 0u64.into(), program_hash, config_hash).await;
     log::debug!("Bridge init for goerli successful [✅]");
     log::debug!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> [ETH BRIDGE] ⏳");
-    deploy_eth_bridge(&clients, config.clone(), &core_contract_client).await.expect("Error in deploying ETH bridge");
+    deploy_eth_bridge(&clients, config, &core_contract_client).await.expect("Error in deploying ETH bridge");
     log::debug!("ETH BRIDGE DEPLOYED [✅]");
     log::debug!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>[ERC20 BRIDGE] ⏳");
-    deploy_erc20_bridge(&clients, config.clone(), &core_contract_client)
-        .await
-        .expect("Error in deploying ERC20 bridge");
+    deploy_erc20_bridge(&clients, config, &core_contract_client).await.expect("Error in deploying ERC20 bridge");
     log::debug!("ERC20 BRIDGE DEPLOYED [✅]");
 }

@@ -14,7 +14,7 @@ use crate::contract_clients::config::Config;
 use crate::contract_clients::eth_bridge::BridgeDeployable;
 use crate::contract_clients::starknet_sovereign::StarknetSovereignContract;
 use crate::contract_clients::token_bridge::StarknetTokenBridge;
-use crate::{ArgConfig, CliArgs};
+use crate::CliArgs;
 
 pub async fn deploy_erc20_bridge(
     clients: &Config,
@@ -57,7 +57,7 @@ pub async fn deploy_erc20_bridge(
     sleep(Duration::from_secs(arg_config.l1_wait_time.parse().unwrap())).await;
 
     // We need to wait a little bit more for message to be consumed and executed
-    sleep(Duration::from_millis(60000)).await;
+    sleep(Duration::from_secs(arg_config.cross_chain_wait_time)).await;
 
     let l2_erc20_token_address =
         get_l2_token_address(&clients.provider_l2(), &l2_bridge_address, &token_bridge.address()).await;

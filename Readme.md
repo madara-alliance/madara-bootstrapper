@@ -1,6 +1,7 @@
 # Karnot Bridge Deploy
 
-Karnot bridge deploy is a tool that will deploy the bridge contract on settlement layer and on the rollup side.
+Karnot bridge deploy is a tool that helps to deploy the bridge
+contract on settlement layer and on the rollup side.
 
 ```shell
 ARGS / ENV:

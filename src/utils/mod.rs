@@ -11,9 +11,9 @@ use starknet_providers::JsonRpcClient;
 use tokio::time::sleep;
 
 use crate::bridge::helpers::account_actions::{get_transaction_receipt, AccountActions};
-use crate::contract_clients::config::build_single_owner_account;
+use crate::contract_clients::utils::build_single_owner_account;
 
-pub mod arg_config;
+pub mod constants;
 
 pub async fn invoke_contract(
     rpc_provider: &JsonRpcClient<HttpTransport>,

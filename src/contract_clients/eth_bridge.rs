@@ -17,7 +17,7 @@ use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
 
 use crate::bridge::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::contract_clients::utils::{build_single_owner_account, field_element_to_u256};
-use crate::tests::constants::LEGACY_BRIDGE_PATH;
+use crate::utils::constants::LEGACY_BRIDGE_PATH;
 use crate::utils::{invoke_contract, wait_for_transaction};
 
 #[async_trait]

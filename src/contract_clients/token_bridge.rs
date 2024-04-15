@@ -28,7 +28,7 @@ use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
 use crate::bridge::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::contract_clients::eth_bridge::BridgeDeployable;
 use crate::contract_clients::utils::{build_single_owner_account, field_element_to_u256};
-use crate::tests::constants::{ERC20_CASM_PATH, ERC20_SIERRA_PATH, TOKEN_BRIDGE_CASM_PATH, TOKEN_BRIDGE_SIERRA_PATH};
+use crate::utils::constants::{ERC20_CASM_PATH, ERC20_SIERRA_PATH, TOKEN_BRIDGE_CASM_PATH, TOKEN_BRIDGE_SIERRA_PATH};
 use crate::utils::{invoke_contract, pad_bytes, wait_for_transaction};
 
 pub struct StarknetTokenBridge {
@@ -108,12 +108,12 @@ impl StarknetTokenBridge {
             .expect("L2 Bridge initiation failed");
         wait_for_transaction(rpc_provider_l2, declare_txn.transaction_hash).await.unwrap();
         // for individual test :
-        let declare_txn_2 = account
-            .declare(Arc::new(flattened_class_erc20), class_hash_erc20)
-            .send()
-            .await
-            .expect("L2 Bridge initiation failed");
-        wait_for_transaction(rpc_provider_l2, declare_txn_2.transaction_hash).await.unwrap();
+        // let declare_txn_2 = account
+        //     .declare(Arc::new(flattened_class_erc20), class_hash_erc20)
+        //     .send()
+        //     .await
+        //     .expect("L2 Bridge initiation failed");
+        // wait_for_transaction(rpc_provider_l2, declare_txn_2.transaction_hash).await.unwrap();
 
         let mut rng = rand::thread_rng();
         let random: u32 = rng.gen();
