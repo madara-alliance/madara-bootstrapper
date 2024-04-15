@@ -2,34 +2,38 @@
 
 Karnot bridge deploy is a tool that will deploy the bridge contract on settlement layer and on the rollup side.
 
-```sh
-ARGS:
+```shell
+ARGS / ENV:
 //////////////////////////////////////////////////
 
-- eth_rpc
-- eth_priv_key
-- rollup_sequencer_url
-- rollup_priv_key
-- L1 deployer address : will be used as a governor in bridge contracts
-- L2 deployer address
+eth_rpc
+eth_priv_key
+rollup_seq_url
+rollup_priv_key
+eth_chain_id
+l1_deployer_address
+l2_deployer_address
+l1_wait_time
+sn_os_program_hash
+config_hash_version
+app_chain_id
+fee_token_address
 ```
 
 ## To test
 
-```sh
+```shell
 # 1. Run madara instance with eth as settlement layer :
-./target/release/madara --dev --sealing=manual --da-layer=ethereum --da-conf=examples/da-confs/ethereum.json --settlement=Ethereum --settlement-conf=examples/da-confs/ethereum.json
-
+./target/release/madara --dev --da-layer=ethereum --da-conf=examples/da-confs/ethereum.json --settlement=Ethereum --settlement-conf=examples/da-confs/ethereum.json
 # 2. Run anvil instance
 ~/.foundry/bin/anvil
 
 # 3. Run tests
-# To test deployment of bridges :
-cargo test deploy_bridge -- --nocapture --exact
+RUST_LOG=debug cargo test -- --no-capture
+```
 
-# To test eth deposit and withdrawal
-cargo test deposit_and_withdraw_eth_bridge -- --nocapture --exact
+## To run and env setup
 
-# To test erc20 deposit and withdrawal
-cargo test deposit_and_withdraw_erc20_bridge -- --nocapture --exact
+```shell
+RUST_LOG=debug cargo run -- --help
 ```
