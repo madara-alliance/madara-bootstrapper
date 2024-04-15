@@ -1,5 +1,5 @@
-use crate::bridge::contract_clients::config::Config;
-use crate::utils::convert_felt_to_u256;
+use std::sync::Arc;
+
 use ethers::types::{Address, I256};
 use starknet_api::hash::{StarkFelt, StarkHash};
 use starknet_core_contract_client::clients::StarknetSovereignContractClient;
@@ -9,8 +9,10 @@ use starknet_ff::FieldElement;
 use starknet_proxy_client::proxy_support::{
     CoreContractInitData, CoreContractState, ProxyInitializeData, ProxySupportTrait,
 };
-use std::sync::Arc;
 use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
+
+use crate::contract_clients::config::Config;
+use crate::utils::convert_felt_to_u256;
 
 pub struct StarknetSovereignContract {
     core_contract_client: StarknetSovereignContractClient,
@@ -26,28 +28,18 @@ impl StarknetSovereignContract {
     }
 
     pub async fn deploy(config: &Config) -> Self {
-        let client =
-            deploy_starknet_sovereign_behind_unsafe_proxy(config.eth_client().client().clone())
-                .await
-                .expect("Failed to deploy the starknet contact");
+        let client = deploy_starknet_sovereign_behind_unsafe_proxy(config.eth_client().client().clone())
+            .await
+            .expect("Failed to deploy the starknet contact");
 
-        Self {
-            core_contract_client: client,
-        }
+        Self { core_contract_client: client }
     }
 
     /// Initialize Starknet core contract with the specified data.
     pub async fn initialize_with(&self, init_data: CoreContractInitData) {
-        let data = ProxyInitializeData::<0> {
-            sub_contract_addresses: [],
-            eic_address: Default::default(),
-            init_data,
-        };
+        let data = ProxyInitializeData::<0> { sub_contract_addresses: [], eic_address: Default::default(), init_data };
 
-        self.core_contract_client
-            .initialize_with(data)
-            .await
-            .expect("Failed to initialize");
+        self.core_contract_client.initialize_with(data).await.expect("Failed to initialize");
 
         self.core_contract_client
             .register_operator(self.core_contract_client.client().address())
@@ -55,7 +47,8 @@ impl StarknetSovereignContract {
             .expect("Failed to register operator");
     }
 
-    /// Initialize Starknet core contract with the specified program and config hashes. The rest of parameters will be left default.
+    /// Initialize Starknet core contract with the specified program and config hashes. The rest of
+    /// parameters will be left default.
     pub async fn initialize(&self, program_hash: StarkFelt, config_hash: StarkFelt) {
         self.initialize_with(CoreContractInitData {
             program_hash: convert_felt_to_u256(program_hash),
@@ -66,7 +59,7 @@ impl StarknetSovereignContract {
     }
 
     /// Initialize Starknet core contract with the specified block number and state root hash.
-    pub async fn initialize_for_goerli(
+    pub async fn initialize_core_contract(
         &self,
         block_number: StarkFelt,
         state_root: StarkFelt,

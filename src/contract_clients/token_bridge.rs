@@ -1,12 +1,5 @@
-use crate::bridge::contract_clients::config::{build_single_owner_account, field_element_to_u256};
-use crate::bridge::contract_clients::eth_bridge::BridgeDeployable;
-use crate::bridge::helpers::account_actions::{
-    get_contract_address_from_deploy_tx, AccountActions,
-};
-use crate::utils::constants::{
-    ERC20_CASM_PATH, ERC20_SIERRA_PATH, TOKEN_BRIDGE_CASM_PATH, TOKEN_BRIDGE_SIERRA_PATH,
-};
-use crate::utils::utils::{invoke_contract, pad_bytes, wait_for_transaction};
+use std::sync::Arc;
+
 use async_trait::async_trait;
 use ethers::addressbook::Address;
 use ethers::core::rand;
@@ -30,8 +23,13 @@ use starknet_proxy_client::proxy_support::ProxySupportTrait;
 use starknet_token_bridge_client::clients::token_bridge::StarknetTokenBridgeContractClient;
 use starknet_token_bridge_client::deploy_starknet_token_bridge_behind_unsafe_proxy;
 use starknet_token_bridge_client::interfaces::token_bridge::StarknetTokenBridgeTrait;
-use std::sync::Arc;
 use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
+
+use crate::bridge::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
+use crate::contract_clients::eth_bridge::BridgeDeployable;
+use crate::contract_clients::utils::{build_single_owner_account, field_element_to_u256};
+use crate::tests::constants::{ERC20_CASM_PATH, ERC20_SIERRA_PATH, TOKEN_BRIDGE_CASM_PATH, TOKEN_BRIDGE_SIERRA_PATH};
+use crate::utils::{invoke_contract, pad_bytes, wait_for_transaction};
 
 pub struct StarknetTokenBridge {
     manager: StarkgateManagerContractClient,
@@ -52,16 +50,10 @@ impl BridgeDeployable for StarknetTokenBridge {
         let token_bridge = deploy_starknet_token_bridge_behind_unsafe_proxy(client.clone())
             .await
             .expect("Failed to deploy starknet contract");
-        let erc20 = deploy_dai_erc20_behind_unsafe_proxy(client.clone())
-            .await
-            .expect("Failed to deploy dai erc20 contract");
+        let erc20 =
+            deploy_dai_erc20_behind_unsafe_proxy(client.clone()).await.expect("Failed to deploy dai erc20 contract");
 
-        Self {
-            manager,
-            registry,
-            token_bridge,
-            erc20,
-        }
+        Self { manager, registry, token_bridge, erc20 }
     }
 }
 
@@ -97,14 +89,13 @@ impl StarknetTokenBridge {
         priv_key: &str,
         l2_deployer_address: &str,
     ) -> FieldElement {
-        let account =
-            build_single_owner_account(&rpc_provider_l2, priv_key, l2_deployer_address, false);
+        let account = build_single_owner_account(&rpc_provider_l2, priv_key, l2_deployer_address, false);
         // ! not needed already declared
         #[allow(unused_variables)]
         let (class_hash_erc20, contract_artifact_erc20) =
             account.declare_contract_params_sierra(ERC20_SIERRA_PATH, ERC20_CASM_PATH);
-        let (class_hash_bridge, contract_artifact_bridge) = account
-            .declare_contract_params_sierra(TOKEN_BRIDGE_SIERRA_PATH, TOKEN_BRIDGE_CASM_PATH);
+        let (class_hash_bridge, contract_artifact_bridge) =
+            account.declare_contract_params_sierra(TOKEN_BRIDGE_SIERRA_PATH, TOKEN_BRIDGE_CASM_PATH);
 
         #[allow(unused_variables)]
         let flattened_class_erc20 = contract_artifact_erc20.flatten().unwrap();
@@ -115,18 +106,14 @@ impl StarknetTokenBridge {
             .send()
             .await
             .expect("L2 Bridge initiation failed");
-        wait_for_transaction(rpc_provider_l2, declare_txn.transaction_hash)
-            .await
-            .unwrap();
+        wait_for_transaction(rpc_provider_l2, declare_txn.transaction_hash).await.unwrap();
         // for individual test :
         let declare_txn_2 = account
             .declare(Arc::new(flattened_class_erc20), class_hash_erc20)
             .send()
             .await
             .expect("L2 Bridge initiation failed");
-        wait_for_transaction(rpc_provider_l2, declare_txn_2.transaction_hash)
-            .await
-            .unwrap();
+        wait_for_transaction(rpc_provider_l2, declare_txn_2.transaction_hash).await.unwrap();
 
         let mut rng = rand::thread_rng();
         let random: u32 = rng.gen();
@@ -136,13 +123,11 @@ impl StarknetTokenBridge {
                 FieldElement::from_hex_be("0x1").unwrap(),
                 "deploy_contract",
                 vec![
-                    FieldElement::from_hex_be(
-                        "0x0358663e6ed9d37efd33d4661e20b2bad143e0f92076b0c91fe65f31ccf55046",
-                    )
-                    .unwrap(), // class_hash
+                    FieldElement::from_hex_be("0x0358663e6ed9d37efd33d4661e20b2bad143e0f92076b0c91fe65f31ccf55046")
+                        .unwrap(), // class_hash
                     FieldElement::from_dec_str(&random.to_string()).unwrap(), // contract_address_salt
-                    FieldElement::ONE,  // constructor_calldata_len
-                    FieldElement::ZERO, // constructor_calldata (upgrade_delay)
+                    FieldElement::ONE,                                        // constructor_calldata_len
+                    FieldElement::ZERO,                                       // constructor_calldata (upgrade_delay)
                 ],
                 None,
             )
@@ -150,13 +135,9 @@ impl StarknetTokenBridge {
             .await
             .expect("");
 
-        wait_for_transaction(rpc_provider_l2, deploy_tx.transaction_hash)
-            .await
-            .unwrap();
+        wait_for_transaction(rpc_provider_l2, deploy_tx.transaction_hash).await.unwrap();
 
-        get_contract_address_from_deploy_tx(&rpc_provider_l2, &deploy_tx)
-            .await
-            .unwrap()
+        get_contract_address_from_deploy_tx(&rpc_provider_l2, &deploy_tx).await.unwrap()
     }
 
     /// Initialize Starknet Token Bridge.
@@ -177,10 +158,7 @@ impl StarknetTokenBridge {
         bridge_calldata.extend(pad_bytes(self.manager_address()));
         bridge_calldata.extend(pad_bytes(messaging_contract));
 
-        self.manager
-            .initialize(Bytes::from(manager_calldata))
-            .await
-            .expect("Failed to initialize starkgate manager");
+        self.manager.initialize(Bytes::from(manager_calldata)).await.expect("Failed to initialize starkgate manager");
         self.registry
             .initialize(Bytes::from(registry_calldata))
             .await
@@ -193,22 +171,10 @@ impl StarknetTokenBridge {
 
     /// Sets up the Token bridge with the specified data
     pub async fn setup_l1_bridge(&self, governor: Address, l2_bridge: FieldElement, fee: U256) {
-        self.token_bridge
-            .register_app_role_admin(governor)
-            .await
-            .unwrap();
-        self.token_bridge
-            .register_app_governor(governor)
-            .await
-            .unwrap();
-        self.token_bridge
-            .set_l2_token_bridge(field_element_to_u256(l2_bridge))
-            .await
-            .unwrap();
-        self.manager
-            .enroll_token_bridge(self.address(), fee)
-            .await
-            .unwrap();
+        self.token_bridge.register_app_role_admin(governor).await.unwrap();
+        self.token_bridge.register_app_governor(governor).await.unwrap();
+        self.token_bridge.set_l2_token_bridge(field_element_to_u256(l2_bridge)).await.unwrap();
+        self.manager.enroll_token_bridge(self.address(), fee).await.unwrap();
     }
 
     pub async fn setup_l2_bridge(
@@ -233,9 +199,7 @@ impl StarknetTokenBridge {
         )
         .await;
 
-        wait_for_transaction(rpc_provider_l2, tx.transaction_hash)
-            .await
-            .unwrap();
+        wait_for_transaction(rpc_provider_l2, tx.transaction_hash).await.unwrap();
         log::trace!("setup_l2_bridge : register_app_role_admin //");
 
         let tx = invoke_contract(
@@ -248,9 +212,7 @@ impl StarknetTokenBridge {
         )
         .await;
 
-        wait_for_transaction(rpc_provider_l2, tx.transaction_hash)
-            .await
-            .unwrap();
+        wait_for_transaction(rpc_provider_l2, tx.transaction_hash).await.unwrap();
         log::trace!("setup_l2_bridge : register_app_governor //");
 
         let tx = invoke_contract(
@@ -263,9 +225,7 @@ impl StarknetTokenBridge {
         )
         .await;
 
-        wait_for_transaction(rpc_provider_l2, tx.transaction_hash)
-            .await
-            .unwrap();
+        wait_for_transaction(rpc_provider_l2, tx.transaction_hash).await.unwrap();
         log::trace!("setup_l2_bridge : set_l2_token_governance //");
 
         let tx = invoke_contract(
@@ -273,19 +233,15 @@ impl StarknetTokenBridge {
             l2_bridge,
             "set_erc20_class_hash",
             vec![
-                FieldElement::from_hex_be(
-                    "0x008b150cfa4db35ed9d685d79f6daa590ff2bb10c295cd656fcbf176c4bd8365",
-                )
-                .unwrap(), // class hash
+                FieldElement::from_hex_be("0x008b150cfa4db35ed9d685d79f6daa590ff2bb10c295cd656fcbf176c4bd8365")
+                    .unwrap(), // class hash
             ],
             priv_key,
             l2_address,
         )
         .await;
 
-        wait_for_transaction(rpc_provider_l2, tx.transaction_hash)
-            .await
-            .unwrap();
+        wait_for_transaction(rpc_provider_l2, tx.transaction_hash).await.unwrap();
         log::trace!("setup_l2_bridge : set_erc20_class_hash //");
 
         let tx = invoke_contract(
@@ -297,9 +253,7 @@ impl StarknetTokenBridge {
             l2_address,
         )
         .await;
-        wait_for_transaction(rpc_provider_l2, tx.transaction_hash)
-            .await
-            .unwrap();
+        wait_for_transaction(rpc_provider_l2, tx.transaction_hash).await.unwrap();
         log::trace!("setup_l2_bridge : set_l1_bridge //");
     }
 
@@ -325,10 +279,7 @@ impl StarknetTokenBridge {
     }
 
     pub async fn deposit(&self, token: Address, amount: U256, l2address: U256, fee: U256) {
-        self.token_bridge
-            .deposit(token, amount, l2address, fee)
-            .await
-            .expect("Failed to bridge funds from l1 to l2");
+        self.token_bridge.deposit(token, amount, l2address, fee).await.expect("Failed to bridge funds from l1 to l2");
     }
 
     pub async fn withdraw(&self, l1_token: Address, amount: U256, l1_recipient: Address) {
@@ -339,17 +290,11 @@ impl StarknetTokenBridge {
     }
 
     pub async fn enroll_token_bridge(&self, address: Address, fee: U256) {
-        self.manager
-            .enroll_token_bridge(address, fee)
-            .await
-            .expect("Failed to enroll token in starknet token bridge");
+        self.manager.enroll_token_bridge(address, fee).await.expect("Failed to enroll token in starknet token bridge");
     }
 
     pub async fn approve(&self, address: Address, amount: U256) {
-        self.erc20
-            .approve(address, amount)
-            .await
-            .expect("Failed to approve dai transfer for starknet token bridge");
+        self.erc20.approve(address, amount).await.expect("Failed to approve dai transfer for starknet token bridge");
     }
 
     pub async fn token_balance(&self, address: Address) -> U256 {

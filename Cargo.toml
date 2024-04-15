@@ -4,21 +4,21 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+anyhow = "1.0.80"
 cairo-vm = { git = "https://github.com/keep-starknet-strange/cairo-rs", branch = "no_std-support-21eff70", default-features = false, features = [
   "std",
   "cairo-1-hints",
   "parity-scale-codec",
 ] }
 ethers = { git = "https://github.com/gakonst/ethers-rs", rev = "f0e5b194f09c533feb10d1a686ddb9e5946ec107" }
+hex = { version = "0.4.3", default-features = false, features = ["std"] }
+reqwest = { version = "0.11.22", default-features = false }
 serde = { version = "1.0.192", default-features = false, features = ["std"] }
 serde_json = { version = "1.0.108", default-features = false, features = [
   "std",
 ] }
 serde_with = { version = "2.3.3", default-features = false }
 thiserror-no-std = "2.0.2"
-hex = { version = "0.4.3", default-features = false, features = ["std"] }
-anyhow = "1.0.80"
-reqwest = { version = "0.11.22", default-features = false }
 url = "2.4.1"
 
 # Substrate primitives dependencies
@@ -38,36 +38,36 @@ starknet-token-bridge-client = { git = "https://github.com/karnotxyz/zaun", pack
 zaun-utils = { git = "https://github.com/karnotxyz/zaun", package = "utils", branch = "starkgate" }
 
 # Starknet Deps
-starknet-ff = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "64ebc36", default-features = false, features = [
-  "std",
-] }
+starknet-accounts = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "64ebc36", default-features = false }
+starknet-contract = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "64ebc36", default-features = false }
 starknet-core = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "64ebc36", default-features = false, features = [
   "std",
 ] }
+starknet-ff = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "64ebc36", default-features = false, features = [
+  "std",
+] }
+starknet-providers = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "64ebc36", default-features = false }
+starknet-signers = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "64ebc36", default-features = false }
 starknet_api = { git = "https://github.com/keep-starknet-strange/starknet-api", branch = "no_std-support-dc83f05", features = [
   "std",
   "testing",
   "parity-scale-codec",
 ], default-features = false }
-starknet-accounts = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "64ebc36", default-features = false }
-starknet-providers = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "64ebc36", default-features = false }
-starknet-signers = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "64ebc36", default-features = false }
-starknet-contract = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "64ebc36", default-features = false }
 
 # Third Party
-scale-info = { version = "2.10.0", default-features = false, features = [
-  "std",
-] }
+assert_matches = "1.5.0"
+async-lock = "3.1.0"
+async-trait = "0.1.74"
+clap = { version = "4.4.11", features = ["derive", "env"] }
+dotenv = "0.15.0"
+env_logger = "0.11.3"
+log = "0.4.21"
 parity-scale-codec = { version = "3.2.2", default-features = false, features = [
   "std",
 ] }
-async-lock = "3.1.0"
 rstest = "0.18.1"
+scale-info = { version = "2.10.0", default-features = false, features = [
+  "std",
+] }
 thiserror = "1.0.50"
-assert_matches = "1.5.0"
-async-trait = "0.1.74"
-tokio = {version = "1.36.0",  features = ["macros", "rt-multi-thread"]}
-log = "0.4.21"
-clap = { version = "4.4.11", features = ["derive", "env"] }
-env_logger = "0.11.3"
-dotenv = "0.15.0"
+tokio = { version = "1.36.0", features = ["macros", "rt-multi-thread"] }

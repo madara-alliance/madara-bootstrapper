@@ -1,9 +1,5 @@
-use crate::bridge::contract_clients::config::{build_single_owner_account, field_element_to_u256};
-use crate::bridge::helpers::account_actions::{
-    get_contract_address_from_deploy_tx, AccountActions,
-};
-use crate::utils::constants::LEGACY_BRIDGE_PATH;
-use crate::utils::utils::{invoke_contract, wait_for_transaction};
+use std::sync::Arc;
+
 use async_trait::async_trait;
 use ethers::addressbook::Address;
 use ethers::providers::Middleware;
@@ -17,8 +13,12 @@ use starknet_ff::FieldElement;
 use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::JsonRpcClient;
 use starknet_proxy_client::proxy_support::ProxySupportTrait;
-use std::sync::Arc;
 use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
+
+use crate::bridge::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
+use crate::contract_clients::utils::{build_single_owner_account, field_element_to_u256};
+use crate::tests::constants::LEGACY_BRIDGE_PATH;
+use crate::utils::{invoke_contract, wait_for_transaction};
 
 #[async_trait]
 pub trait BridgeDeployable {
@@ -54,8 +54,7 @@ impl StarknetLegacyEthBridge {
         private_key: &str,
         l2_deployer_address: &str,
     ) -> FieldElement {
-        let account =
-            build_single_owner_account(&rpc_provider_l2, private_key, l2_deployer_address, false);
+        let account = build_single_owner_account(&rpc_provider_l2, private_key, l2_deployer_address, false);
 
         let contract_artifact = account.declare_contract_params_legacy(LEGACY_BRIDGE_PATH);
         let class_hash = contract_artifact.class_hash().unwrap();
@@ -65,9 +64,7 @@ impl StarknetLegacyEthBridge {
             .send()
             .await
             .expect("Unable to declare legacy eth bridge on l2");
-        wait_for_transaction(rpc_provider_l2, declare_txn.transaction_hash)
-            .await
-            .unwrap();
+        wait_for_transaction(rpc_provider_l2, declare_txn.transaction_hash).await.unwrap();
 
         let contract_factory = ContractFactory::new(class_hash, account.clone());
         let deploy_tx = &contract_factory
@@ -76,9 +73,7 @@ impl StarknetLegacyEthBridge {
             .await
             .expect("Unable to deploy legacy eth bridge on l2");
 
-        wait_for_transaction(rpc_provider_l2, deploy_tx.transaction_hash)
-            .await
-            .unwrap();
+        wait_for_transaction(rpc_provider_l2, deploy_tx.transaction_hash).await.unwrap();
 
         let address = get_contract_address_from_deploy_tx(&rpc_provider_l2, deploy_tx)
             .await
@@ -101,31 +96,14 @@ impl StarknetLegacyEthBridge {
         calldata.extend(empty_bytes);
         calldata.extend(padded_messaging_bytes);
 
-        self.eth_bridge
-            .initialize(Bytes::from(calldata))
-            .await
-            .expect("Failed to initialize eth bridge");
+        self.eth_bridge.initialize(Bytes::from(calldata)).await.expect("Failed to initialize eth bridge");
     }
 
     /// Sets up the Eth bridge with the specified data
-    pub async fn setup_l1_bridge(
-        &self,
-        max_total_balance: &str,
-        max_deposit: &str,
-        l2_bridge: FieldElement,
-    ) {
-        self.eth_bridge
-            .set_max_total_balance(U256::from_dec_str(max_total_balance).unwrap())
-            .await
-            .unwrap();
-        self.eth_bridge
-            .set_max_deposit(U256::from_dec_str(max_deposit).unwrap())
-            .await
-            .unwrap();
-        self.eth_bridge
-            .set_l2_token_bridge(field_element_to_u256(l2_bridge))
-            .await
-            .unwrap();
+    pub async fn setup_l1_bridge(&self, max_total_balance: &str, max_deposit: &str, l2_bridge: FieldElement) {
+        self.eth_bridge.set_max_total_balance(U256::from_dec_str(max_total_balance).unwrap()).await.unwrap();
+        self.eth_bridge.set_max_deposit(U256::from_dec_str(max_deposit).unwrap()).await.unwrap();
+        self.eth_bridge.set_l2_token_bridge(field_element_to_u256(l2_bridge)).await.unwrap();
     }
 
     pub async fn setup_l2_bridge(
@@ -140,20 +118,14 @@ impl StarknetLegacyEthBridge {
             rpc_provider,
             l2_bridge_address,
             "initialize",
-            vec![
-                FieldElement::from_dec_str("1").unwrap(),
-                FieldElement::from_hex_be(l2_deployer_address).unwrap(),
-            ],
+            vec![FieldElement::from_dec_str("1").unwrap(), FieldElement::from_hex_be(l2_deployer_address).unwrap()],
             priv_key,
             l2_deployer_address,
         )
         .await;
 
         log::trace!("setup_l2_bridge : l2 bridge initialized //");
-        wait_for_transaction(rpc_provider, tx.transaction_hash)
-            .await
-            .unwrap();
-        // sleep(Duration::from_secs(7)).await;
+        wait_for_transaction(rpc_provider, tx.transaction_hash).await.unwrap();
 
         let tx = invoke_contract(
             rpc_provider,
@@ -166,10 +138,7 @@ impl StarknetLegacyEthBridge {
         .await;
 
         log::trace!("setup_l2_bridge : l2 token set //");
-        wait_for_transaction(rpc_provider, tx.transaction_hash)
-            .await
-            .unwrap();
-        // sleep(Duration::from_secs(7)).await;
+        wait_for_transaction(rpc_provider, tx.transaction_hash).await.unwrap();
 
         let tx = invoke_contract(
             rpc_provider,
@@ -182,9 +151,7 @@ impl StarknetLegacyEthBridge {
         .await;
 
         log::trace!("setup_l2_bridge : l1 bridge set //");
-        wait_for_transaction(rpc_provider, tx.transaction_hash)
-            .await
-            .unwrap();
+        wait_for_transaction(rpc_provider, tx.transaction_hash).await.unwrap();
     }
 
     pub async fn set_max_total_balance(&self, amount: U256) {
@@ -195,31 +162,19 @@ impl StarknetLegacyEthBridge {
     }
 
     pub async fn set_max_deposit(&self, amount: U256) {
-        self.eth_bridge
-            .set_max_deposit(amount)
-            .await
-            .expect("Failed to set max deposit value in eth bridge");
+        self.eth_bridge.set_max_deposit(amount).await.expect("Failed to set max deposit value in eth bridge");
     }
 
     pub async fn set_l2_token_bridge(&self, l2_bridge: U256) {
-        self.eth_bridge
-            .set_l2_token_bridge(l2_bridge)
-            .await
-            .expect("Failed to set l2 bridge in eth bridge");
+        self.eth_bridge.set_l2_token_bridge(l2_bridge).await.expect("Failed to set l2 bridge in eth bridge");
     }
 
     pub async fn deposit(&self, amount: U256, l2_address: U256, fee: U256) {
-        self.eth_bridge
-            .deposit(amount, l2_address, fee)
-            .await
-            .expect("Failed to deposit in eth bridge");
+        self.eth_bridge.deposit(amount, l2_address, fee).await.expect("Failed to deposit in eth bridge");
     }
 
     pub async fn withdraw(&self, amount: U256, l1_recipient: Address) {
-        self.eth_bridge
-            .withdraw(amount, l1_recipient)
-            .await
-            .expect("Failed to withdraw from eth bridge");
+        self.eth_bridge.withdraw(amount, l1_recipient).await.expect("Failed to withdraw from eth bridge");
     }
 
     pub async fn eth_balance(&self, l1_recipient: Address) -> U256 {
