@@ -28,7 +28,7 @@ pub async fn erc20_bridge_test_helper(
     sleep(Duration::from_secs(arg_config.cross_chain_wait_time)).await;
 
     let balance_before = read_erc20_balance(
-        &clients.provider_l2(),
+        clients.provider_l2(),
         l2_erc20_token_address,
         FieldElement::from_str(&arg_config.l2_deployer_address).unwrap(),
     )
@@ -48,7 +48,7 @@ pub async fn erc20_bridge_test_helper(
     sleep(Duration::from_secs(arg_config.cross_chain_wait_time)).await;
 
     let balance_after = read_erc20_balance(
-        &clients.provider_l2(),
+        clients.provider_l2(),
         l2_erc20_token_address,
         FieldElement::from_str(&arg_config.l2_deployer_address).unwrap(),
     )
@@ -60,7 +60,7 @@ pub async fn erc20_bridge_test_helper(
 
     log::debug!("Initiated token withdraw on L2 [⏳]");
     invoke_contract(
-        &clients.provider_l2(),
+        clients.provider_l2(),
         l2_bridge_address,
         "initiate_token_withdraw",
         vec![
