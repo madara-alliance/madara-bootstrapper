@@ -89,8 +89,7 @@ impl StarknetTokenBridge {
         priv_key: &str,
         l2_deployer_address: &str,
     ) -> FieldElement {
-        let account = build_single_owner_account(&rpc_provider_l2, priv_key, l2_deployer_address, false);
-        // ! not needed already declared
+        let account = build_single_owner_account(rpc_provider_l2, priv_key, l2_deployer_address, false);
         #[allow(unused_variables)]
         let (class_hash_erc20, contract_artifact_erc20) =
             account.declare_contract_params_sierra(ERC20_SIERRA_PATH, ERC20_CASM_PATH);
@@ -108,12 +107,12 @@ impl StarknetTokenBridge {
             .expect("L2 Bridge initiation failed");
         wait_for_transaction(rpc_provider_l2, declare_txn.transaction_hash).await.unwrap();
         // for individual test :
-        // let declare_txn_2 = account
-        //     .declare(Arc::new(flattened_class_erc20), class_hash_erc20)
-        //     .send()
-        //     .await
-        //     .expect("L2 Bridge initiation failed");
-        // wait_for_transaction(rpc_provider_l2, declare_txn_2.transaction_hash).await.unwrap();
+        let declare_txn_2 = account
+            .declare(Arc::new(flattened_class_erc20), class_hash_erc20)
+            .send()
+            .await
+            .expect("L2 Bridge initiation failed");
+        wait_for_transaction(rpc_provider_l2, declare_txn_2.transaction_hash).await.unwrap();
 
         let mut rng = rand::thread_rng();
         let random: u32 = rng.gen();
@@ -133,11 +132,11 @@ impl StarknetTokenBridge {
             )
             .send()
             .await
-            .expect("");
+            .expect("Error deploying the contract");
 
         wait_for_transaction(rpc_provider_l2, deploy_tx.transaction_hash).await.unwrap();
 
-        get_contract_address_from_deploy_tx(&rpc_provider_l2, &deploy_tx).await.unwrap()
+        get_contract_address_from_deploy_tx(rpc_provider_l2, &deploy_tx).await.unwrap()
     }
 
     /// Initialize Starknet Token Bridge.
@@ -233,7 +232,7 @@ impl StarknetTokenBridge {
             l2_bridge,
             "set_erc20_class_hash",
             vec![
-                FieldElement::from_hex_be("0x008b150cfa4db35ed9d685d79f6daa590ff2bb10c295cd656fcbf176c4bd8365")
+                FieldElement::from_hex_be("0x05ffbcfeb50d200a0677c48a129a11245a3fc519d1d98d76882d1c9a1b19c6ed")
                     .unwrap(), // class hash
             ],
             priv_key,

@@ -28,7 +28,7 @@ pub async fn deploy_erc20_bridge(
     log::debug!("[🚀] ERC 20 Token Address : {:?}", token_bridge.address());
 
     let l2_bridge_address = StarknetTokenBridge::deploy_l2_contracts(
-        &clients.provider_l2(),
+        clients.provider_l2(),
         &arg_config.rollup_priv_key,
         &arg_config.l2_deployer_address,
     )
@@ -40,7 +40,7 @@ pub async fn deploy_erc20_bridge(
     token_bridge.initialize(core_contract.address()).await;
     token_bridge
         .setup_l2_bridge(
-            &clients.provider_l2(),
+            clients.provider_l2(),
             l2_bridge_address,
             &arg_config.rollup_priv_key,
             &arg_config.l2_deployer_address,
@@ -60,7 +60,7 @@ pub async fn deploy_erc20_bridge(
     sleep(Duration::from_secs(arg_config.cross_chain_wait_time)).await;
 
     let l2_erc20_token_address =
-        get_l2_token_address(&clients.provider_l2(), &l2_bridge_address, &token_bridge.address()).await;
+        get_l2_token_address(clients.provider_l2(), &l2_bridge_address, &token_bridge.address()).await;
     log::debug!("[🚀] L2 ERC 20 Token Address : {:?}", l2_erc20_token_address);
 
     Ok((token_bridge, l2_bridge_address, l2_erc20_token_address))
@@ -71,17 +71,15 @@ async fn get_l2_token_address(
     l2_bridge_address: &FieldElement,
     l1_erc_20_address: &H160,
 ) -> FieldElement {
-    let l2_address = rpc_provider_l2
+    rpc_provider_l2
         .call(
             FunctionCall {
-                contract_address: l2_bridge_address.clone(),
+                contract_address: *l2_bridge_address,
                 entry_point_selector: get_selector_from_name("get_l2_token").unwrap(),
                 calldata: vec![FieldElement::from_byte_slice_be(l1_erc_20_address.as_bytes()).unwrap()],
             },
             BlockId::Tag(BlockTag::Latest),
         )
         .await
-        .unwrap()[0];
-
-    l2_address
+        .unwrap()[0]
 }

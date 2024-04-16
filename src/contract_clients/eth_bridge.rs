@@ -54,7 +54,7 @@ impl StarknetLegacyEthBridge {
         private_key: &str,
         l2_deployer_address: &str,
     ) -> FieldElement {
-        let account = build_single_owner_account(&rpc_provider_l2, private_key, l2_deployer_address, false);
+        let account = build_single_owner_account(rpc_provider_l2, private_key, l2_deployer_address, false);
 
         let contract_artifact = account.declare_contract_params_legacy(LEGACY_BRIDGE_PATH);
         let class_hash = contract_artifact.class_hash().unwrap();
@@ -75,10 +75,9 @@ impl StarknetLegacyEthBridge {
 
         wait_for_transaction(rpc_provider_l2, deploy_tx.transaction_hash).await.unwrap();
 
-        let address = get_contract_address_from_deploy_tx(&rpc_provider_l2, deploy_tx)
+        get_contract_address_from_deploy_tx(rpc_provider_l2, deploy_tx)
             .await
-            .expect("Error getting contract address from transaction hash");
-        address
+            .expect("Error getting contract address from transaction hash")
     }
 
     /// Initialize Starknet Legacy Eth Bridge

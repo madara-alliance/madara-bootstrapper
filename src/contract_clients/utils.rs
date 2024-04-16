@@ -34,19 +34,16 @@ pub async fn read_erc20_balance(
     contract_address: FieldElement,
     account_address: FieldElement,
 ) -> Vec<FieldElement> {
-    let balance = rpc
-        .call(
-            FunctionCall {
-                contract_address,
-                entry_point_selector: get_selector_from_name("balanceOf").unwrap(),
-                calldata: vec![account_address],
-            },
-            BlockId::Tag(BlockTag::Latest),
-        )
-        .await
-        .unwrap();
-
-    balance
+    rpc.call(
+        FunctionCall {
+            contract_address,
+            entry_point_selector: get_selector_from_name("balanceOf").unwrap(),
+            calldata: vec![account_address],
+        },
+        BlockId::Tag(BlockTag::Latest),
+    )
+    .await
+    .unwrap()
 }
 
 pub fn field_element_to_u256(input: FieldElement) -> U256 {

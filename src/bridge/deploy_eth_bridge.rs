@@ -27,7 +27,7 @@ pub async fn deploy_eth_bridge(
     log::debug!("[🚀] Eth Bridge Address : {:?}", eth_bridge.address());
 
     let l2_bridge_address = StarknetLegacyEthBridge::deploy_l2_contracts(
-        &clients.provider_l2(),
+        clients.provider_l2(),
         &arg_config.rollup_priv_key,
         &arg_config.l2_deployer_address,
     )
@@ -37,7 +37,7 @@ pub async fn deploy_eth_bridge(
     log::debug!("[🚀] L2 Bridge Address : {:?}", l2_bridge_address);
 
     let l2_eth_address = deploy_eth_token_on_l2(
-        &clients.provider_l2(),
+        clients.provider_l2(),
         l2_bridge_address,
         &arg_config.rollup_priv_key,
         &arg_config.l2_deployer_address,
@@ -51,7 +51,7 @@ pub async fn deploy_eth_bridge(
     log::debug!("[🚀] ETH Bridge initialized");
     eth_bridge
         .setup_l2_bridge(
-            &clients.provider_l2(),
+            clients.provider_l2(),
             l2_bridge_address,
             l2_eth_address,
             &arg_config.rollup_priv_key,
@@ -72,7 +72,7 @@ pub async fn deploy_eth_token_on_l2(
     private_key: &str,
     address: &str,
 ) -> FieldElement {
-    let account = build_single_owner_account(&rpc_provider_l2, private_key, address, false);
+    let account = build_single_owner_account(rpc_provider_l2, private_key, address, false);
 
     let (class_hash, contract_artifact) = account.declare_contract_params_sierra(ERC20_SIERRA_PATH, ERC20_CASM_PATH);
     let flattened_class = contract_artifact.clone().flatten().unwrap();

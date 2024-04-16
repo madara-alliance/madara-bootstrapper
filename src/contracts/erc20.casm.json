@@ -1,6 +1,6 @@
 {
   "prime": "0x800000000000011000000000000000000000000000000000000000000000001",
-  "compiler_version": "2.5.1",
+  "compiler_version": "2.3.0",
   "bytecode": [
     "0xa0680017fff8000",
     "0x7",
@@ -14086,8 +14086,8 @@
     "0x48127ffd7fff8000",
     "0x208b7fff7fff7ffe",
     "0x480a7ff67fff8000",
-    "0x480a7ffa7fff8000",
-    "0x480a7ffb7fff8000",
+    "0x480a7ffc7fff8000",
+    "0x480a7ffd7fff8000",
     "0x1104800180018000",
     "0x451",
     "0x480a7ff77fff8000",
@@ -14097,18 +14097,18 @@
     "0x44c",
     "0x480a7ff87fff8000",
     "0x480a7ff97fff8000",
-    "0x480a7ffc7fff8000",
-    "0x480a7ffd7fff8000",
+    "0x48127ffc7fff8000",
+    "0x48127ffc7fff8000",
     "0x1104800180018000",
     "0x800000000000010ffffffffffffffffffffffffffffffffffffffffffffe5b4",
-    "0x48127ff67fff8000",
-    "0x48127ff67fff8000",
+    "0x480a7ffa7fff8000",
+    "0x480a7ffb7fff8000",
     "0x48127ffc7fff8000",
     "0x48127ffc7fff8000",
     "0x208b7fff7fff7ffe",
     "0x480a7ff67fff8000",
-    "0x480a7ffa7fff8000",
-    "0x480a7ffb7fff8000",
+    "0x480a7ffc7fff8000",
+    "0x480a7ffd7fff8000",
     "0x1104800180018000",
     "0x43c",
     "0x480a7ff77fff8000",
@@ -14118,12 +14118,12 @@
     "0x437",
     "0x480a7ff87fff8000",
     "0x480a7ff97fff8000",
-    "0x480a7ffc7fff8000",
-    "0x480a7ffd7fff8000",
+    "0x48127ffc7fff8000",
+    "0x48127ffc7fff8000",
     "0x1104800180018000",
     "0x800000000000010ffffffffffffffffffffffffffffffffffffffffffffe59f",
-    "0x48127ff67fff8000",
-    "0x48127ff67fff8000",
+    "0x480a7ffa7fff8000",
+    "0x480a7ffb7fff8000",
     "0x48127ffc7fff8000",
     "0x48127ffc7fff8000",
     "0x208b7fff7fff7ffe",
@@ -19664,15 +19664,9 @@
         {
           "TestLessThan": {
             "lhs": {
-              "BinOp": {
-                "op": "Add",
-                "a": {
-                  "register": "FP",
-                  "offset": -3
-                },
-                "b": {
-                  "Immediate": "0x0"
-                }
+              "Deref": {
+                "register": "FP",
+                "offset": -3
               }
             },
             "rhs": {
@@ -19721,15 +19715,9 @@
         {
           "TestLessThan": {
             "lhs": {
-              "BinOp": {
-                "op": "Add",
-                "a": {
-                  "register": "FP",
-                  "offset": -3
-                },
-                "b": {
-                  "Immediate": "0x0"
-                }
+              "Deref": {
+                "register": "FP",
+                "offset": -3
               }
             },
             "rhs": {

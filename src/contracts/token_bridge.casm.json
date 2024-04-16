@@ -1,6 +1,6 @@
 {
   "prime": "0x800000000000011000000000000000000000000000000000000000000000001",
-  "compiler_version": "2.1.0",
+  "compiler_version": "2.3.0",
   "bytecode": [
     "0xa0680017fff8000",
     "0x7",
@@ -29342,18 +29342,15 @@
       9765,
       [
         {
-          "TestLessThanOrEqual": {
+          "TestLessThan": {
             "lhs": {
               "Deref": {
-                "register": "FP",
-                "offset": 10
+                "register": "AP",
+                "offset": 0
               }
             },
             "rhs": {
-              "Deref": {
-                "register": "FP",
-                "offset": 9
-              }
+              "Immediate": "0x10000000000000000"
             },
             "dst": {
               "register": "AP",
@@ -29367,18 +29364,15 @@
       9774,
       [
         {
-          "TestLessThanOrEqual": {
+          "TestLessThan": {
             "lhs": {
               "Deref": {
-                "register": "FP",
-                "offset": 9
+                "register": "AP",
+                "offset": 0
               }
             },
             "rhs": {
-              "Deref": {
-                "register": "AP",
-                "offset": -8
-              }
+              "Immediate": "0x10000000000000000"
             },
             "dst": {
               "register": "AP",
@@ -30233,18 +30227,15 @@
       14241,
       [
         {
-          "TestLessThanOrEqual": {
+          "TestLessThan": {
             "lhs": {
               "Deref": {
-                "register": "FP",
-                "offset": -3
+                "register": "AP",
+                "offset": 0
               }
             },
             "rhs": {
-              "Deref": {
-                "register": "FP",
-                "offset": -5
-              }
+              "Immediate": "0x100000000000000000000000000000000"
             },
             "dst": {
               "register": "AP",
@@ -30258,18 +30249,15 @@
       14264,
       [
         {
-          "TestLessThanOrEqual": {
+          "TestLessThan": {
             "lhs": {
               "Deref": {
-                "register": "FP",
-                "offset": -4
+                "register": "AP",
+                "offset": 0
               }
             },
             "rhs": {
-              "Deref": {
-                "register": "FP",
-                "offset": -6
-              }
+              "Immediate": "0x100000000000000000000000000000000"
             },
             "dst": {
               "register": "AP",
@@ -30908,18 +30896,15 @@
       17096,
       [
         {
-          "TestLessThanOrEqual": {
+          "TestLessThan": {
             "lhs": {
               "Deref": {
-                "register": "FP",
-                "offset": -3
+                "register": "AP",
+                "offset": 0
               }
             },
             "rhs": {
-              "Deref": {
-                "register": "AP",
-                "offset": -2
-              }
+              "Immediate": "0x100"
             },
             "dst": {
               "register": "AP",
@@ -32313,18 +32298,15 @@
       21459,
       [
         {
-          "TestLessThanOrEqual": {
+          "TestLessThan": {
             "lhs": {
               "Deref": {
-                "register": "FP",
-                "offset": -3
+                "register": "AP",
+                "offset": 0
               }
             },
             "rhs": {
-              "Deref": {
-                "register": "FP",
-                "offset": -5
-              }
+              "Immediate": "0x100000000000000000000000000000000"
             },
             "dst": {
               "register": "AP",
@@ -32338,18 +32320,15 @@
       21482,
       [
         {
-          "TestLessThanOrEqual": {
+          "TestLessThan": {
             "lhs": {
               "Deref": {
-                "register": "FP",
-                "offset": -4
+                "register": "AP",
+                "offset": 0
               }
             },
             "rhs": {
-              "Deref": {
-                "register": "FP",
-                "offset": -6
-              }
+              "Immediate": "0x100000000000000000000000000000000"
             },
             "dst": {
               "register": "AP",
@@ -32363,18 +32342,15 @@
       21502,
       [
         {
-          "TestLessThanOrEqual": {
+          "TestLessThan": {
             "lhs": {
               "Deref": {
                 "register": "AP",
-                "offset": -2
+                "offset": 0
               }
             },
             "rhs": {
-              "Deref": {
-                "register": "AP",
-                "offset": -7
-              }
+              "Immediate": "0x100000000000000000000000000000000"
             },
             "dst": {
               "register": "AP",
@@ -32976,18 +32952,15 @@
       22741,
       [
         {
-          "TestLessThanOrEqual": {
+          "TestLessThan": {
             "lhs": {
               "Deref": {
-                "register": "FP",
-                "offset": -5
+                "register": "AP",
+                "offset": 0
               }
             },
             "rhs": {
-              "Deref": {
-                "register": "AP",
-                "offset": -2
-              }
+              "Immediate": "0x100000000000000000000000000000000"
             },
             "dst": {
               "register": "AP",
@@ -33001,18 +32974,15 @@
       22760,
       [
         {
-          "TestLessThanOrEqual": {
+          "TestLessThan": {
             "lhs": {
               "Deref": {
-                "register": "FP",
-                "offset": -3
+                "register": "AP",
+                "offset": 0
               }
             },
             "rhs": {
-              "Deref": {
-                "register": "AP",
-                "offset": -2
-              }
+              "Immediate": "0x100000000000000000000000000000000"
             },
             "dst": {
               "register": "AP",

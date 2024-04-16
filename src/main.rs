@@ -54,10 +54,10 @@ pub async fn main() {
 }
 
 pub async fn deploy_bridges(config: &CliArgs) {
-    let clients = Config::init(&config).await;
+    let clients = Config::init(config).await;
     let core_contract_client = StarknetSovereignContract::deploy(&clients).await;
     log::debug!("Core address [📦] : {:?}", core_contract_client.address());
-    let (program_hash, config_hash) = get_bridge_init_configs(&config);
+    let (program_hash, config_hash) = get_bridge_init_configs(config);
     core_contract_client.initialize_core_contract(0u64.into(), 0u64.into(), program_hash, config_hash).await;
     log::debug!("Bridge init for goerli successful [✅]");
     log::debug!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> [ETH BRIDGE] ⏳");

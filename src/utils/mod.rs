@@ -23,7 +23,7 @@ pub async fn invoke_contract(
     priv_key: &str,
     address: &str,
 ) -> InvokeTransactionResult {
-    let account = build_single_owner_account(&rpc_provider, priv_key, address, false);
+    let account = build_single_owner_account(rpc_provider, priv_key, address, false);
 
     let txn_res = account
         .invoke_contract(contract, method, calldata, None)
