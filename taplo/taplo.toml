@@ -1,0 +1,15 @@
+include = ["**/*.toml"]
+exclude = [
+  "**/bad.toml",
+  "starkgate-contracts/*.toml",
+  "starkgate-contracts-2-0-1/*.toml",
+]
+
+[formatting]
+align_entries = false
+
+[[rule]]
+keys = ["dependencies"]
+
+[rule.formatting]
+reorder_keys = true
