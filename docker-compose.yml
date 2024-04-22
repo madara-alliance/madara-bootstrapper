@@ -1,0 +1,20 @@
+version: "3.8"
+services:
+  app:
+    build:
+      context: .
+      args:
+        APP_CHAIN_ID: ${APP_CHAIN_ID}
+        ETH_CHAIN_ID: ${ETH_CHAIN_ID}
+        ETH_PRIV_KEY: ${ETH_PRIV_KEY}
+        ETH_RPC: ${ETH_RPC}
+        FEE_TOKEN_ADDRESS: ${FEE_TOKEN_ADDRESS}
+        L1_DEPLOYER_ADDRESS: ${L1_DEPLOYER_ADDRESS}
+        L1_WAIT_TIME: ${L1_WAIT_TIME}
+        L2_DEPLOYER_ADDRESS: ${L2_DEPLOYER_ADDRESS}
+        ROLLUP_PRIV_KEY: ${ROLLUP_PRIV_KEY}
+        SN_OS_CONFIG_HASH_VERSION: ${SN_OS_CONFIG_HASH_VERSION}
+        SN_OS_PROGRAM_HASH: ${SN_OS_PROGRAM_HASH}
+        CROSS_CHAIN_WAIT_TIME: ${CROSS_CHAIN_WAIT_TIME}
+    volumes:
+      - ./addresses.json:/karnot-bridge-deploy/addresses.json:rw

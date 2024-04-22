@@ -28,7 +28,7 @@ impl StarknetSovereignContract {
     }
 
     pub async fn deploy(config: &Config) -> Self {
-        let client = deploy_starknet_sovereign_behind_unsafe_proxy(config.eth_client().client().clone())
+        let client = deploy_starknet_sovereign_behind_unsafe_proxy(config.eth_client().signer().clone())
             .await
             .expect("Failed to deploy the starknet contact");
 

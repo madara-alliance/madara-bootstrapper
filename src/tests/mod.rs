@@ -28,7 +28,7 @@ async fn deploy_bridge() -> Result<(), anyhow::Error> {
 
 #[rstest]
 #[tokio::test]
-#[ignore]
+// #[ignore]
 async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
 
@@ -46,7 +46,7 @@ async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
 
 #[rstest]
 #[tokio::test]
-// #[ignore]
+#[ignore]
 async fn deposit_and_withdraw_erc20_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
 

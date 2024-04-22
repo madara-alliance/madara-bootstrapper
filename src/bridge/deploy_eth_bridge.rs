@@ -1,11 +1,13 @@
 use std::str::FromStr;
 use std::sync::Arc;
+use std::time::Duration;
 
 use starknet_accounts::Account;
 use starknet_contract::ContractFactory;
 use starknet_ff::FieldElement;
 use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::JsonRpcClient;
+use tokio::time::sleep;
 
 use crate::bridge::helpers::account_actions::AccountActions;
 use crate::contract_clients::config::Config;
@@ -13,7 +15,7 @@ use crate::contract_clients::eth_bridge::{BridgeDeployable, StarknetLegacyEthBri
 use crate::contract_clients::starknet_sovereign::StarknetSovereignContract;
 use crate::contract_clients::utils::build_single_owner_account;
 use crate::utils::constants::{ERC20_CASM_PATH, ERC20_SIERRA_PATH};
-use crate::utils::wait_for_transaction;
+use crate::utils::{save_to_json, wait_for_transaction, JsonValueType};
 use crate::CliArgs;
 
 pub async fn deploy_eth_bridge(
@@ -25,6 +27,7 @@ pub async fn deploy_eth_bridge(
 
     log::debug!("Eth Bridge Deployment Successful [✅]");
     log::debug!("[🚀] Eth Bridge Address : {:?}", eth_bridge.address());
+    save_to_json("ETH_l1_bridge_address", &JsonValueType::EthAddress(eth_bridge.address()))?;
 
     let l2_bridge_address = StarknetLegacyEthBridge::deploy_l2_contracts(
         clients.provider_l2(),
@@ -35,35 +38,49 @@ pub async fn deploy_eth_bridge(
 
     log::debug!("L2 Bridge Deployment Successful [✅]");
     log::debug!("[🚀] L2 Bridge Address : {:?}", l2_bridge_address);
+    save_to_json("ETH_l2_bridge_address", &JsonValueType::StringType(l2_bridge_address.to_string()))?;
 
-    let l2_eth_address = deploy_eth_token_on_l2(
-        clients.provider_l2(),
-        l2_bridge_address,
-        &arg_config.rollup_priv_key,
-        &arg_config.l2_deployer_address,
-    )
-    .await;
+    let eth_address =
+        FieldElement::from_str("0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7").unwrap();
+
+    // let eth_address = deploy_eth_token_on_l2(
+    //     clients.provider_l2(),
+    //     l2_bridge_address,
+    //     &arg_config.rollup_priv_key,
+    //     &arg_config.l2_deployer_address,
+    // )
+    //     .await;
 
     log::debug!("L2 ETH Token Deployment Successful [✅]");
-    log::debug!("[🚀] L2 ETH Token Address : {:?}", l2_eth_address);
+    log::debug!("[🚀] L2 ETH Token Address : {:?}", eth_address);
+    save_to_json("l2_eth_address", &JsonValueType::StringType(eth_address.to_string()))?;
 
     eth_bridge.initialize(core_contract.address()).await;
     log::debug!("[🚀] ETH Bridge initialized");
+
+    sleep(Duration::from_secs(arg_config.l1_wait_time.parse().unwrap())).await;
+
     eth_bridge
         .setup_l2_bridge(
             clients.provider_l2(),
             l2_bridge_address,
-            l2_eth_address,
+            eth_address,
             &arg_config.rollup_priv_key,
             &arg_config.l2_deployer_address,
         )
         .await;
     log::debug!("ETH Bridge L2 setup complete [✅]");
 
-    eth_bridge.setup_l1_bridge("10000000000000000", "10000000000000000", l2_bridge_address).await;
+    eth_bridge
+        .setup_l1_bridge(
+            "10000000000000000000000000000000000000000",
+            "10000000000000000000000000000000000000000",
+            l2_bridge_address,
+        )
+        .await;
     log::debug!("ETH Bridge L1 setup complete [✅]");
 
-    Ok((eth_bridge, l2_bridge_address, l2_eth_address))
+    Ok((eth_bridge, l2_bridge_address, eth_address))
 }
 
 pub async fn deploy_eth_token_on_l2(

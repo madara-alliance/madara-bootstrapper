@@ -123,7 +123,7 @@ impl StarknetLegacyEthBridge {
         )
         .await;
 
-        log::trace!("setup_l2_bridge : l2 bridge initialized //");
+        log::debug!("setup_l2_bridge : l2 bridge initialized //");
         wait_for_transaction(rpc_provider, tx.transaction_hash).await.unwrap();
 
         let tx = invoke_contract(
@@ -136,7 +136,7 @@ impl StarknetLegacyEthBridge {
         )
         .await;
 
-        log::trace!("setup_l2_bridge : l2 token set //");
+        log::debug!("setup_l2_bridge : l2 token set //");
         wait_for_transaction(rpc_provider, tx.transaction_hash).await.unwrap();
 
         let tx = invoke_contract(
@@ -149,7 +149,19 @@ impl StarknetLegacyEthBridge {
         )
         .await;
 
-        log::trace!("setup_l2_bridge : l1 bridge set //");
+        log::debug!("setup_l2_bridge : l1 bridge set //");
+        wait_for_transaction(rpc_provider, tx.transaction_hash).await.unwrap();
+
+        let tx = invoke_contract(
+            rpc_provider,
+            erc20_address,
+            "set_role_temp",
+            vec![l2_bridge_address],
+            priv_key,
+            l2_deployer_address,
+        )
+        .await;
+        log::debug!("setup_l2_bridge : l2 bridge minter role granted for eth token //");
         wait_for_transaction(rpc_provider, tx.transaction_hash).await.unwrap();
     }
 

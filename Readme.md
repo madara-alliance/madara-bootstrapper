@@ -1,27 +1,33 @@
-# Karnot Bridge Deploy
+# KBD 🌉
 
-Karnot bridge deploy is a tool that helps to deploy the bridge
-contract on settlement layer and on the rollup side.
+Karnot bridge deploy (KBD) is a tool that helps to deploy
+the bridge contract between a madara/katana appchain and
+another L2 or L1 network.
 
-```shell
-ARGS / ENV:
-//////////////////////////////////////////////////
+**Currently Supported :**
 
-eth_rpc
-eth_priv_key
-rollup_seq_url
-rollup_priv_key
-eth_chain_id
-l1_deployer_address
-l2_deployer_address
-l1_wait_time
-sn_os_program_hash
-config_hash_version
-app_chain_id
-fee_token_address
-```
+- Madara App Chain <----> Ethereum / EVM based chains
+- 👷🏼 more coming soon......
 
-## To test
+## Testing 🛠️
+
+There are three test in the repository :
+
+- bridge deployment e2e
+- eth bridge deposit and claim
+- erc20 token bridge deposit and claim
+
+### IMP 🚨
+
+- You need to comment/remove the #[ignore]
+  tags in [src/tests/mod.rs](src/tests/mod.rs) file
+- Only one test can be run at one time as all
+  the tests are e2e tests.
+- You also would need to restart
+  both the chains after running each test.
+- While running the erc20 bridge deposit and withdraw
+  test you need to uncomment the lines 109-115 in file
+  [src/contract_clients/token_bridge.rs](src/contract_clients/token_bridge.rs)
 
 ```shell
 # 1. Run madara instance with eth as settlement layer :
@@ -30,11 +36,43 @@ fee_token_address
 ~/.foundry/bin/anvil
 
 # 3. Run tests
-RUST_LOG=debug cargo test -- --no-capture
+RUST_LOG=debug cargo test -- --nocapture
 ```
 
-## To run and env setup
+## Run 🚀
+
+### Local 💻
+
+You can provide the env variables as arguments also
+,or you can also provide them in .env file.
+
+Refer [.env.example](.env.example) file for setup
 
 ```shell
+cp .env.example .env
+cargo build --release
 RUST_LOG=debug cargo run -- --help
 ```
+
+### Docker 🐳
+
+1. You need to set up the .env file first. Fill all
+   the variables in .env file
+
+   ```shell
+   cp .env.example .env
+   ```
+
+2. You need to run docker compose command to build the image
+
+   ```shell
+   docker compose build
+   ```
+
+3. Run the image
+   ```shell
+   # If both the networks are running locally
+   docker run -it --net=host karnot-bridge-deploy-app
+   # If you are hosting on already deployed networks
+   docker run -it karnot-bridge-deploy-app
+   ```

@@ -1,7 +1,11 @@
+use std::path::Path;
 use std::time::Duration;
+use std::{fs, io};
 
 use ethers::addressbook::Address;
 use ethers::types::U256;
+use num_bigint::BigUint;
+use serde_json::{Map, Value};
 use starknet_api::hash::StarkFelt;
 use starknet_core::types::InvokeTransactionResult;
 use starknet_core::types::MaybePendingTransactionReceipt::{PendingReceipt, Receipt};
@@ -64,4 +68,43 @@ pub async fn wait_for_transaction(
 
 pub fn convert_felt_to_u256(felt: StarkFelt) -> U256 {
     U256::from_big_endian(felt.bytes())
+}
+
+pub enum JsonValueType {
+    EthAddress(Address),
+    StringType(String),
+}
+
+pub fn save_to_json(key: &str, value: &JsonValueType) -> Result<(), io::Error> {
+    let file_path: &str = "./addresses.json";
+    let data = fs::read_to_string(file_path);
+    let mut json: Map<String, Value> = match data {
+        Ok(content) => serde_json::from_str(&content).unwrap_or_else(|_| Map::new()),
+        Err(_) => Map::new(),
+    };
+
+    match value {
+        JsonValueType::EthAddress(x) => {
+            json.insert(key.to_string(), serde_json::json!(x));
+        }
+        JsonValueType::StringType(x) => {
+            json.insert(key.to_string(), serde_json::json!(convert_to_hex(x)));
+        }
+    }
+
+    let updated_json = serde_json::to_string_pretty(&json)?;
+
+    // Ensure the directory exists before writing the file
+    if let Some(dir_path) = Path::new(file_path).parent() {
+        fs::create_dir_all(dir_path)?;
+    }
+
+    fs::write(file_path, updated_json)?;
+
+    Ok(())
+}
+
+fn convert_to_hex(address: &str) -> String {
+    let big_uint = address.parse::<BigUint>().map_err(|_| "Invalid number");
+    big_uint.expect("error converting decimal string ---> hex string").to_str_radix(16)
 }

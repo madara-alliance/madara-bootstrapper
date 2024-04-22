@@ -107,12 +107,12 @@ impl StarknetTokenBridge {
             .expect("L2 Bridge initiation failed");
         wait_for_transaction(rpc_provider_l2, declare_txn.transaction_hash).await.unwrap();
         // for individual test :
-        let declare_txn_2 = account
-            .declare(Arc::new(flattened_class_erc20), class_hash_erc20)
-            .send()
-            .await
-            .expect("L2 Bridge initiation failed");
-        wait_for_transaction(rpc_provider_l2, declare_txn_2.transaction_hash).await.unwrap();
+        // let declare_txn_2 = account
+        //     .declare(Arc::new(flattened_class_erc20), class_hash_erc20)
+        //     .send()
+        //     .await
+        //     .expect("L2 Bridge initiation failed");
+        // wait_for_transaction(rpc_provider_l2, declare_txn_2.transaction_hash).await.unwrap();
 
         let mut rng = rand::thread_rng();
         let random: u32 = rng.gen();
@@ -232,7 +232,7 @@ impl StarknetTokenBridge {
             l2_bridge,
             "set_erc20_class_hash",
             vec![
-                FieldElement::from_hex_be("0x05ffbcfeb50d200a0677c48a129a11245a3fc519d1d98d76882d1c9a1b19c6ed")
+                FieldElement::from_hex_be("0x03aa3ecb2cd9133927565413894391635c4895bb2abd32b34089b24c3ac63236")
                     .unwrap(), // class hash
             ],
             priv_key,

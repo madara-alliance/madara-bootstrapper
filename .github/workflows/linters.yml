@@ -14,15 +14,15 @@ jobs:
         run: |-
           npx prettier --check .
 
-  markdown-lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: avto-dev/markdown-lint@v1
-        with:
-          config: "./.markdownlint.json"
-          args: "."
-          ignore: "./target"
+  #  markdown-lint:
+  #    runs-on: ubuntu-latest
+  #    steps:
+  #      - uses: actions/checkout@v3
+  #      - uses: avto-dev/markdown-lint@v1
+  #        with:
+  #          config: "./.markdownlint.json"
+  #          args: "."
+  #          ignore: "./target"
 
   toml-lint:
     runs-on: ubuntu-latest

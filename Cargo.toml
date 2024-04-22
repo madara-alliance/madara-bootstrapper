@@ -27,15 +27,15 @@ sp-core = { git = "https://github.com/massalabs/polkadot-sdk", branch = "release
 ] }
 
 # Zaun Deps
-ethereum-instance = { git = "https://github.com/karnotxyz/zaun", package = "ethereum-instance", branch = "starkgate" }
-starkgate-manager-client = { git = "https://github.com/karnotxyz/zaun", package = "starkgate-manager-client", branch = "starkgate" }
-starkgate-registry-client = { git = "https://github.com/karnotxyz/zaun", package = "starkgate-registry-client", branch = "starkgate" }
-starknet-core-contract-client = { git = "https://github.com/karnotxyz/zaun", package = "starknet-core-contract-client", branch = "starkgate" }
-starknet-erc20-client = { git = "https://github.com/karnotxyz/zaun", package = "starknet-erc20-client", branch = "starkgate" }
-starknet-eth-bridge-client = { git = "https://github.com/karnotxyz/zaun", package = "starknet-eth-bridge-client", branch = "starkgate" }
-starknet-proxy-client = { git = "https://github.com/karnotxyz/zaun", package = "starknet-proxy-client", branch = "starkgate" }
-starknet-token-bridge-client = { git = "https://github.com/karnotxyz/zaun", package = "starknet-token-bridge-client", branch = "starkgate" }
-zaun-utils = { git = "https://github.com/karnotxyz/zaun", package = "utils", branch = "starkgate" }
+ethereum-instance = { git = "https://github.com/karnotxyz/zaun", package = "ethereum-instance", branch = "main" }
+starkgate-manager-client = { git = "https://github.com/karnotxyz/zaun", package = "starkgate-manager-client", branch = "main" }
+starkgate-registry-client = { git = "https://github.com/karnotxyz/zaun", package = "starkgate-registry-client", branch = "main" }
+starknet-core-contract-client = { git = "https://github.com/karnotxyz/zaun", package = "starknet-core-contract-client", branch = "main" }
+starknet-erc20-client = { git = "https://github.com/karnotxyz/zaun", package = "starknet-erc20-client", branch = "main" }
+starknet-eth-bridge-client = { git = "https://github.com/karnotxyz/zaun", package = "starknet-eth-bridge-client", branch = "main" }
+starknet-proxy-client = { git = "https://github.com/karnotxyz/zaun", package = "starknet-proxy-client", branch = "main" }
+starknet-token-bridge-client = { git = "https://github.com/karnotxyz/zaun", package = "starknet-token-bridge-client", branch = "main" }
+zaun-utils = { git = "https://github.com/karnotxyz/zaun", package = "utils", branch = "main" }
 
 # Starknet Deps
 starknet-accounts = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "64ebc36", default-features = false }
@@ -62,6 +62,7 @@ clap = { version = "4.4.11", features = ["derive", "env"] }
 dotenv = "0.15.0"
 env_logger = "0.11.3"
 log = "0.4.21"
+num-bigint = "0.4"
 parity-scale-codec = { version = "3.2.2", default-features = false, features = [
   "std",
 ] }

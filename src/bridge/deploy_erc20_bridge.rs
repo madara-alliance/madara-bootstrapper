@@ -14,6 +14,7 @@ use crate::contract_clients::config::Config;
 use crate::contract_clients::eth_bridge::BridgeDeployable;
 use crate::contract_clients::starknet_sovereign::StarknetSovereignContract;
 use crate::contract_clients::token_bridge::StarknetTokenBridge;
+use crate::utils::{save_to_json, JsonValueType};
 use crate::CliArgs;
 
 pub async fn deploy_erc20_bridge(
@@ -26,6 +27,10 @@ pub async fn deploy_erc20_bridge(
     log::debug!("Token Bridge Deployment Successful [✅]");
     log::debug!("[🚀] Token Bridge Address : {:?}", token_bridge.bridge_address());
     log::debug!("[🚀] ERC 20 Token Address : {:?}", token_bridge.address());
+    save_to_json("ERC20_l1_bridge_address", &JsonValueType::EthAddress(token_bridge.bridge_address()))?;
+    save_to_json("ERC20_l1_registry_address", &JsonValueType::EthAddress(token_bridge.registry_address()))?;
+    save_to_json("ERC20_l1_manager_address", &JsonValueType::EthAddress(token_bridge.manager_address()))?;
+    save_to_json("ERC20_l1_token_address", &JsonValueType::EthAddress(token_bridge.address()))?;
 
     let l2_bridge_address = StarknetTokenBridge::deploy_l2_contracts(
         clients.provider_l2(),
@@ -36,6 +41,7 @@ pub async fn deploy_erc20_bridge(
 
     log::debug!("L2 Token Bridge Deployment Successful [✅]");
     log::debug!("[🚀] L2 Token Bridge Address : {:?}", l2_bridge_address);
+    save_to_json("ERC20_l2_bridge_address", &JsonValueType::StringType(l2_bridge_address.to_string()))?;
 
     token_bridge.initialize(core_contract.address()).await;
     token_bridge
@@ -62,6 +68,7 @@ pub async fn deploy_erc20_bridge(
     let l2_erc20_token_address =
         get_l2_token_address(clients.provider_l2(), &l2_bridge_address, &token_bridge.address()).await;
     log::debug!("[🚀] L2 ERC 20 Token Address : {:?}", l2_erc20_token_address);
+    save_to_json("ERC20_l2_token_address", &JsonValueType::StringType(l2_erc20_token_address.to_string()))?;
 
     Ok((token_bridge, l2_bridge_address, l2_erc20_token_address))
 }
