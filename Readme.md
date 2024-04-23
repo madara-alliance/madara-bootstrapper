@@ -54,6 +54,8 @@ cargo build --release
 RUST_LOG=debug cargo run -- --help
 ```
 
+**IMP 🚨** : It will store all the addresses in [data/addresses.json](data/addresses.json)
+
 ### Docker 🐳
 
 1. You need to set up the .env file first. Fill all
@@ -72,7 +74,9 @@ RUST_LOG=debug cargo run -- --help
 3. Run the image
    ```shell
    # If both the networks are running locally
-   docker run -it --net=host karnot-bridge-deploy-app
+   docker compose -f docker-compose-local.yml up
    # If you are hosting on already deployed networks
-   docker run -it karnot-bridge-deploy-app
+   docker compose up
    ```
+
+**IMP 🚨** : It will store all the addresses in [data/addresses.json](data/addresses.json)

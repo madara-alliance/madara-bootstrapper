@@ -57,7 +57,7 @@ COPY ./src ./src
 # Build for release
 RUN rm -rf ./target/x86_64-unknown-linux-musl/release/deps/karnot_bridge_deploy*
 RUN cargo build --target x86_64-unknown-linux-musl --release
-RUN touch addresses.json
+RUN mkdir data && touch data/addresses.json
 
 ENV RUST_LOG=debug
 

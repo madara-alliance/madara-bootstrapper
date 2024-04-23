@@ -76,7 +76,7 @@ pub enum JsonValueType {
 }
 
 pub fn save_to_json(key: &str, value: &JsonValueType) -> Result<(), io::Error> {
-    let file_path: &str = "./addresses.json";
+    let file_path: &str = "./data/addresses.json";
     let data = fs::read_to_string(file_path);
     let mut json: Map<String, Value> = match data {
         Ok(content) => serde_json::from_str(&content).unwrap_or_else(|_| Map::new()),
