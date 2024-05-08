@@ -16,7 +16,7 @@ use starknet_proxy_client::proxy_support::ProxySupportTrait;
 use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
 
 use crate::bridge::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
-use crate::contract_clients::utils::{build_single_owner_account, field_element_to_u256};
+use crate::contract_clients::utils::{build_single_owner_account, field_element_to_u256, RpcAccount};
 use crate::utils::constants::LEGACY_BRIDGE_PATH;
 use crate::utils::{invoke_contract, wait_for_transaction};
 
@@ -51,33 +51,37 @@ impl StarknetLegacyEthBridge {
 
     pub async fn deploy_l2_contracts(
         rpc_provider_l2: &JsonRpcClient<HttpTransport>,
-        private_key: &str,
-        l2_deployer_address: &str,
+        legacy_eth_bridge_class_hash: FieldElement,
+        legacy_eth_bridge_proxy_address: FieldElement,
+        proxy_class_hash: FieldElement,
+        account: &RpcAccount<'_>,
+        deployer_priv_key: &str,
     ) -> FieldElement {
-        let account = build_single_owner_account(rpc_provider_l2, private_key, l2_deployer_address, false);
+        // let contract_factory = ContractFactory::new(proxy_class_hash, account.clone());
+        // let deploy_tx = &contract_factory
+        //     .deploy(vec![], FieldElement::ZERO, true)
+        //     .send()
+        //     .await
+        //     .expect("Unable to deploy legacy eth bridge on l2");
+        let deploy_txn = invoke_contract(
+            rpc_provider_l2,
+            legacy_eth_bridge_proxy_address,
+            "upgrade_to",
+            vec![
+                legacy_eth_bridge_class_hash,
+                FieldElement::ZERO,
+                FieldElement::ZERO,
+                FieldElement::ZERO,
+                FieldElement::ONE,
+            ],
+            deployer_priv_key,
+            &account.address().to_string(),
+        )
+        .await;
 
-        let contract_artifact = account.declare_contract_params_legacy(LEGACY_BRIDGE_PATH);
-        let class_hash = contract_artifact.class_hash().unwrap();
+        wait_for_transaction(rpc_provider_l2, deploy_txn.transaction_hash).await.unwrap();
 
-        let declare_txn = account
-            .declare_legacy(Arc::new(contract_artifact))
-            .send()
-            .await
-            .expect("Unable to declare legacy eth bridge on l2");
-        wait_for_transaction(rpc_provider_l2, declare_txn.transaction_hash).await.unwrap();
-
-        let contract_factory = ContractFactory::new(class_hash, account.clone());
-        let deploy_tx = &contract_factory
-            .deploy(vec![], FieldElement::ZERO, true)
-            .send()
-            .await
-            .expect("Unable to deploy legacy eth bridge on l2");
-
-        wait_for_transaction(rpc_provider_l2, deploy_tx.transaction_hash).await.unwrap();
-
-        get_contract_address_from_deploy_tx(rpc_provider_l2, deploy_tx)
-            .await
-            .expect("Error getting contract address from transaction hash")
+        legacy_eth_bridge_proxy_address
     }
 
     /// Initialize Starknet Legacy Eth Bridge
@@ -152,17 +156,18 @@ impl StarknetLegacyEthBridge {
         log::debug!("setup_l2_bridge : l1 bridge set //");
         wait_for_transaction(rpc_provider, tx.transaction_hash).await.unwrap();
 
-        let tx = invoke_contract(
-            rpc_provider,
-            erc20_address,
-            "set_role_temp",
-            vec![l2_bridge_address],
-            priv_key,
-            l2_deployer_address,
-        )
-        .await;
-        log::debug!("setup_l2_bridge : l2 bridge minter role granted for eth token //");
-        wait_for_transaction(rpc_provider, tx.transaction_hash).await.unwrap();
+        // Not needed as we are following a bootstrap node approach
+        // let tx = invoke_contract(
+        //     rpc_provider,
+        //     erc20_address,
+        //     "set_role_temp",
+        //     vec![l2_bridge_address],
+        //     priv_key,
+        //     l2_deployer_address,
+        // )
+        // .await;
+        // log::debug!("setup_l2_bridge : l2 bridge minter role granted for eth token //");
+        // wait_for_transaction(rpc_provider, tx.transaction_hash).await.unwrap();
     }
 
     pub async fn set_max_total_balance(&self, amount: U256) {

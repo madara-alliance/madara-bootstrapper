@@ -21,6 +21,7 @@ pub async fn deploy_erc20_bridge(
     clients: &Config,
     arg_config: &CliArgs,
     core_contract: &StarknetSovereignContract,
+    account_address: &str,
 ) -> Result<(StarknetTokenBridge, FieldElement, FieldElement), anyhow::Error> {
     let token_bridge = StarknetTokenBridge::deploy(core_contract.client().clone()).await;
 
@@ -32,12 +33,9 @@ pub async fn deploy_erc20_bridge(
     save_to_json("ERC20_l1_manager_address", &JsonValueType::EthAddress(token_bridge.manager_address()))?;
     save_to_json("ERC20_l1_token_address", &JsonValueType::EthAddress(token_bridge.address()))?;
 
-    let l2_bridge_address = StarknetTokenBridge::deploy_l2_contracts(
-        clients.provider_l2(),
-        &arg_config.rollup_priv_key,
-        &arg_config.l2_deployer_address,
-    )
-    .await;
+    let l2_bridge_address =
+        StarknetTokenBridge::deploy_l2_contracts(clients.provider_l2(), &arg_config.rollup_priv_key, account_address)
+            .await;
 
     log::debug!("L2 Token Bridge Deployment Successful [✅]");
     log::debug!("[🚀] L2 Token Bridge Address : {:?}", l2_bridge_address);
@@ -45,12 +43,7 @@ pub async fn deploy_erc20_bridge(
 
     token_bridge.initialize(core_contract.address()).await;
     token_bridge
-        .setup_l2_bridge(
-            clients.provider_l2(),
-            l2_bridge_address,
-            &arg_config.rollup_priv_key,
-            &arg_config.l2_deployer_address,
-        )
+        .setup_l2_bridge(clients.provider_l2(), l2_bridge_address, &arg_config.rollup_priv_key, account_address)
         .await;
     token_bridge
         .setup_l1_bridge(

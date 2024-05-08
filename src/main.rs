@@ -5,10 +5,12 @@ mod tests;
 pub mod utils;
 use clap::Parser;
 use dotenv::dotenv;
+use log::log;
 
 use crate::bridge::deploy_erc20_bridge::deploy_erc20_bridge;
 use crate::bridge::deploy_eth_bridge::deploy_eth_bridge;
 use crate::contract_clients::config::Config;
+use crate::contract_clients::init_state::init_and_deploy_eth_and_account;
 use crate::contract_clients::starknet_sovereign::StarknetSovereignContract;
 use crate::contract_clients::utils::get_bridge_init_configs;
 use crate::utils::{save_to_json, JsonValueType};
@@ -28,8 +30,6 @@ pub struct CliArgs {
     eth_chain_id: u64,
     #[clap(long, env, default_value = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")]
     l1_deployer_address: String,
-    #[clap(long, env, default_value = "0x0000000000000000000000000000000000000000000000000000000000000004")]
-    l2_deployer_address: String,
     #[clap(long, env, default_value = "15")]
     l1_wait_time: String,
     #[clap(long, env, default_value = "0x41fc2a467ef8649580631912517edcab7674173f1dbfa2e9b64fbcd82bc4d79")]
@@ -61,11 +61,33 @@ pub async fn deploy_bridges(config: &CliArgs) {
     save_to_json("l1_core_contract_address", &JsonValueType::EthAddress(core_contract_client.address())).unwrap();
     let (program_hash, config_hash) = get_bridge_init_configs(config);
     core_contract_client.initialize_core_contract(0u64.into(), 0u64.into(), program_hash, config_hash).await;
-    log::debug!("Bridge init for goerli successful [✅]");
+    log::debug!("Bridge init for l1 successful [✅]");
+    log::debug!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> [L2 State and Initialisation] ⏳");
+    let (
+        erc_20_class_hash,
+        legacy_eth_bridge_class_hash,
+        account_address,
+        eth_proxy_address,
+        eth_bridge_proxy_address,
+        token_bridge_proxy_address,
+        proxy_class_hash,
+    ) = init_and_deploy_eth_and_account(&clients, config).await;
     log::debug!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> [ETH BRIDGE] ⏳");
-    deploy_eth_bridge(&clients, config, &core_contract_client).await.expect("Error in deploying ETH bridge");
+    deploy_eth_bridge(
+        &clients,
+        config,
+        &core_contract_client,
+        legacy_eth_bridge_class_hash,
+        eth_bridge_proxy_address,
+        eth_proxy_address,
+        erc_20_class_hash,
+        account_address,
+        proxy_class_hash,
+    )
+    .await
+    .expect("Error in deploying ETH bridge");
     log::debug!("ETH BRIDGE DEPLOYED [✅]");
     log::debug!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>[ERC20 BRIDGE] ⏳");
-    deploy_erc20_bridge(&clients, config, &core_contract_client).await.expect("Error in deploying ERC20 bridge");
+    deploy_erc20_bridge(&clients, config, &core_contract_client, "").await.expect("Error in deploying ERC20 bridge");
     log::debug!("ERC20 BRIDGE DEPLOYED [✅]");
 }

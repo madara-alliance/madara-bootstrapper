@@ -18,6 +18,7 @@ use crate::bridge::helpers::account_actions::{get_transaction_receipt, AccountAc
 use crate::contract_clients::utils::build_single_owner_account;
 
 pub mod constants;
+pub mod mapper;
 
 pub async fn invoke_contract(
     rpc_provider: &JsonRpcClient<HttpTransport>,
