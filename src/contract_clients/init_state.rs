@@ -40,7 +40,7 @@ use crate::utils::constants::{
     ERC20_CASM_PATH, ERC20_SIERRA_PATH, LEGACY_BRIDGE_PATH, LEGACY_BRIDGE_PROGRAM_PATH, OZ_ACCOUNT_CASM_PATH,
     OZ_ACCOUNT_SIERRA_PATH, PROXY_PATH, PROXY_PROGRAM_PATH,
 };
-use crate::utils::mapper::{map_builtins, map_constants, map_data, map_error_message_attributes, map_hints, map_hints_ranges, map_identifiers, map_instruction_locations, map_main, map_program_end, map_program_start};
+use crate::utils::mapper::{map_builtins, map_constants, map_data, map_error_message_attributes, map_hints, map_hints_ranges, map_identifiers, map_instruction_locations, map_main, map_program_end, map_program_start, map_reference_manager};
 use crate::utils::{invoke_contract, wait_for_transaction};
 use crate::{contract_clients, CliArgs};
 
@@ -164,7 +164,7 @@ async fn declare_contract_using_subxt(input: DeclarationInput) -> FieldElement {
                     error_message_attributes: map_error_message_attributes(&p),
                     instruction_locations: map_instruction_locations(&p),
                     identifiers: map_identifiers(&p),
-                    reference_manager: vec![],
+                    reference_manager: map_reference_manager(&p),
                 },
                 constatnts: map_constants(&p),
                 builtins: map_builtins(&p),
