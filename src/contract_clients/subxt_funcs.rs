@@ -6,7 +6,7 @@ use subxt::dynamic::Value;
 use subxt::{OnlineClient, PolkadotConfig};
 
 use crate::contract_clients::subxt_funcs::appchain::runtime_types::blockifier::execution::contract_class::{
-    ClassInfo, ContractClass, ContractClassV0, ContractClassV0Inner
+    ClassInfo, ContractClass, ContractClassV0, ContractClassV0Inner,
 };
 use crate::contract_clients::subxt_funcs::appchain::runtime_types::blockifier::transaction::transactions::DeclareTransaction;
 use crate::contract_clients::subxt_funcs::appchain::runtime_types::cairo_vm::types::program::Program;

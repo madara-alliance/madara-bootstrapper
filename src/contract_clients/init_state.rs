@@ -37,9 +37,10 @@ use crate::contract_clients::subxt_funcs::appchain::runtime_types::starknet_api:
 use crate::contract_clients::subxt_funcs::{declare_contract_subxt, declare_transaction_build_subxt, toggle_fee};
 use crate::contract_clients::utils::{build_single_owner_account, RpcAccount};
 use crate::utils::constants::{
-    ERC20_CASM_PATH, ERC20_SIERRA_PATH, LEGACY_BRIDGE_PATH, OZ_ACCOUNT_CASM_PATH, OZ_ACCOUNT_SIERRA_PATH, PROXY_PATH,
+    ERC20_CASM_PATH, ERC20_SIERRA_PATH, LEGACY_BRIDGE_PATH, LEGACY_BRIDGE_PROGRAM_PATH, OZ_ACCOUNT_CASM_PATH,
+    OZ_ACCOUNT_SIERRA_PATH, PROXY_PATH, PROXY_PROGRAM_PATH,
 };
-use crate::utils::mapper::{map_builtins, map_constants};
+use crate::utils::mapper::{map_builtins, map_constants, map_data, map_error_message_attributes, map_hints, map_hints_ranges, map_identifiers, map_instruction_locations, map_main, map_program_end, map_program_start};
 use crate::utils::{invoke_contract, wait_for_transaction};
 use crate::{contract_clients, CliArgs};
 
@@ -54,15 +55,21 @@ pub async fn init_and_deploy_eth_and_account(
         String::from(ERC20_CASM_PATH),
     ))
     .await;
-    let legacy_eth_bridge_class_hash =
-        declare_contract_using_subxt(DeclarationInput::LegacyDeclarationInputs(String::from(LEGACY_BRIDGE_PATH))).await;
+    let legacy_eth_bridge_class_hash = declare_contract_using_subxt(DeclarationInput::LegacyDeclarationInputs(
+        String::from(LEGACY_BRIDGE_PATH),
+        String::from(LEGACY_BRIDGE_PROGRAM_PATH),
+    ))
+    .await;
     let oz_account_class_hash = declare_contract_using_subxt(DeclarationInput::DeclarationInputs(
         String::from(OZ_ACCOUNT_SIERRA_PATH),
         String::from(OZ_ACCOUNT_CASM_PATH),
     ))
     .await;
-    let proxy_class_hash =
-        declare_contract_using_subxt(DeclarationInput::LegacyDeclarationInputs(String::from(PROXY_PATH))).await;
+    let proxy_class_hash = declare_contract_using_subxt(DeclarationInput::LegacyDeclarationInputs(
+        String::from(PROXY_PATH),
+        String::from(PROXY_PROGRAM_PATH),
+    ))
+    .await;
 
     let account_address =
         deploy_account_using_priv_key(arg_config.rollup_priv_key.clone(), clients.provider_l2(), oz_account_class_hash)
@@ -119,7 +126,7 @@ enum DeclarationInput {
     // inputs : sierra_path, casm_path
     DeclarationInputs(String, String),
     // input : artifact_path
-    LegacyDeclarationInputs(String),
+    LegacyDeclarationInputs(String, String),
 }
 
 async fn declare_contract_using_subxt(input: DeclarationInput) -> FieldElement {
@@ -136,32 +143,33 @@ async fn declare_contract_using_subxt(input: DeclarationInput) -> FieldElement {
 
             sierra.class_hash().unwrap()
         }
-        DeclarationInput::LegacyDeclarationInputs(artifact_path) => {
+        DeclarationInput::LegacyDeclarationInputs(artifact_path, program_artifact_path) => {
             let contract_artifact: LegacyContractClass = serde_json::from_reader(
                 std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + &artifact_path).unwrap(),
             )
             .unwrap();
             let p = Program::from_file(
-                (env!("CARGO_MANIFEST_DIR").to_owned() + "/" + "src/contracts/program.json").as_ref(),
+                (env!("CARGO_MANIFEST_DIR").to_owned() + "/" + &program_artifact_path).as_ref(),
                 None,
             )
             .unwrap();
 
             let program: ProgramSubxt = ProgramSubxt {
                 shared_program_data: SharedProgramData {
-                    data: vec![],
-                    hints_collection: HintsCollection { hints: vec![], hints_ranges: vec![] },
-                    main: None,
-                    start: None,
-                    end: None,
-                    error_message_attributes: vec![],
-                    instruction_locations: None,
-                    identifiers: vec![],
+                    data: map_data(&p),
+                    hints_collection: HintsCollection { hints: map_hints(&p), hints_ranges: map_hints_ranges(&p) },
+                    main: map_main(&p),
+                    start: map_program_start(&p),
+                    end: map_program_end(&p),
+                    error_message_attributes: map_error_message_attributes(&p),
+                    instruction_locations: map_instruction_locations(&p),
+                    identifiers: map_identifiers(&p),
                     reference_manager: vec![],
                 },
                 constatnts: map_constants(&p),
                 builtins: map_builtins(&p),
             };
+
             // declare_transaction_build_subxt(
             //     contract_artifact.class_hash().unwrap(),
             //     FieldElement::ONE,
