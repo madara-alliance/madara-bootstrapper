@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::fmt::Debug;
+use std::ops::Deref;
 use std::str::FromStr;
 use std::sync::Arc;
 
@@ -38,9 +39,13 @@ use crate::contract_clients::subxt_funcs::{declare_contract_subxt, declare_trans
 use crate::contract_clients::utils::{build_single_owner_account, RpcAccount};
 use crate::utils::constants::{
     ERC20_CASM_PATH, ERC20_SIERRA_PATH, LEGACY_BRIDGE_PATH, LEGACY_BRIDGE_PROGRAM_PATH, OZ_ACCOUNT_CASM_PATH,
-    OZ_ACCOUNT_SIERRA_PATH, PROXY_PATH, PROXY_PROGRAM_PATH,
+    OZ_ACCOUNT_PATH, OZ_ACCOUNT_PROGRAM_PATH, OZ_ACCOUNT_SIERRA_PATH, PROXY_PATH, PROXY_PROGRAM_PATH,
 };
-use crate::utils::mapper::{map_builtins, map_constants, map_data, map_error_message_attributes, map_hints, map_hints_ranges, map_identifiers, map_instruction_locations, map_main, map_program_end, map_program_start, map_reference_manager};
+use crate::utils::mapper::{
+    map_builtins, map_constants, map_data, map_entrypoint_selector, map_error_message_attributes, map_hints,
+    map_hints_ranges, map_identifiers, map_instruction_locations, map_main, map_program_end, map_program_start,
+    map_reference_manager,
+};
 use crate::utils::{invoke_contract, wait_for_transaction};
 use crate::{contract_clients, CliArgs};
 
@@ -50,19 +55,14 @@ pub async fn init_and_deploy_eth_and_account(
 ) -> (FieldElement, FieldElement, FieldElement, FieldElement, FieldElement, FieldElement, FieldElement) {
     toggle_fee(true).await.expect("Error in disabling the fee on configured app-chain");
 
-    let erc_20_class_hash = declare_contract_using_subxt(DeclarationInput::DeclarationInputs(
-        String::from(ERC20_SIERRA_PATH),
-        String::from(ERC20_CASM_PATH),
-    ))
-    .await;
     let legacy_eth_bridge_class_hash = declare_contract_using_subxt(DeclarationInput::LegacyDeclarationInputs(
         String::from(LEGACY_BRIDGE_PATH),
         String::from(LEGACY_BRIDGE_PROGRAM_PATH),
     ))
     .await;
-    let oz_account_class_hash = declare_contract_using_subxt(DeclarationInput::DeclarationInputs(
-        String::from(OZ_ACCOUNT_SIERRA_PATH),
-        String::from(OZ_ACCOUNT_CASM_PATH),
+    let oz_account_class_hash = declare_contract_using_subxt(DeclarationInput::LegacyDeclarationInputs(
+        String::from(OZ_ACCOUNT_PATH),
+        String::from(OZ_ACCOUNT_PROGRAM_PATH),
     ))
     .await;
     let proxy_class_hash = declare_contract_using_subxt(DeclarationInput::LegacyDeclarationInputs(
@@ -80,6 +80,13 @@ pub async fn init_and_deploy_eth_and_account(
         &account_address.to_string(),
         false,
     );
+    // cairo 1 declarations through account
+    let erc_20_class_hash = declare_contract_using_subxt(DeclarationInput::DeclarationInputs(
+        String::from(ERC20_SIERRA_PATH),
+        String::from(ERC20_CASM_PATH),
+        user_account.clone(),
+    ))
+    .await;
 
     let eth_proxy_address = deploy_proxy_contract(
         &user_account,
@@ -124,23 +131,20 @@ pub async fn init_and_deploy_eth_and_account(
 
 enum DeclarationInput {
     // inputs : sierra_path, casm_path
-    DeclarationInputs(String, String),
+    DeclarationInputs(String, String, RpcAccount<'static>),
     // input : artifact_path
     LegacyDeclarationInputs(String, String),
 }
 
 async fn declare_contract_using_subxt(input: DeclarationInput) -> FieldElement {
     match input {
-        DeclarationInput::DeclarationInputs(sierra_path, casm_path) => {
-            let sierra: SierraClass = serde_json::from_reader(
-                std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + &sierra_path).unwrap(),
-            )
-            .unwrap();
-            let casm: CompiledClass = serde_json::from_reader(
-                std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + &casm_path).unwrap(),
-            )
-            .unwrap();
-
+        DeclarationInput::DeclarationInputs(sierra_path, casm_path, account) => {
+            let (class_hash, sierra) = account.declare_contract_params_sierra(&sierra_path, &casm_path);
+            account
+                .declare(Arc::new(sierra.clone().flatten().unwrap()), class_hash)
+                .send()
+                .await
+                .expect("Error in declaring the contract using Cairo 1 declaration using the provided account !!!");
             sierra.class_hash().unwrap()
         }
         DeclarationInput::LegacyDeclarationInputs(artifact_path, program_artifact_path) => {
@@ -148,6 +152,9 @@ async fn declare_contract_using_subxt(input: DeclarationInput) -> FieldElement {
                 std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + &artifact_path).unwrap(),
             )
             .unwrap();
+
+            let entrypoints = contract_artifact.entry_points_by_type.clone();
+
             let p = Program::from_file(
                 (env!("CARGO_MANIFEST_DIR").to_owned() + "/" + &program_artifact_path).as_ref(),
                 None,
@@ -170,14 +177,14 @@ async fn declare_contract_using_subxt(input: DeclarationInput) -> FieldElement {
                 builtins: map_builtins(&p),
             };
 
-            // declare_transaction_build_subxt(
-            //     contract_artifact.class_hash().unwrap(),
-            //     FieldElement::ONE,
-            //     contract_artifact.clone(),
-            //     program,
-            //     ,
-            // )
-            // .await;
+            declare_transaction_build_subxt(
+                contract_artifact.class_hash().unwrap(),
+                FieldElement::ONE,
+                contract_artifact.clone(),
+                program,
+                map_entrypoint_selector(entrypoints),
+            )
+            .await;
 
             contract_artifact.class_hash().unwrap()
         }

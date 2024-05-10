@@ -4,16 +4,18 @@ use cairo_vm::serde::deserialize_program::{Attribute, BuiltinName, HintParams, I
 use cairo_vm::types::instruction::Register;
 use cairo_vm::types::program::Program;
 use cairo_vm::types::relocatable::MaybeRelocatable;
-
+use starknet_core::types::contract::legacy::{LegacyEntrypointOffset, RawLegacyEntryPoint, RawLegacyEntryPoints};
 use crate::contract_clients::subxt_funcs::appchain::runtime_types::cairo_felt::bigint_felt::FeltBigInt as FeltBigIntSubxt;
 use crate::contract_clients::subxt_funcs::appchain::runtime_types::cairo_felt::lib_bigint_felt::Felt252 as Felt252Subxt;
 use crate::contract_clients::subxt_funcs::appchain::runtime_types::cairo_vm::hint_processor::hint_processor_definition::HintReference as HintReferenceSubxt;
 use crate::contract_clients::subxt_funcs::appchain::runtime_types::cairo_vm::serde::deserialize_program::{ApTracking as ApTrackingSubxt, Attribute as AttributeSubxt, BuiltinName as BuiltinNameSubxt, FlowTrackingData as FlowTrackingDataSubxt, HintParams as HintParamsSubxt, Identifier as IdentifierSubxt, InputFile as InputFileSubxt, InstructionLocation as InstructionLocationSubxt, Location as LocationSubxt, Member as MemberSubxt, OffsetValue as OffsetValueSubxt};
-use crate::contract_clients::subxt_funcs::appchain::runtime_types::cairo_vm::serde::deserialize_program::OffsetValue::Reference as ReferenceSubxt;
 use crate::contract_clients::subxt_funcs::appchain::runtime_types::cairo_vm::types::instruction::Register as RegisterSubxt;
 use crate::contract_clients::subxt_funcs::appchain::runtime_types::cairo_vm::types::relocatable::{
     MaybeRelocatable as MaybeRelocatableSubxt, Relocatable as RelocatableSubxt,
 };
+use crate::contract_clients::subxt_funcs::appchain::runtime_types::starknet_api::core::EntryPointSelector as EntryPointSelectorSubxt;
+use crate::contract_clients::subxt_funcs::appchain::runtime_types::starknet_api::deprecated_contract_class::{EntryPoint as EntryPointSubxt, EntryPointOffset as EntryPointOffsetSubxt, EntryPointType as EntryPointTypeSubxt};
+use crate::contract_clients::subxt_funcs::appchain::runtime_types::starknet_api::hash::StarkFelt as StarkFeltSubxt;
 
 pub fn map_builtins(p: &Program) -> Vec<BuiltinNameSubxt> {
     let mut builtins: Vec<BuiltinNameSubxt> = vec![];
@@ -198,51 +200,77 @@ pub fn map_reference_manager(p: &Program) -> Vec<HintReferenceSubxt> {
     let mut vec_reference_manager: Vec<HintReferenceSubxt> = vec![];
     let ref_mngr = p.reference_manager().references;
     for x in ref_mngr {
-        vec_reference_manager.push(
-            HintReferenceSubxt{
-                offset1: match x.value_address.offset1 {
-                    OffsetValue::Immediate(val) => OffsetValueSubxt::Immediate(Felt252Subxt {
-                        value: FeltBigIntSubxt {
-                            value: val.to_bytes_be()
-                        }
-                    }),
-                    OffsetValue::Value(val) => OffsetValueSubxt::Value(val),
-                    OffsetValue::Reference(reg, val, bool_val) => OffsetValueSubxt::Reference(
-                        match reg {
-                            Register::AP => {RegisterSubxt::AP},
-                            Register::FP => {RegisterSubxt::FP}
-                        },
-                        val,
-                        bool_val
-                    )
-                },
-                offset2: match x.value_address.offset2 {
-                    OffsetValue::Immediate(val) => OffsetValueSubxt::Immediate(Felt252Subxt {
-                        value: FeltBigIntSubxt {
-                            value: val.to_bytes_be()
-                        }
-                    }),
-                    OffsetValue::Value(val) => OffsetValueSubxt::Value(val),
-                    OffsetValue::Reference(reg, val, bool_val) => OffsetValueSubxt::Reference(
-                        match reg {
-                            Register::AP => {RegisterSubxt::AP},
-                            Register::FP => {RegisterSubxt::FP}
-                        },
-                        val,
-                        bool_val
-                    )
-                },
-                dereference: x.value_address.dereference,
-                ap_tracking_data: Some(
-                    ApTrackingSubxt {
-                        group: x.ap_tracking_data.group as u64,
-                        offset: x.ap_tracking_data.offset as u64
-                    }
+        vec_reference_manager.push(HintReferenceSubxt {
+            offset1: match x.value_address.offset1 {
+                OffsetValue::Immediate(val) => {
+                    OffsetValueSubxt::Immediate(Felt252Subxt { value: FeltBigIntSubxt { value: val.to_bytes_be() } })
+                }
+                OffsetValue::Value(val) => OffsetValueSubxt::Value(val),
+                OffsetValue::Reference(reg, val, bool_val) => OffsetValueSubxt::Reference(
+                    match reg {
+                        Register::AP => RegisterSubxt::AP,
+                        Register::FP => RegisterSubxt::FP,
+                    },
+                    val,
+                    bool_val,
                 ),
-                cairo_type: Some(x.value_address.value_type),
-            }
-        )
+            },
+            offset2: match x.value_address.offset2 {
+                OffsetValue::Immediate(val) => {
+                    OffsetValueSubxt::Immediate(Felt252Subxt { value: FeltBigIntSubxt { value: val.to_bytes_be() } })
+                }
+                OffsetValue::Value(val) => OffsetValueSubxt::Value(val),
+                OffsetValue::Reference(reg, val, bool_val) => OffsetValueSubxt::Reference(
+                    match reg {
+                        Register::AP => RegisterSubxt::AP,
+                        Register::FP => RegisterSubxt::FP,
+                    },
+                    val,
+                    bool_val,
+                ),
+            },
+            dereference: x.value_address.dereference,
+            ap_tracking_data: Some(ApTrackingSubxt {
+                group: x.ap_tracking_data.group as u64,
+                offset: x.ap_tracking_data.offset as u64,
+            }),
+            cairo_type: Some(x.value_address.value_type),
+        })
     }
 
     vec_reference_manager
+}
+
+pub fn map_entrypoint_selector(entrypoints: RawLegacyEntryPoints) -> Vec<(EntryPointTypeSubxt, Vec<EntryPointSubxt>)> {
+    let mut vec_entrypoints: Vec<(EntryPointTypeSubxt, Vec<EntryPointSubxt>)> = vec![];
+
+    let mut vec_constructor: Vec<EntryPointSubxt> = vec![];
+    let mut vec_external: Vec<EntryPointSubxt> = vec![];
+    let mut vec_l1_handler: Vec<EntryPointSubxt> = vec![];
+
+    for x in entrypoints.constructor {
+        vec_constructor.push(gen_val_entrypoint(x))
+    }
+    for x in entrypoints.external {
+        vec_external.push(gen_val_entrypoint(x))
+    }
+    for x in entrypoints.l1_handler {
+        vec_external.push(gen_val_entrypoint(x))
+    }
+
+    vec_entrypoints.push((EntryPointTypeSubxt::Constructor, vec_constructor));
+    vec_entrypoints.push((EntryPointTypeSubxt::L1Handler, vec_l1_handler));
+    vec_entrypoints.push((EntryPointTypeSubxt::External, vec_external));
+
+    vec_entrypoints
+}
+
+fn gen_val_entrypoint(x: RawLegacyEntryPoint) -> EntryPointSubxt {
+    EntryPointSubxt {
+        selector: EntryPointSelectorSubxt(StarkFeltSubxt(x.selector.to_bytes_be())),
+        offset: EntryPointOffsetSubxt(match x.offset {
+            LegacyEntrypointOffset::U64AsInt(val) => val,
+            LegacyEntrypointOffset::U64AsHex(val) => val,
+        }),
+    }
 }
