@@ -129,14 +129,14 @@ pub async fn init_and_deploy_eth_and_account(
     )
 }
 
-enum DeclarationInput {
+enum DeclarationInput<'a> {
     // inputs : sierra_path, casm_path
-    DeclarationInputs(String, String, RpcAccount<'static>),
+    DeclarationInputs(String, String, RpcAccount<'a>),
     // input : artifact_path
     LegacyDeclarationInputs(String, String),
 }
 
-async fn declare_contract_using_subxt(input: DeclarationInput) -> FieldElement {
+async fn declare_contract_using_subxt(input: DeclarationInput<'_>) -> FieldElement {
     match input {
         DeclarationInput::DeclarationInputs(sierra_path, casm_path, account) => {
             let (class_hash, sierra) = account.declare_contract_params_sierra(&sierra_path, &casm_path);
