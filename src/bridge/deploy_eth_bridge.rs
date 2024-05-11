@@ -1,21 +1,16 @@
 use std::str::FromStr;
-use std::sync::Arc;
 use std::time::Duration;
 
-use scale_info::Field;
 use starknet_accounts::Account;
-use starknet_contract::ContractFactory;
 use starknet_ff::FieldElement;
 use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::JsonRpcClient;
 use tokio::time::sleep;
 
-use crate::bridge::helpers::account_actions::AccountActions;
 use crate::contract_clients::config::Config;
 use crate::contract_clients::eth_bridge::{BridgeDeployable, StarknetLegacyEthBridge};
 use crate::contract_clients::starknet_sovereign::StarknetSovereignContract;
 use crate::contract_clients::utils::{build_single_owner_account, RpcAccount};
-use crate::utils::constants::{ERC20_CASM_PATH, ERC20_SIERRA_PATH};
 use crate::utils::{invoke_contract, save_to_json, wait_for_transaction, JsonValueType};
 use crate::CliArgs;
 
@@ -58,7 +53,8 @@ pub async fn deploy_eth_bridge(
 
     log::debug!("L2 Bridge Deployment Successful [✅]");
     log::debug!("[🚀] L2 Bridge Address : {:?}", l2_bridge_address);
-    save_to_json("ETH_l2_bridge_address", &JsonValueType::StringType(l2_bridge_address.to_string()))?;
+    // save_to_json("ETH_l2_bridge_address",
+    // &JsonValueType::StringType(l2_bridge_address.to_string()))?;
 
     let eth_address = deploy_eth_token_on_l2(
         clients.provider_l2(),
@@ -72,7 +68,7 @@ pub async fn deploy_eth_bridge(
 
     log::debug!("L2 ETH Token Deployment Successful [✅]");
     log::debug!("[🚀] L2 ETH Token Address : {:?}", eth_address);
-    save_to_json("l2_eth_address", &JsonValueType::StringType(eth_address.to_string()))?;
+    // save_to_json("l2_eth_address", &JsonValueType::StringType(eth_address.to_string()))?;
 
     eth_bridge.initialize(core_contract.address()).await;
     log::debug!("[🚀] ETH Bridge initialized");

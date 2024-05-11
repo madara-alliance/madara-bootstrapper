@@ -2,8 +2,7 @@
 
 use starknet_core::types::contract::legacy::LegacyContractClass;
 use starknet_ff::FieldElement;
-use subxt::dynamic::Value;
-use subxt::{OnlineClient, PolkadotConfig};
+use subxt::{OnlineClient, PolkadotConfig, SubstrateConfig};
 
 use crate::contract_clients::subxt_funcs::appchain::runtime_types::blockifier::execution::contract_class::{
     ClassInfo, ContractClass, ContractClassV0, ContractClassV0Inner,
@@ -21,20 +20,30 @@ use crate::contract_clients::subxt_funcs::appchain::runtime_types::starknet_api:
     DeclareTransactionV0V1, Fee, TransactionHash, TransactionSignature,
 };
 
+
+
+
 #[subxt::subxt(runtime_metadata_path = "./src/artifacts/madara.artifact.scale")]
 pub mod appchain {}
 
+// struct StarknetConfig {
+// }
+//
+// impl StarknetConfig {
+//     type ExtrinsicParams = appchain::ExtrinsicParams;
+// }
+
 pub async fn declare_contract_subxt(declare_txn: DeclareTransaction) -> Result<(), Box<dyn std::error::Error>> {
-    let api = OnlineClient::<PolkadotConfig>::new().await.unwrap();
+    let api = OnlineClient::<SubstrateConfig>::new().await.unwrap();
     let declare_call = appchain::tx().starknet().declare(declare_txn);
-    let txn = api.tx().create_unsigned(&declare_call).unwrap().submit_and_watch().await.unwrap();
+    api.tx().create_unsigned(&declare_call).unwrap().submit_and_watch().await.unwrap();
     Ok(())
 }
 
 pub async fn toggle_fee(val: bool) -> Result<(), Box<dyn std::error::Error>> {
-    let api = OnlineClient::<PolkadotConfig>::new().await?;
-    let fee_call = subxt::dynamic::runtime_api_call("starknet", "set_disable_fee", vec![Value::from(val)]);
-    let txn = api.runtime_api().at_latest().await?.call(fee_call).await?;
+    let api = OnlineClient::<SubstrateConfig>::new().await?;
+    let fee_call = appchain::tx().starknet().set_disable_fee(val);
+    api.tx().create_unsigned(&fee_call).unwrap().submit_and_watch().await.unwrap();
     Ok(())
 }
 

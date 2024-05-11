@@ -1140,9 +1140,9 @@ pub mod api {
                         "get_storage_at",
                         types::GetStorageAt { address, key },
                         [
-                            218u8, 70u8, 23u8, 117u8, 134u8, 149u8, 149u8, 52u8, 107u8, 184u8, 92u8, 60u8, 234u8, 81u8,
-                            62u8, 254u8, 176u8, 3u8, 72u8, 252u8, 234u8, 226u8, 113u8, 3u8, 238u8, 139u8, 216u8, 182u8,
-                            56u8, 200u8, 225u8, 44u8,
+                            145u8, 32u8, 153u8, 129u8, 224u8, 13u8, 103u8, 245u8, 38u8, 250u8, 9u8, 25u8, 204u8, 191u8,
+                            158u8, 16u8, 228u8, 140u8, 212u8, 202u8, 101u8, 15u8, 39u8, 89u8, 16u8, 64u8, 67u8, 83u8,
+                            173u8, 33u8, 235u8, 178u8,
                         ],
                     )
                 }
@@ -1158,9 +1158,9 @@ pub mod api {
                         "call",
                         types::Call { address, function_selector, calldata },
                         [
-                            243u8, 171u8, 64u8, 174u8, 161u8, 137u8, 230u8, 19u8, 218u8, 58u8, 240u8, 15u8, 226u8,
-                            41u8, 176u8, 172u8, 67u8, 234u8, 184u8, 21u8, 84u8, 198u8, 196u8, 55u8, 240u8, 128u8,
-                            163u8, 75u8, 84u8, 235u8, 250u8, 249u8,
+                            211u8, 198u8, 56u8, 120u8, 31u8, 134u8, 6u8, 101u8, 71u8, 45u8, 90u8, 198u8, 202u8, 206u8,
+                            47u8, 67u8, 24u8, 215u8, 150u8, 215u8, 242u8, 251u8, 111u8, 130u8, 2u8, 136u8, 12u8, 37u8,
+                            172u8, 2u8, 240u8, 237u8,
                         ],
                     )
                 }
@@ -1233,22 +1233,6 @@ pub mod api {
                         ],
                     )
                 }
-                /// Returns the Starknet config hash.
-                pub fn config_hash(
-                    &self,
-                ) -> ::subxt::runtime_api::Payload<types::ConfigHash, types::config_hash::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
-                        "StarknetRuntimeApi",
-                        "config_hash",
-                        types::ConfigHash {},
-                        [
-                            106u8, 73u8, 154u8, 190u8, 90u8, 106u8, 65u8, 70u8, 120u8, 248u8, 104u8, 75u8, 148u8,
-                            184u8, 129u8, 205u8, 252u8, 31u8, 150u8, 31u8, 73u8, 164u8, 12u8, 251u8, 38u8, 116u8,
-                            153u8, 79u8, 147u8, 193u8, 149u8, 0u8,
-                        ],
-                    )
-                }
                 /// Returns the fee token address.
                 pub fn fee_token_addresses(
                     &self,
@@ -1277,9 +1261,9 @@ pub mod api {
                         "estimate_fee",
                         types::EstimateFee { transactions, simulation_flags },
                         [
-                            2u8, 122u8, 246u8, 218u8, 106u8, 93u8, 189u8, 221u8, 252u8, 153u8, 190u8, 166u8, 61u8,
-                            134u8, 14u8, 131u8, 132u8, 94u8, 120u8, 139u8, 150u8, 9u8, 56u8, 28u8, 214u8, 76u8, 46u8,
-                            44u8, 61u8, 243u8, 243u8, 41u8,
+                            75u8, 156u8, 2u8, 219u8, 138u8, 197u8, 128u8, 229u8, 108u8, 224u8, 157u8, 46u8, 201u8,
+                            195u8, 155u8, 65u8, 153u8, 188u8, 62u8, 173u8, 250u8, 34u8, 76u8, 160u8, 23u8, 207u8,
+                            238u8, 54u8, 116u8, 128u8, 215u8, 173u8,
                         ],
                     )
                 }
@@ -1294,9 +1278,9 @@ pub mod api {
                         "estimate_message_fee",
                         types::EstimateMessageFee { message },
                         [
-                            232u8, 119u8, 241u8, 180u8, 9u8, 253u8, 100u8, 91u8, 117u8, 155u8, 75u8, 253u8, 49u8, 13u8,
-                            23u8, 162u8, 208u8, 130u8, 84u8, 186u8, 164u8, 91u8, 17u8, 97u8, 43u8, 61u8, 24u8, 115u8,
-                            162u8, 36u8, 115u8, 40u8,
+                            170u8, 172u8, 199u8, 35u8, 52u8, 88u8, 50u8, 192u8, 29u8, 69u8, 215u8, 147u8, 163u8, 214u8,
+                            27u8, 21u8, 8u8, 231u8, 4u8, 54u8, 253u8, 234u8, 32u8, 117u8, 151u8, 208u8, 71u8, 145u8,
+                            135u8, 12u8, 1u8, 36u8,
                         ],
                     )
                 }
@@ -1312,9 +1296,9 @@ pub mod api {
                         "simulate_message",
                         types::SimulateMessage { message, simulation_flags },
                         [
-                            75u8, 111u8, 218u8, 164u8, 97u8, 9u8, 163u8, 125u8, 231u8, 232u8, 16u8, 233u8, 6u8, 39u8,
-                            50u8, 120u8, 203u8, 228u8, 114u8, 24u8, 46u8, 146u8, 39u8, 209u8, 157u8, 250u8, 131u8,
-                            219u8, 181u8, 25u8, 157u8, 0u8,
+                            110u8, 41u8, 25u8, 134u8, 109u8, 11u8, 89u8, 35u8, 128u8, 121u8, 90u8, 94u8, 220u8, 0u8,
+                            2u8, 84u8, 106u8, 68u8, 208u8, 93u8, 6u8, 120u8, 188u8, 146u8, 127u8, 106u8, 248u8, 52u8,
+                            0u8, 40u8, 96u8, 16u8,
                         ],
                     )
                 }
@@ -1332,9 +1316,9 @@ pub mod api {
                         "simulate_transactions",
                         types::SimulateTransactions { transactions, simulation_flags },
                         [
-                            120u8, 252u8, 46u8, 75u8, 94u8, 103u8, 207u8, 152u8, 231u8, 96u8, 29u8, 40u8, 102u8, 205u8,
-                            48u8, 112u8, 59u8, 189u8, 34u8, 20u8, 169u8, 116u8, 155u8, 56u8, 70u8, 120u8, 165u8, 223u8,
-                            49u8, 3u8, 195u8, 90u8,
+                            205u8, 105u8, 32u8, 10u8, 40u8, 93u8, 205u8, 113u8, 29u8, 253u8, 84u8, 1u8, 3u8, 242u8,
+                            225u8, 133u8, 104u8, 218u8, 162u8, 227u8, 116u8, 202u8, 70u8, 147u8, 212u8, 217u8, 224u8,
+                            195u8, 200u8, 134u8, 227u8, 181u8,
                         ],
                     )
                 }
@@ -1384,6 +1368,7 @@ pub mod api {
                     &self,
                     transactions_before: types::re_execute_transactions::TransactionsBefore,
                     transactions_to_trace: types::re_execute_transactions::TransactionsToTrace,
+                    with_state_diff: types::re_execute_transactions::WithStateDiff,
                 ) -> ::subxt::runtime_api::Payload<
                     types::ReExecuteTransactions,
                     types::re_execute_transactions::output::Output,
@@ -1391,11 +1376,11 @@ pub mod api {
                     ::subxt::runtime_api::Payload::new_static(
                         "StarknetRuntimeApi",
                         "re_execute_transactions",
-                        types::ReExecuteTransactions { transactions_before, transactions_to_trace },
+                        types::ReExecuteTransactions { transactions_before, transactions_to_trace, with_state_diff },
                         [
-                            157u8, 87u8, 69u8, 134u8, 45u8, 199u8, 85u8, 193u8, 88u8, 209u8, 98u8, 211u8, 123u8, 217u8,
-                            62u8, 103u8, 26u8, 147u8, 35u8, 166u8, 28u8, 67u8, 162u8, 153u8, 81u8, 2u8, 31u8, 150u8,
-                            225u8, 41u8, 26u8, 133u8,
+                            155u8, 2u8, 16u8, 98u8, 101u8, 99u8, 138u8, 5u8, 16u8, 51u8, 170u8, 232u8, 60u8, 236u8,
+                            111u8, 223u8, 96u8, 40u8, 31u8, 76u8, 121u8, 124u8, 101u8, 18u8, 232u8, 3u8, 211u8, 215u8,
+                            13u8, 184u8, 168u8, 78u8,
                         ],
                     )
                 }
@@ -1555,7 +1540,7 @@ pub mod api {
                         use super::runtime_types;
                         pub type Output = ::core::result::Result<
                             runtime_types::starknet_api::hash::StarkFelt,
-                            runtime_types::sp_runtime::DispatchError,
+                            runtime_types::mp_simulations::SimulationError,
                         >;
                     }
                 }
@@ -1582,7 +1567,7 @@ pub mod api {
                         use super::runtime_types;
                         pub type Output = ::core::result::Result<
                             ::std::vec::Vec<runtime_types::mp_felt::Felt252Wrapper>,
-                            runtime_types::sp_runtime::DispatchError,
+                            runtime_types::mp_simulations::SimulationError,
                         >;
                     }
                 }
@@ -1680,24 +1665,6 @@ pub mod api {
                 #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
                 #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
                 pub struct ProgramHash {}
-                pub mod config_hash {
-                    use super::runtime_types;
-                    pub mod output {
-                        use super::runtime_types;
-                        pub type Output = runtime_types::starknet_api::hash::StarkFelt;
-                    }
-                }
-                #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
-                    Debug,
-                )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
-                pub struct ConfigHash {}
                 pub mod fee_token_addresses {
                     use super::runtime_types;
                     pub mod output {
@@ -1725,8 +1692,11 @@ pub mod api {
                     pub mod output {
                         use super::runtime_types;
                         pub type Output = ::core::result::Result<
-                            ::std::vec::Vec<(::core::primitive::u128, ::core::primitive::u128)>,
-                            runtime_types::sp_runtime::DispatchError,
+                            ::core::result::Result<
+                                ::std::vec::Vec<(::core::primitive::u128, ::core::primitive::u128)>,
+                                runtime_types::mp_simulations::SimulationError,
+                            >,
+                            runtime_types::mp_simulations::InternalSubstrateError,
                         >;
                     }
                 }
@@ -1750,8 +1720,11 @@ pub mod api {
                     pub mod output {
                         use super::runtime_types;
                         pub type Output = ::core::result::Result<
-                            (::core::primitive::u128, ::core::primitive::u128, ::core::primitive::u128),
-                            runtime_types::sp_runtime::DispatchError,
+                            ::core::result::Result<
+                                (::core::primitive::u128, ::core::primitive::u128, ::core::primitive::u128),
+                                runtime_types::mp_simulations::SimulationError,
+                            >,
+                            runtime_types::mp_simulations::InternalSubstrateError,
                         >;
                     }
                 }
@@ -1777,9 +1750,9 @@ pub mod api {
                         pub type Output = ::core::result::Result<
                             ::core::result::Result<
                                 runtime_types::blockifier::transaction::objects::TransactionExecutionInfo,
-                                runtime_types::mp_simulations::PlaceHolderErrorTypeForFailedStarknetExecution,
+                                runtime_types::mp_simulations::SimulationError,
                             >,
-                            runtime_types::sp_runtime::DispatchError,
+                            runtime_types::mp_simulations::InternalSubstrateError,
                         >;
                     }
                 }
@@ -1806,14 +1779,17 @@ pub mod api {
                     pub mod output {
                         use super::runtime_types;
                         pub type Output = ::core::result::Result<
-                            ::std::vec::Vec<(
-                                runtime_types::blockifier::state::cached_state::CommitmentStateDiff,
-                                ::core::result::Result<
-                                    runtime_types::blockifier::transaction::objects::TransactionExecutionInfo,
-                                    runtime_types::mp_simulations::PlaceHolderErrorTypeForFailedStarknetExecution,
-                                >,
-                            )>,
-                            runtime_types::sp_runtime::DispatchError,
+                            ::core::result::Result<
+                                ::std::vec::Vec<(
+                                    runtime_types::blockifier::state::cached_state::CommitmentStateDiff,
+                                    ::core::result::Result<
+                                        runtime_types::blockifier::transaction::objects::TransactionExecutionInfo,
+                                        runtime_types::mp_simulations::SimulationError,
+                                    >,
+                                )>,
+                                runtime_types::mp_simulations::SimulationError,
+                            >,
+                            runtime_types::mp_simulations::InternalSubstrateError,
                         >;
                     }
                 }
@@ -1874,17 +1850,20 @@ pub mod api {
                         ::std::vec::Vec<runtime_types::blockifier::transaction::transaction_execution::Transaction>;
                     pub type TransactionsToTrace =
                         ::std::vec::Vec<runtime_types::blockifier::transaction::transaction_execution::Transaction>;
+                    pub type WithStateDiff = ::core::primitive::bool;
                     pub mod output {
                         use super::runtime_types;
                         pub type Output = ::core::result::Result<
                             ::core::result::Result<
                                 ::std::vec::Vec<(
                                     runtime_types::blockifier::transaction::objects::TransactionExecutionInfo,
-                                    runtime_types::blockifier::state::cached_state::CommitmentStateDiff,
+                                    ::core::option::Option<
+                                        runtime_types::blockifier::state::cached_state::CommitmentStateDiff,
+                                    >,
                                 )>,
-                                runtime_types::mp_simulations::PlaceHolderErrorTypeForFailedStarknetExecution,
+                                runtime_types::mp_simulations::SimulationError,
                             >,
-                            runtime_types::sp_runtime::DispatchError,
+                            runtime_types::mp_simulations::InternalSubstrateError,
                         >;
                     }
                 }
@@ -1901,6 +1880,7 @@ pub mod api {
                 pub struct ReExecuteTransactions {
                     pub transactions_before: re_execute_transactions::TransactionsBefore,
                     pub transactions_to_trace: re_execute_transactions::TransactionsToTrace,
+                    pub with_state_diff: re_execute_transactions::WithStateDiff,
                 }
                 pub mod get_index_and_tx_for_tx_hash {
                     use super::runtime_types;
@@ -2108,23 +2088,6 @@ pub mod api {
                         ],
                     )
                 }
-                /// Converts the DispatchError to an understandable error for the client
-                pub fn convert_error(
-                    &self,
-                    error: types::convert_error::Error,
-                ) -> ::subxt::runtime_api::Payload<types::ConvertError, types::convert_error::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
-                        "ConvertTransactionRuntimeApi",
-                        "convert_error",
-                        types::ConvertError { error },
-                        [
-                            99u8, 109u8, 225u8, 103u8, 141u8, 72u8, 147u8, 132u8, 251u8, 176u8, 127u8, 246u8, 28u8,
-                            171u8, 244u8, 204u8, 159u8, 42u8, 215u8, 195u8, 88u8, 246u8, 173u8, 193u8, 46u8, 170u8,
-                            188u8, 147u8, 113u8, 158u8, 243u8, 203u8,
-                        ],
-                    )
-                }
             }
             pub mod types {
                 use super::runtime_types;
@@ -2197,27 +2160,6 @@ pub mod api {
                 pub struct ConvertL1Transaction {
                     pub transaction: convert_l1_transaction::Transaction,
                 }
-                pub mod convert_error {
-                    use super::runtime_types;
-                    pub type Error = runtime_types::sp_runtime::DispatchError;
-                    pub mod output {
-                        use super::runtime_types;
-                        pub type Output = runtime_types::pallet_starknet_runtime_api::StarknetTransactionExecutionError;
-                    }
-                }
-                #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
-                    Debug,
-                )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
-                pub struct ConvertError {
-                    pub error: convert_error::Error,
-                }
             }
         }
     }
@@ -2280,8 +2222,8 @@ pub mod api {
             metadata.hasher().only_these_pallets(&PALLETS).only_these_runtime_apis(&RUNTIME_APIS).hash();
         runtime_metadata_hash
             == [
-                62u8, 150u8, 73u8, 138u8, 110u8, 106u8, 189u8, 71u8, 209u8, 169u8, 32u8, 35u8, 28u8, 59u8, 64u8, 47u8,
-                182u8, 238u8, 93u8, 207u8, 205u8, 203u8, 45u8, 199u8, 38u8, 52u8, 77u8, 15u8, 73u8, 118u8, 232u8, 47u8,
+                94u8, 161u8, 169u8, 145u8, 77u8, 120u8, 73u8, 216u8, 37u8, 92u8, 5u8, 38u8, 160u8, 26u8, 186u8, 161u8,
+                27u8, 67u8, 144u8, 28u8, 28u8, 254u8, 188u8, 212u8, 178u8, 207u8, 5u8, 195u8, 252u8, 40u8, 36u8, 182u8,
             ]
     }
     pub mod system {
@@ -4063,17 +4005,17 @@ pub mod api {
                 # [codec (crate = :: subxt :: ext :: codec)]
                 #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
                 #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
-                /// See [`Pallet::set_sequencer_address`].
-                pub struct SetSequencerAddress {
-                    pub addr: set_sequencer_address::Addr,
+                /// See [`Pallet::set_starknet_inherent_data`].
+                pub struct SetStarknetInherentData {
+                    pub data: set_starknet_inherent_data::Data,
                 }
-                pub mod set_sequencer_address {
+                pub mod set_starknet_inherent_data {
                     use super::runtime_types;
-                    pub type Addr = [::core::primitive::u8; 32usize];
+                    pub type Data = runtime_types::mp_starknet_inherent::StarknetInherentData;
                 }
-                impl ::subxt::blocks::StaticExtrinsic for SetSequencerAddress {
+                impl ::subxt::blocks::StaticExtrinsic for SetStarknetInherentData {
                     const PALLET: &'static str = "Starknet";
-                    const CALL: &'static str = "set_sequencer_address";
+                    const CALL: &'static str = "set_starknet_inherent_data";
                 }
                 #[derive(
                     :: subxt :: ext :: codec :: Decode,
@@ -4189,19 +4131,19 @@ pub mod api {
             }
             pub struct TransactionApi;
             impl TransactionApi {
-                /// See [`Pallet::set_sequencer_address`].
-                pub fn set_sequencer_address(
+                /// See [`Pallet::set_starknet_inherent_data`].
+                pub fn set_starknet_inherent_data(
                     &self,
-                    addr: types::set_sequencer_address::Addr,
-                ) -> ::subxt::tx::Payload<types::SetSequencerAddress> {
+                    data: types::set_starknet_inherent_data::Data,
+                ) -> ::subxt::tx::Payload<types::SetStarknetInherentData> {
                     ::subxt::tx::Payload::new_static(
                         "Starknet",
-                        "set_sequencer_address",
-                        types::SetSequencerAddress { addr },
+                        "set_starknet_inherent_data",
+                        types::SetStarknetInherentData { data },
                         [
-                            169u8, 26u8, 33u8, 250u8, 166u8, 134u8, 232u8, 133u8, 55u8, 175u8, 66u8, 239u8, 41u8,
-                            169u8, 98u8, 174u8, 140u8, 37u8, 219u8, 244u8, 241u8, 223u8, 217u8, 81u8, 149u8, 123u8,
-                            195u8, 228u8, 103u8, 201u8, 113u8, 94u8,
+                            86u8, 202u8, 45u8, 218u8, 211u8, 140u8, 13u8, 15u8, 101u8, 210u8, 165u8, 123u8, 227u8,
+                            117u8, 56u8, 148u8, 51u8, 250u8, 204u8, 94u8, 84u8, 120u8, 98u8, 208u8, 135u8, 83u8, 158u8,
+                            27u8, 23u8, 212u8, 35u8, 132u8,
                         ],
                     )
                 }
@@ -4368,9 +4310,13 @@ pub mod api {
                     use super::runtime_types;
                     pub type SequencerAddress = runtime_types::starknet_api::core::ContractAddress;
                 }
-                pub mod seq_addr_update {
+                pub mod current_l1_gas_price {
                     use super::runtime_types;
-                    pub type SeqAddrUpdate = ::core::primitive::bool;
+                    pub type CurrentL1GasPrice = runtime_types::mp_starknet_inherent::L1GasPrices;
+                }
+                pub mod inherent_update {
+                    use super::runtime_types;
+                    pub type InherentUpdate = ::core::primitive::bool;
                 }
                 pub mod l1_messages {
                     use super::runtime_types;
@@ -5014,24 +4960,45 @@ pub mod api {
                         ],
                     )
                 }
-                /// Ensure the sequencer address was updated for this block.
-                pub fn seq_addr_update(
+                /// Current sequencer address.
+                pub fn current_l1_gas_price(
                     &self,
                 ) -> ::subxt::storage::address::Address<
                     (),
-                    types::seq_addr_update::SeqAddrUpdate,
+                    types::current_l1_gas_price::CurrentL1GasPrice,
                     ::subxt::storage::address::Yes,
                     ::subxt::storage::address::Yes,
                     (),
                 > {
                     ::subxt::storage::address::Address::new_static(
                         "Starknet",
-                        "SeqAddrUpdate",
+                        "CurrentL1GasPrice",
                         (),
                         [
-                            86u8, 255u8, 158u8, 112u8, 88u8, 3u8, 203u8, 93u8, 42u8, 28u8, 71u8, 231u8, 161u8, 207u8,
-                            222u8, 62u8, 118u8, 196u8, 132u8, 133u8, 33u8, 226u8, 237u8, 95u8, 251u8, 75u8, 142u8,
-                            159u8, 110u8, 186u8, 84u8, 189u8,
+                            56u8, 253u8, 141u8, 81u8, 149u8, 227u8, 78u8, 10u8, 225u8, 183u8, 30u8, 27u8, 184u8, 56u8,
+                            85u8, 101u8, 223u8, 160u8, 202u8, 13u8, 30u8, 34u8, 32u8, 210u8, 207u8, 141u8, 67u8, 32u8,
+                            190u8, 55u8, 113u8, 179u8,
+                        ],
+                    )
+                }
+                /// Ensure the sequencer address was updated for this block.
+                pub fn inherent_update(
+                    &self,
+                ) -> ::subxt::storage::address::Address<
+                    (),
+                    types::inherent_update::InherentUpdate,
+                    ::subxt::storage::address::Yes,
+                    ::subxt::storage::address::Yes,
+                    (),
+                > {
+                    ::subxt::storage::address::Address::new_static(
+                        "Starknet",
+                        "InherentUpdate",
+                        (),
+                        [
+                            165u8, 17u8, 246u8, 46u8, 185u8, 97u8, 211u8, 55u8, 28u8, 136u8, 33u8, 238u8, 234u8, 36u8,
+                            232u8, 132u8, 148u8, 43u8, 183u8, 216u8, 115u8, 145u8, 72u8, 243u8, 152u8, 98u8, 16u8,
+                            204u8, 230u8, 153u8, 240u8, 187u8,
                         ],
                     )
                 }
@@ -5104,21 +5071,6 @@ pub mod api {
             use super::runtime_types;
             pub struct ConstantsApi;
             impl ConstantsApi {
-                /// The gas price
-                pub fn l1_gas_prices(
-                    &self,
-                ) -> ::subxt::constants::Address<runtime_types::blockifier::blockifier::block::GasPrices>
-                {
-                    ::subxt::constants::Address::new_static(
-                        "Starknet",
-                        "L1GasPrices",
-                        [
-                            84u8, 116u8, 64u8, 149u8, 216u8, 103u8, 54u8, 98u8, 168u8, 127u8, 253u8, 92u8, 234u8,
-                            212u8, 42u8, 217u8, 65u8, 231u8, 62u8, 128u8, 20u8, 171u8, 69u8, 71u8, 10u8, 251u8, 187u8,
-                            141u8, 63u8, 189u8, 148u8, 170u8,
-                        ],
-                    )
-                }
                 /// A configuration for base priority of unsigned transactions.
                 ///
                 /// This is exposed so that it can be tuned for particular runtime, when
@@ -5180,6 +5132,20 @@ pub mod api {
                             115u8, 233u8, 13u8, 223u8, 88u8, 20u8, 202u8, 139u8, 153u8, 28u8, 155u8, 157u8, 224u8,
                             66u8, 3u8, 250u8, 23u8, 53u8, 88u8, 168u8, 211u8, 204u8, 122u8, 166u8, 248u8, 23u8, 174u8,
                             225u8, 99u8, 108u8, 89u8, 135u8,
+                        ],
+                    )
+                }
+                pub fn execution_constants(
+                    &self,
+                ) -> ::subxt::constants::Address<runtime_types::blockifier::versioned_constants::VersionedConstants>
+                {
+                    ::subxt::constants::Address::new_static(
+                        "Starknet",
+                        "ExecutionConstants",
+                        [
+                            56u8, 154u8, 41u8, 238u8, 214u8, 119u8, 27u8, 183u8, 187u8, 97u8, 255u8, 158u8, 64u8, 25u8,
+                            212u8, 149u8, 126u8, 182u8, 60u8, 123u8, 155u8, 188u8, 189u8, 82u8, 181u8, 82u8, 82u8,
+                            141u8, 51u8, 192u8, 142u8, 5u8,
                         ],
                     )
                 }
@@ -7375,7 +7341,30 @@ pub mod api {
             # [codec (crate = :: subxt :: ext :: codec)]
             #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
             #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
-            pub struct PlaceHolderErrorTypeForFailedStarknetExecution;
+            pub enum InternalSubstrateError {
+                #[codec(index = 0)]
+                FailedToCreateATransactionalStorageExecution,
+            }
+            #[derive(
+                :: subxt :: ext :: codec :: Decode,
+                :: subxt :: ext :: codec :: Encode,
+                :: subxt :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                Debug,
+            )]
+            # [codec (crate = :: subxt :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            pub enum SimulationError {
+                #[codec(index = 0)]
+                ContractNotFound,
+                #[codec(index = 1)]
+                TransactionExecutionFailed(::std::string::String),
+                #[codec(index = 2)]
+                MissingL1GasUsage,
+                #[codec(index = 3)]
+                StateDiff,
+            }
             #[derive(
                 :: subxt :: ext :: codec :: Decode,
                 :: subxt :: ext :: codec :: Encode,
@@ -7389,6 +7378,39 @@ pub mod api {
             pub struct SimulationFlags {
                 pub validate: ::core::primitive::bool,
                 pub charge_fee: ::core::primitive::bool,
+            }
+        }
+        pub mod mp_starknet_inherent {
+            use super::runtime_types;
+            #[derive(
+                :: subxt :: ext :: codec :: Decode,
+                :: subxt :: ext :: codec :: Encode,
+                :: subxt :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                Debug,
+            )]
+            # [codec (crate = :: subxt :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            pub struct L1GasPrices {
+                pub eth_l1_gas_price: ::core::num::NonZeroU128,
+                pub strk_l1_gas_price: ::core::num::NonZeroU128,
+                pub eth_l1_data_gas_price: ::core::num::NonZeroU128,
+                pub strk_l1_data_gas_price: ::core::num::NonZeroU128,
+            }
+            #[derive(
+                :: subxt :: ext :: codec :: Decode,
+                :: subxt :: ext :: codec :: Encode,
+                :: subxt :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                Debug,
+            )]
+            # [codec (crate = :: subxt :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            pub struct StarknetInherentData {
+                pub sequencer_address: [::core::primitive::u8; 32usize],
+                pub l1_gas_price: runtime_types::mp_starknet_inherent::L1GasPrices,
             }
         }
         pub mod pallet_grandpa {
@@ -7558,8 +7580,8 @@ pub mod api {
                 /// DispatchResult.
                 pub enum Call {
                     #[codec(index = 0)]
-                    /// See [`Pallet::set_sequencer_address`].
-                    set_sequencer_address { addr: [::core::primitive::u8; 32usize] },
+                    /// See [`Pallet::set_starknet_inherent_data`].
+                    set_starknet_inherent_data { data: runtime_types::mp_starknet_inherent::StarknetInherentData },
                     #[codec(index = 1)]
                     /// See [`Pallet::invoke`].
                     invoke { transaction: runtime_types::blockifier::transaction::transactions::InvokeTransaction },
@@ -7642,31 +7664,6 @@ pub mod api {
                     #[codec(index = 23)]
                     QueryTransactionCannotBeExecuted,
                 }
-            }
-        }
-        pub mod pallet_starknet_runtime_api {
-            use super::runtime_types;
-            #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
-                Debug,
-            )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
-            pub enum StarknetTransactionExecutionError {
-                #[codec(index = 0)]
-                ContractNotFound,
-                #[codec(index = 1)]
-                ClassAlreadyDeclared,
-                #[codec(index = 2)]
-                ClassHashNotFound,
-                #[codec(index = 3)]
-                InvalidContractClass,
-                #[codec(index = 4)]
-                ContractError,
             }
         }
         pub mod pallet_timestamp {

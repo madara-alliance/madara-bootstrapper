@@ -2,9 +2,7 @@ use ethers::types::U256;
 use hex::encode;
 use starknet_accounts::SingleOwnerAccount;
 use starknet_api::hash::{pedersen_hash_array, StarkFelt, StarkHash};
-use starknet_api::transaction::{DeclareTransactionV0V1, TransactionHash};
 use starknet_core::chain_id;
-use starknet_core::crypto::compute_hash_on_elements;
 use starknet_core::types::{BlockId, BlockTag, FunctionCall};
 use starknet_core::utils::get_selector_from_name;
 use starknet_ff::FieldElement;
@@ -12,7 +10,6 @@ use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::{JsonRpcClient, Provider};
 use starknet_signers::{LocalWallet, SigningKey};
 
-use crate::contract_clients::subxt_funcs::appchain::runtime_types::mp_felt::Felt252Wrapper;
 use crate::CliArgs;
 
 pub type RpcAccount<'a> = SingleOwnerAccount<&'a JsonRpcClient<HttpTransport>, LocalWallet>;

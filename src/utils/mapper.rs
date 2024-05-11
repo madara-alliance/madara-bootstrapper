@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-use cairo_vm::serde::deserialize_program::{Attribute, BuiltinName, HintParams, Identifier, Location, OffsetValue, ReferenceManager};
+use cairo_vm::serde::deserialize_program::{BuiltinName, Location, OffsetValue};
 use cairo_vm::types::instruction::Register;
 use cairo_vm::types::program::Program;
 use cairo_vm::types::relocatable::MaybeRelocatable;
@@ -52,6 +52,8 @@ pub fn map_constants(p: &Program) -> Vec<(String, Felt252Subxt)> {
 pub fn map_data(p: &Program) -> Vec<MaybeRelocatableSubxt> {
     let mut data: Vec<MaybeRelocatableSubxt> = vec![];
 
+    // log::debug!("{:?}", p.data());
+
     for x in p.data() {
         match x {
             MaybeRelocatable::RelocatableValue(val) => data.push(MaybeRelocatableSubxt::RelocatableValue {
@@ -62,6 +64,7 @@ pub fn map_data(p: &Program) -> Vec<MaybeRelocatableSubxt> {
             }),
         };
     }
+    // log::debug!("{:?}", data);
 
     data
 }
@@ -96,24 +99,46 @@ pub fn map_hints_ranges(p: &Program) -> Vec<(u64, u64)> {
     let mut hints_ranges: Vec<(u64, u64)> = vec![];
 
     for x in p.hints_ranges() {
-        let (x, y) = x.unwrap();
-        hints_ranges.push((x as u64, y.get() as u64));
+        match x {
+            Some((x, y)) => {
+                hints_ranges.push((x.clone() as u64, y.get() as u64));
+            },
+            None => {}
+        }
     }
 
     hints_ranges
 }
 
 pub fn map_main(p: &Program) -> Option<u64> {
-    let main = p.main().unwrap() as u64;
-    Some(main)
+    match p.main() {
+        Some(val) => {
+            Some(val.clone() as u64)
+        },
+        None => {
+            None
+        }
+    }
 }
 pub fn map_program_start(p: &Program) -> Option<u64> {
-    let start = p.start().unwrap() as u64;
-    Some(start)
+    match p.start() {
+        Some(val) => {
+            Some(val.clone() as u64)
+        },
+        None => {
+            None
+        }
+    }
 }
 pub fn map_program_end(p: &Program) -> Option<u64> {
-    let end = p.end().unwrap() as u64;
-    Some(end)
+    match p.end() {
+        Some(val) => {
+            Some(val.clone() as u64)
+        },
+        None => {
+            None
+        }
+    }
 }
 pub fn map_error_message_attributes(p: &Program) -> Vec<AttributeSubxt> {
     let mut error_message_attribute: Vec<AttributeSubxt> = vec![];
@@ -156,15 +181,23 @@ pub fn map_instruction_locations(p: &Program) -> Option<Vec<(u64, InstructionLoc
     Some(instruction_locations)
 }
 
+#[allow(unconditional_recursion)]
 fn map_location_internal(l: Location) -> LocationSubxt {
     LocationSubxt {
         end_line: l.end_line.clone(),
         end_col: l.end_col.clone(),
         input_file: InputFileSubxt { filename: l.input_file.filename },
-        parent_location: Box::new(Some((
-            map_location_internal(l.parent_location.clone().unwrap().0.deref().clone()),
-            l.parent_location.unwrap().1.clone(),
-        ))),
+        parent_location: match l.parent_location {
+            Some(val) => {
+                Box::new(Some((
+                    map_location_internal(val.0.deref().clone()),
+                    val.1.clone(),
+                )))
+            },
+            None => {
+                Box::new(None)
+            }
+        },
         start_line: l.start_line,
         start_col: l.start_col,
     }
@@ -175,20 +208,48 @@ pub fn map_identifiers(p: &Program) -> Vec<(String, IdentifierSubxt)> {
 
     for x in p.identifiers() {
         let mut members_vec: Vec<(String, MemberSubxt)> = vec![];
-        for (x, y) in x.1.clone().members.unwrap() {
-            members_vec.push((x, MemberSubxt { cairo_type: y.cairo_type.clone(), offset: y.offset.clone() as u64 }));
+        match x.1.clone().members {
+            Some(val) => {
+                for (x, y) in val {
+                    members_vec.push((x, MemberSubxt { cairo_type: y.cairo_type.clone(), offset: y.offset.clone() as u64 }));
+                }
+            },
+            None => {}
         }
         vec_identifiers.push((
             x.0.clone(),
             IdentifierSubxt {
-                pc: Some(x.1.clone().pc.unwrap() as u64),
-                type_: Some(x.1.clone().type_.unwrap()),
-                value: Some(Felt252Subxt {
-                    value: FeltBigIntSubxt { value: x.1.clone().value.unwrap().to_bytes_be() },
-                }),
-                full_name: Some(x.1.clone().full_name.unwrap()),
+                pc: match x.1.clone().pc {
+                    Some(val) => Some(val as u64),
+                    None => None
+                },
+                type_: match x.1.clone().type_ {
+                    Some(val) => Some(val),
+                    None => None
+                },
+                value: match x.1.clone().value {
+                    Some(val) => {
+                        Some(Felt252Subxt {
+                            value: FeltBigIntSubxt {
+                                value: val.to_bytes_be()
+                            }
+                        })
+                    },
+                    None => None
+                },
+                full_name: match x.1.clone().full_name {
+                    Some(val) => {
+                        Some(val)
+                    },
+                    None => None
+                },
                 members: Some(members_vec),
-                cairo_type: Some(x.1.clone().cairo_type.unwrap()),
+                cairo_type: match x.1.clone().cairo_type {
+                    Some(val) => {
+                        Some(val)
+                    },
+                    None => None
+                }
             },
         ));
     }
@@ -255,7 +316,7 @@ pub fn map_entrypoint_selector(entrypoints: RawLegacyEntryPoints) -> Vec<(EntryP
         vec_external.push(gen_val_entrypoint(x))
     }
     for x in entrypoints.l1_handler {
-        vec_external.push(gen_val_entrypoint(x))
+        vec_l1_handler.push(gen_val_entrypoint(x))
     }
 
     vec_entrypoints.push((EntryPointTypeSubxt::Constructor, vec_constructor));

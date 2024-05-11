@@ -9,6 +9,13 @@ another L2 or L1 network.
 - Madara App Chain <----> Ethereum / EVM based chains
 - 👷🏼 more coming soon......
 
+**To generate the madara subxt artifacts**
+
+```shell
+subxt metadata --url http://127.0.0.1:9944 > src/artifacts/madara.artifact.scale
+subxt codegen --url http://127.0.0.1:9944 | rustfmt --edition=2018 --emit=stdout > src/artifacts/madara_metadata.rs
+```
+
 ## Testing 🛠️
 
 There are three test in the repository :

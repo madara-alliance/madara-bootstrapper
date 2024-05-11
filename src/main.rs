@@ -5,9 +5,8 @@ mod tests;
 pub mod utils;
 use clap::Parser;
 use dotenv::dotenv;
-use log::log;
 
-use crate::bridge::deploy_erc20_bridge::deploy_erc20_bridge;
+// use crate::bridge::deploy_erc20_bridge::deploy_erc20_bridge;
 use crate::bridge::deploy_eth_bridge::deploy_eth_bridge;
 use crate::contract_clients::config::Config;
 use crate::contract_clients::init_state::init_and_deploy_eth_and_account;
@@ -69,7 +68,7 @@ pub async fn deploy_bridges(config: &CliArgs) {
         account_address,
         eth_proxy_address,
         eth_bridge_proxy_address,
-        token_bridge_proxy_address,
+        _token_bridge_proxy_address,
         proxy_class_hash,
     ) = init_and_deploy_eth_and_account(&clients, config).await;
     log::debug!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> [ETH BRIDGE] ⏳");
@@ -87,7 +86,7 @@ pub async fn deploy_bridges(config: &CliArgs) {
     .await
     .expect("Error in deploying ETH bridge");
     log::debug!("ETH BRIDGE DEPLOYED [✅]");
-    log::debug!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>[ERC20 BRIDGE] ⏳");
-    deploy_erc20_bridge(&clients, config, &core_contract_client, "").await.expect("Error in deploying ERC20 bridge");
-    log::debug!("ERC20 BRIDGE DEPLOYED [✅]");
+    // log::debug!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>[ERC20 BRIDGE] ⏳");
+    // deploy_erc20_bridge(&clients, config, &core_contract_client, "").await.expect("Error in
+    // deploying ERC20 bridge"); log::debug!("ERC20 BRIDGE DEPLOYED [✅]");
 }

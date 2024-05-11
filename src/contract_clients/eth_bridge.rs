@@ -5,7 +5,6 @@ use ethers::addressbook::Address;
 use ethers::providers::Middleware;
 use ethers::types::{Bytes, U256};
 use starknet_accounts::Account;
-use starknet_contract::ContractFactory;
 use starknet_eth_bridge_client::clients::eth_bridge::StarknetEthBridgeContractClient;
 use starknet_eth_bridge_client::deploy_starknet_eth_bridge_behind_unsafe_proxy;
 use starknet_eth_bridge_client::interfaces::eth_bridge::StarknetEthBridgeTrait;
@@ -15,9 +14,7 @@ use starknet_providers::JsonRpcClient;
 use starknet_proxy_client::proxy_support::ProxySupportTrait;
 use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
 
-use crate::bridge::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
-use crate::contract_clients::utils::{build_single_owner_account, field_element_to_u256, RpcAccount};
-use crate::utils::constants::LEGACY_BRIDGE_PATH;
+use crate::contract_clients::utils::{field_element_to_u256, RpcAccount};
 use crate::utils::{invoke_contract, wait_for_transaction};
 
 #[async_trait]
@@ -53,7 +50,7 @@ impl StarknetLegacyEthBridge {
         rpc_provider_l2: &JsonRpcClient<HttpTransport>,
         legacy_eth_bridge_class_hash: FieldElement,
         legacy_eth_bridge_proxy_address: FieldElement,
-        proxy_class_hash: FieldElement,
+        _proxy_class_hash: FieldElement,
         account: &RpcAccount<'_>,
         deployer_priv_key: &str,
     ) -> FieldElement {

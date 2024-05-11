@@ -1,53 +1,33 @@
-use std::collections::HashMap;
-use std::fmt::Debug;
-use std::ops::Deref;
 use std::str::FromStr;
 use std::sync::Arc;
 
-use cairo_vm::serde::deserialize_program::{Attribute, BuiltinName, HintParams, Identifier, ReferenceManager};
 use cairo_vm::types::program::Program;
-use cairo_vm::types::relocatable::MaybeRelocatable;
-use clap::arg;
-use ethers::core::rand;
-use rand::Rng;
-use scale_info::Field;
 use starknet_accounts::{Account, AccountFactory, ConnectedAccount, OpenZeppelinAccountFactory};
-use starknet_api::hash::StarkHash;
-use starknet_api::transaction::TransactionHash;
 use starknet_core::types::contract::legacy::LegacyContractClass;
-use starknet_core::types::contract::{CompiledClass, SierraClass};
 use starknet_core::types::{BlockId, BlockTag};
 use starknet_ff::FieldElement;
 use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::{JsonRpcClient, Provider};
 use starknet_signers::{LocalWallet, SigningKey};
-use subxt::ext::futures::future::err;
 
 use crate::bridge::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::contract_clients::config::Config;
-use crate::contract_clients::subxt_funcs::appchain::runtime_types::blockifier::execution::contract_class::{
-    ContractClassV0, ContractClassV0Inner, ContractClassV1,
-};
-use crate::contract_clients::subxt_funcs::appchain::runtime_types::cairo_vm::serde::deserialize_program::BuiltinName as BuiltinNameSubxt;
 use crate::contract_clients::subxt_funcs::appchain::runtime_types::cairo_vm::types::program::{
     HintsCollection, Program as ProgramSubxt, SharedProgramData,
 };
-use crate::contract_clients::subxt_funcs::appchain::runtime_types::starknet_api::deprecated_contract_class::{
-    EntryPoint, EntryPointType,
-};
-use crate::contract_clients::subxt_funcs::{declare_contract_subxt, declare_transaction_build_subxt, toggle_fee};
+use crate::contract_clients::subxt_funcs::{declare_transaction_build_subxt, toggle_fee};
 use crate::contract_clients::utils::{build_single_owner_account, RpcAccount};
 use crate::utils::constants::{
-    ERC20_CASM_PATH, ERC20_SIERRA_PATH, LEGACY_BRIDGE_PATH, LEGACY_BRIDGE_PROGRAM_PATH, OZ_ACCOUNT_CASM_PATH,
-    OZ_ACCOUNT_PATH, OZ_ACCOUNT_PROGRAM_PATH, OZ_ACCOUNT_SIERRA_PATH, PROXY_PATH, PROXY_PROGRAM_PATH,
+    ERC20_CASM_PATH, ERC20_SIERRA_PATH, LEGACY_BRIDGE_PATH, LEGACY_BRIDGE_PROGRAM_PATH, OZ_ACCOUNT_PATH,
+    OZ_ACCOUNT_PROGRAM_PATH, PROXY_PATH, PROXY_PROGRAM_PATH,
 };
 use crate::utils::mapper::{
     map_builtins, map_constants, map_data, map_entrypoint_selector, map_error_message_attributes, map_hints,
     map_hints_ranges, map_identifiers, map_instruction_locations, map_main, map_program_end, map_program_start,
     map_reference_manager,
 };
-use crate::utils::{invoke_contract, wait_for_transaction};
-use crate::{contract_clients, CliArgs};
+use crate::utils::{invoke_contract, save_to_json, wait_for_transaction, JsonValueType};
+use crate::CliArgs;
 
 pub async fn init_and_deploy_eth_and_account(
     clients: &Config,
@@ -60,11 +40,13 @@ pub async fn init_and_deploy_eth_and_account(
         String::from(LEGACY_BRIDGE_PROGRAM_PATH),
     ))
     .await;
+    log::debug!("Legacy ETH Bridge Class Hash Declared !!!");
     let oz_account_class_hash = declare_contract_using_subxt(DeclarationInput::LegacyDeclarationInputs(
         String::from(OZ_ACCOUNT_PATH),
         String::from(OZ_ACCOUNT_PROGRAM_PATH),
     ))
     .await;
+    log::debug!("OZ Account Class Hash Declared !!!");
     let proxy_class_hash = declare_contract_using_subxt(DeclarationInput::LegacyDeclarationInputs(
         String::from(PROXY_PATH),
         String::from(PROXY_PROGRAM_PATH),
@@ -74,6 +56,7 @@ pub async fn init_and_deploy_eth_and_account(
     let account_address =
         deploy_account_using_priv_key(arg_config.rollup_priv_key.clone(), clients.provider_l2(), oz_account_class_hash)
             .await;
+    save_to_json("Account_address", &JsonValueType::StringType(account_address.to_string())).unwrap();
     let user_account = build_single_owner_account(
         clients.provider_l2(),
         &*arg_config.rollup_priv_key,
@@ -97,6 +80,9 @@ pub async fn init_and_deploy_eth_and_account(
         FieldElement::ONE,
     )
     .await;
+    log::debug!("ETH Proxy Address : {:?}", eth_proxy_address);
+    save_to_json("l2_eth_address_proxy", &JsonValueType::StringType(eth_proxy_address.to_string())).unwrap();
+
     let eth_bridge_proxy_address = deploy_proxy_contract(
         &user_account,
         account_address,
@@ -105,6 +91,8 @@ pub async fn init_and_deploy_eth_and_account(
         FieldElement::ZERO,
     )
     .await;
+    log::debug!("ETH Bridge Proxy Address : {:?}", eth_proxy_address);
+    save_to_json("ETH_l2_bridge_address_proxy", &JsonValueType::StringType(eth_proxy_address.to_string())).unwrap();
 
     init_governance_proxy(&user_account, eth_proxy_address, &arg_config.rollup_priv_key).await;
     init_governance_proxy(&user_account, eth_bridge_proxy_address, &arg_config.rollup_priv_key).await;
@@ -117,6 +105,9 @@ pub async fn init_and_deploy_eth_and_account(
         FieldElement::ZERO,
     )
     .await;
+    log::debug!("Token Bridge Proxy Address : {:?}", eth_proxy_address);
+    save_to_json("ERC20_l2_bridge_address_proxy", &JsonValueType::StringType(token_bridge_proxy_address.to_string()))
+        .unwrap();
 
     (
         erc_20_class_hash,
@@ -221,9 +212,6 @@ async fn deploy_proxy_contract(
     salt: FieldElement,
     deploy_from_zero: FieldElement,
 ) -> FieldElement {
-    let mut rng = rand::thread_rng();
-    let random: u32 = rng.gen();
-
     let txn = account
         .invoke_contract(
             account_address,
