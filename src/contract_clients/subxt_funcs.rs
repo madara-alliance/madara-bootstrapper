@@ -2,7 +2,7 @@
 
 use starknet_core::types::contract::legacy::LegacyContractClass;
 use starknet_ff::FieldElement;
-use subxt::{OnlineClient, PolkadotConfig, SubstrateConfig};
+use subxt::{OnlineClient, SubstrateConfig, Config};
 
 use crate::contract_clients::subxt_funcs::appchain::runtime_types::blockifier::execution::contract_class::{
     ClassInfo, ContractClass, ContractClassV0, ContractClassV0Inner,
