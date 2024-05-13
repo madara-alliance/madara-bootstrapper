@@ -33,7 +33,8 @@ starknet-token-bridge-client = { git = "https://github.com/karnotxyz/zaun", pack
 zaun-utils = { git = "https://github.com/karnotxyz/zaun", package = "utils", branch = "main" }
 
 # Starknet Deps
-cairo-vm = { git = "https://github.com/bidzyyys/cairo-vm", branch = "feature/scale-codec", features = [
+cairo-vm = { git = "https://github.com/keep-starknet-strange/cairo-rs", branch = "no_std-support-21eff70", default-features = false, features = [
+  "std",
   "cairo-1-hints",
   "parity-scale-codec",
 ] }
@@ -52,7 +53,7 @@ starknet_api = { git = "https://github.com/keep-starknet-strange/starknet-api", 
   "testing",
   "parity-scale-codec",
 ], default-features = false }
-blockifier = { git = "https://github.com/bidzyyys/blockifier", branch = "feature/scale-codec" }
+#blockifier = { git = "https://github.com/bidzyyys/blockifier", branch = "feature/scale-codec" } # causing the issue here
 
 # Third Party
 assert_matches = "1.5.0"
