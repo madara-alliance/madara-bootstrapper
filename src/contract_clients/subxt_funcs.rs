@@ -20,9 +20,6 @@ use crate::contract_clients::subxt_funcs::appchain::runtime_types::starknet_api:
     DeclareTransactionV0V1, Fee, TransactionHash, TransactionSignature,
 };
 
-
-
-
 #[subxt::subxt(runtime_metadata_path = "./src/artifacts/madara.artifact.scale")]
 pub mod appchain {}
 

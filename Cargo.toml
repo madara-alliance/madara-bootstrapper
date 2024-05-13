@@ -5,11 +5,6 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.80"
-cairo-vm = { git = "https://github.com/keep-starknet-strange/cairo-rs", branch = "no_std-support-21eff70", default-features = false, features = [
-  "std",
-  "cairo-1-hints",
-  "parity-scale-codec",
-] }
 ethers = { git = "https://github.com/gakonst/ethers-rs", rev = "f0e5b194f09c533feb10d1a686ddb9e5946ec107" }
 hex = { version = "0.4.3", default-features = false, features = ["std"] }
 reqwest = { version = "0.11.22", default-features = false }
@@ -38,6 +33,10 @@ starknet-token-bridge-client = { git = "https://github.com/karnotxyz/zaun", pack
 zaun-utils = { git = "https://github.com/karnotxyz/zaun", package = "utils", branch = "main" }
 
 # Starknet Deps
+cairo-vm = { git = "https://github.com/bidzyyys/cairo-vm", branch = "feature/scale-codec", features = [
+  "cairo-1-hints",
+  "parity-scale-codec",
+] }
 starknet-accounts = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "64ebc36", default-features = false }
 starknet-contract = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "64ebc36", default-features = false }
 starknet-core = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "64ebc36", default-features = false, features = [
@@ -53,7 +52,7 @@ starknet_api = { git = "https://github.com/keep-starknet-strange/starknet-api", 
   "testing",
   "parity-scale-codec",
 ], default-features = false }
-#blockifier = { git = "https://github.com/bidzyyys/blockifier", branch = "feature/scale-codec" }
+blockifier = { git = "https://github.com/bidzyyys/blockifier", branch = "feature/scale-codec" }
 
 # Third Party
 assert_matches = "1.5.0"

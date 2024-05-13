@@ -152,6 +152,8 @@ async fn declare_contract_using_subxt(input: DeclarationInput<'_>) -> FieldEleme
             )
             .unwrap();
 
+
+
             let program: ProgramSubxt = ProgramSubxt {
                 shared_program_data: SharedProgramData {
                     data: map_data(&p),
