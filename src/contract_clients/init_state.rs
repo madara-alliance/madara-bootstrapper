@@ -1,13 +1,15 @@
 use std::str::FromStr;
 use std::sync::Arc;
+
 use blockifier::execution::contract_class::{ClassInfo, ContractClass, ContractClassV0, ContractClassV0Inner};
 use blockifier::transaction::transactions::DeclareTransaction;
-
 use cairo_vm::types::program::Program;
 use starknet_accounts::{Account, AccountFactory, ConnectedAccount, OpenZeppelinAccountFactory};
 use starknet_api::core::{ClassHash, ContractAddress, Nonce, PatriciaKey};
 use starknet_api::hash::{StarkFelt, StarkHash};
-use starknet_api::transaction::{DeclareTransaction as DeclareTransactionEnum, DeclareTransactionV0V1, Fee, TransactionHash, TransactionSignature};
+use starknet_api::transaction::{
+    DeclareTransaction as DeclareTransactionEnum, DeclareTransactionV0V1, Fee, TransactionHash, TransactionSignature,
+};
 use starknet_core::types::contract::legacy::LegacyContractClass;
 use starknet_core::types::{BlockId, BlockTag};
 use starknet_ff::FieldElement;
@@ -17,17 +19,13 @@ use starknet_signers::{LocalWallet, SigningKey};
 
 use crate::bridge::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::contract_clients::config::Config;
-use crate::contract_clients::subxt_funcs::{declare_transaction_build_subxt, toggle_fee};
+use crate::contract_clients::subxt_funcs::{toggle_fee};
 use crate::contract_clients::utils::{build_single_owner_account, RpcAccount};
 use crate::utils::constants::{
     ERC20_CASM_PATH, ERC20_SIERRA_PATH, LEGACY_BRIDGE_PATH, LEGACY_BRIDGE_PROGRAM_PATH, OZ_ACCOUNT_PATH,
     OZ_ACCOUNT_PROGRAM_PATH, PROXY_PATH, PROXY_PROGRAM_PATH,
 };
-use crate::utils::mapper::{
-    map_builtins, map_constants, map_data, map_entrypoint_selector, map_error_message_attributes, map_hints,
-    map_hints_ranges, map_identifiers, map_instruction_locations, map_main, map_program_end, map_program_start,
-    map_reference_manager,
-};
+use crate::utils::mapper::map_entrypoint_selector;
 use crate::utils::{invoke_contract, save_to_json, wait_for_transaction, JsonValueType};
 use crate::CliArgs;
 
@@ -157,27 +155,31 @@ async fn declare_contract_using_subxt(input: DeclarationInput<'_>) -> FieldEleme
 
             let empty_vector_stark_hash: Vec<StarkHash> = Vec::new();
             let empty_array: [u8; 32] = [0; 32];
-            let class_info = ClassInfo::new().unwrap();
-            let txn_hash: TransactionHash = TransactionHash(StarkHash {
-                0: FieldElement::ZERO.to_bytes_be()
-            });
+            let class_info = ClassInfo::new(
+                &ContractClass::V0(ContractClassV0 {
+                    0: Arc::from(ContractClassV0Inner {
+                        program: p,
+                        entry_points_by_type: map_entrypoint_selector(entrypoints),
+                    }),
+                }),
+                0,
+                contract_artifact.abi.len(),
+            )
+            .unwrap();
+            let txn_hash: TransactionHash = TransactionHash(StarkHash { 0: FieldElement::ZERO.to_bytes_be() });
 
             let txn = DeclareTransaction::new(
-                    DeclareTransactionEnum::V0(
-                        DeclareTransactionV0V1 {
-                            max_fee: Fee(0),
-                            signature: TransactionSignature(empty_vector_stark_hash),
-                            nonce: Nonce(StarkFelt(empty_array)),
-                            class_hash: ClassHash(StarkHash { 0: contract_artifact.class_hash().unwrap().to_bytes_be() }),
-                            sender_address: ContractAddress(PatriciaKey {
-                                0: StarkHash {
-                                    0: FieldElement::ONE.to_bytes_be()
-                                }
-                            })
-                        }
-                    ),
+                DeclareTransactionEnum::V0(DeclareTransactionV0V1 {
+                    max_fee: Fee(0),
+                    signature: TransactionSignature(empty_vector_stark_hash),
+                    nonce: Nonce(StarkFelt(empty_array)),
+                    class_hash: ClassHash(StarkHash { 0: contract_artifact.class_hash().unwrap().to_bytes_be() }),
+                    sender_address: ContractAddress(PatriciaKey {
+                        0: StarkHash { 0: FieldElement::ONE.to_bytes_be() },
+                    }),
+                }),
                 txn_hash,
-                class_info
+                class_info,
             );
 
             // declare_transaction_build_subxt(
