@@ -4,6 +4,8 @@ use std::sync::Arc;
 use blockifier::execution::contract_class::{ClassInfo, ContractClass, ContractClassV0, ContractClassV0Inner};
 use blockifier::transaction::transactions::DeclareTransaction;
 use cairo_vm::types::program::Program;
+use clap::Parser;
+use parity_scale_codec::Encode;
 use starknet_accounts::{Account, AccountFactory, ConnectedAccount, OpenZeppelinAccountFactory};
 use starknet_api::core::{ClassHash, ContractAddress, Nonce, PatriciaKey};
 use starknet_api::hash::{StarkFelt, StarkHash};
@@ -19,7 +21,7 @@ use starknet_signers::{LocalWallet, SigningKey};
 
 use crate::bridge::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::contract_clients::config::Config;
-use crate::contract_clients::subxt_funcs::{toggle_fee};
+use crate::contract_clients::subxt_funcs::toggle_fee;
 use crate::contract_clients::utils::{build_single_owner_account, RpcAccount};
 use crate::utils::constants::{
     ERC20_CASM_PATH, ERC20_SIERRA_PATH, LEGACY_BRIDGE_PATH, LEGACY_BRIDGE_PROGRAM_PATH, OZ_ACCOUNT_PATH,
@@ -180,7 +182,24 @@ async fn declare_contract_using_subxt(input: DeclarationInput<'_>) -> FieldEleme
                 }),
                 txn_hash,
                 class_info,
-            );
+            )
+            .unwrap();
+
+            let args = CliArgs::parse();
+            
+            let req_client = reqwest::Client::new();
+            let raw_txn_rpc = req_client.post(args.rollup_seq_url).body(txn.encode()).send().await;
+            
+            match raw_txn_rpc {
+                Result::Ok(val) => {
+                    log::debug!("Txn Sent Successfully : {:?}", val);
+                    log::debug!("Declare Success : {:?}", contract_artifact.class_hash().unwrap());
+                },
+                Result::Err(err) => {
+                    log::debug!("Error : Error sending the transaction using RPC");
+                    log::debug!("{:?}", err);
+                }
+            }
 
             // declare_transaction_build_subxt(
             //     contract_artifact.class_hash().unwrap(),

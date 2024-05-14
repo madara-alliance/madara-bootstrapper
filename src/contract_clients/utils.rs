@@ -56,15 +56,9 @@ pub fn generate_config_hash(
     fee_token_address: FieldElement,
 ) -> StarkHash {
     pedersen_hash_array(&[
-        StarkFelt {
-            0: config_hash_version.to_bytes_be()
-        },
-        StarkFelt {
-            0: chain_id.to_bytes_be()
-        },
-        StarkFelt {
-            0: fee_token_address.to_bytes_be()
-        },
+        StarkFelt { 0: config_hash_version.to_bytes_be() },
+        StarkFelt { 0: chain_id.to_bytes_be() },
+        StarkFelt { 0: fee_token_address.to_bytes_be() },
     ])
 }
 
