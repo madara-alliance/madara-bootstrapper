@@ -48,12 +48,8 @@ starknet-ff = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "
 ] }
 starknet-providers = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "64ebc36", default-features = false }
 starknet-signers = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "64ebc36", default-features = false }
-starknet_api = { git = "https://github.com/keep-starknet-strange/starknet-api", branch = "no_std-support-dc83f05", features = [
-  "std",
-  "testing",
-  "parity-scale-codec",
-], default-features = false }
-#blockifier = { git = "https://github.com/bidzyyys/blockifier", branch = "feature/scale-codec" } # causing the issue here
+starknet_api = { git = "https://github.com/bidzyyys/starknet-api.git", branch = "feature/scale-codec" }
+blockifier = { git = "https://github.com/bidzyyys/blockifier", branch = "feature/scale-codec" }
 
 # Third Party
 assert_matches = "1.5.0"

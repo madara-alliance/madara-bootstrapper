@@ -1,8 +1,13 @@
 use std::str::FromStr;
 use std::sync::Arc;
+use blockifier::execution::contract_class::{ClassInfo, ContractClass, ContractClassV0, ContractClassV0Inner};
+use blockifier::transaction::transactions::DeclareTransaction;
 
 use cairo_vm::types::program::Program;
 use starknet_accounts::{Account, AccountFactory, ConnectedAccount, OpenZeppelinAccountFactory};
+use starknet_api::core::{ClassHash, ContractAddress, Nonce, PatriciaKey};
+use starknet_api::hash::{StarkFelt, StarkHash};
+use starknet_api::transaction::{DeclareTransaction as DeclareTransactionEnum, DeclareTransactionV0V1, Fee, TransactionHash, TransactionSignature};
 use starknet_core::types::contract::legacy::LegacyContractClass;
 use starknet_core::types::{BlockId, BlockTag};
 use starknet_ff::FieldElement;
@@ -12,9 +17,6 @@ use starknet_signers::{LocalWallet, SigningKey};
 
 use crate::bridge::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::contract_clients::config::Config;
-use crate::contract_clients::subxt_funcs::appchain::runtime_types::cairo_vm::types::program::{
-    HintsCollection, Program as ProgramSubxt, SharedProgramData,
-};
 use crate::contract_clients::subxt_funcs::{declare_transaction_build_subxt, toggle_fee};
 use crate::contract_clients::utils::{build_single_owner_account, RpcAccount};
 use crate::utils::constants::{
@@ -131,6 +133,7 @@ async fn declare_contract_using_subxt(input: DeclarationInput<'_>) -> FieldEleme
     match input {
         DeclarationInput::DeclarationInputs(sierra_path, casm_path, account) => {
             let (class_hash, sierra) = account.declare_contract_params_sierra(&sierra_path, &casm_path);
+
             account
                 .declare(Arc::new(sierra.clone().flatten().unwrap()), class_hash)
                 .send()
@@ -152,32 +155,39 @@ async fn declare_contract_using_subxt(input: DeclarationInput<'_>) -> FieldEleme
             )
             .unwrap();
 
+            let empty_vector_stark_hash: Vec<StarkHash> = Vec::new();
+            let empty_array: [u8; 32] = [0; 32];
+            let class_info = ClassInfo::new().unwrap();
+            let txn_hash: TransactionHash = TransactionHash(StarkHash {
+                0: FieldElement::ZERO.to_bytes_be()
+            });
 
+            let txn = DeclareTransaction::new(
+                    DeclareTransactionEnum::V0(
+                        DeclareTransactionV0V1 {
+                            max_fee: Fee(0),
+                            signature: TransactionSignature(empty_vector_stark_hash),
+                            nonce: Nonce(StarkFelt(empty_array)),
+                            class_hash: ClassHash(StarkHash { 0: contract_artifact.class_hash().unwrap().to_bytes_be() }),
+                            sender_address: ContractAddress(PatriciaKey {
+                                0: StarkHash {
+                                    0: FieldElement::ONE.to_bytes_be()
+                                }
+                            })
+                        }
+                    ),
+                txn_hash,
+                class_info
+            );
 
-            let program: ProgramSubxt = ProgramSubxt {
-                shared_program_data: SharedProgramData {
-                    data: map_data(&p),
-                    hints_collection: HintsCollection { hints: map_hints(&p), hints_ranges: map_hints_ranges(&p) },
-                    main: map_main(&p),
-                    start: map_program_start(&p),
-                    end: map_program_end(&p),
-                    error_message_attributes: map_error_message_attributes(&p),
-                    instruction_locations: map_instruction_locations(&p),
-                    identifiers: map_identifiers(&p),
-                    reference_manager: map_reference_manager(&p),
-                },
-                constatnts: map_constants(&p),
-                builtins: map_builtins(&p),
-            };
-
-            declare_transaction_build_subxt(
-                contract_artifact.class_hash().unwrap(),
-                FieldElement::ONE,
-                contract_artifact.clone(),
-                program,
-                map_entrypoint_selector(entrypoints),
-            )
-            .await;
+            // declare_transaction_build_subxt(
+            //     contract_artifact.class_hash().unwrap(),
+            //     FieldElement::ONE,
+            //     contract_artifact.clone(),
+            //     program,
+            //     map_entrypoint_selector(entrypoints),
+            // )
+            // .await;
 
             contract_artifact.class_hash().unwrap()
         }
