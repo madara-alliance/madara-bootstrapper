@@ -41,7 +41,7 @@ pub mod api {
         runtime_apis::RuntimeApi
     }
     pub mod runtime_apis {
-        use ::subxt::ext::codec::Encode;
+        use ::subxt::ext::subxt_core::ext::codec::Encode;
 
         use super::{root_mod, runtime_types};
         pub struct RuntimeApi;
@@ -88,8 +88,13 @@ pub mod api {
             pub struct Core;
             impl Core {
                 /// Returns the version of the runtime.
-                pub fn version(&self) -> ::subxt::runtime_api::Payload<types::Version, types::version::output::Output> {
-                    ::subxt::runtime_api::Payload::new_static(
+                pub fn version(
+                    &self,
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::Version,
+                    types::version::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "Core",
                         "version",
                         types::Version {},
@@ -104,9 +109,11 @@ pub mod api {
                 pub fn execute_block(
                     &self,
                     block: types::execute_block::Block,
-                ) -> ::subxt::runtime_api::Payload<types::ExecuteBlock, types::execute_block::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::ExecuteBlock,
+                    types::execute_block::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "Core",
                         "execute_block",
                         types::ExecuteBlock { block },
@@ -121,9 +128,11 @@ pub mod api {
                 pub fn initialize_block(
                     &self,
                     header: types::initialize_block::Header,
-                ) -> ::subxt::runtime_api::Payload<types::InitializeBlock, types::initialize_block::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::InitializeBlock,
+                    types::initialize_block::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "Core",
                         "initialize_block",
                         types::InitializeBlock { header },
@@ -145,22 +154,25 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct Version {}
                 pub mod execute_block {
                     use super::runtime_types;
                     pub type Block = runtime_types::sp_runtime::generic::block::Block<
                         runtime_types::sp_runtime::generic::header::Header<::core::primitive::u32>,
-                        ::subxt::utils::UncheckedExtrinsic<
-                            ::subxt::utils::MultiAddress<::subxt::utils::AccountId32, ()>,
+                        ::subxt::ext::subxt_core::utils::UncheckedExtrinsic<
+                            ::subxt::ext::subxt_core::utils::MultiAddress<
+                                ::subxt::ext::subxt_core::utils::AccountId32,
+                                (),
+                            >,
                             runtime_types::madara_runtime::RuntimeCall,
                             runtime_types::sp_runtime::MultiSignature,
                             (
@@ -180,15 +192,15 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct ExecuteBlock {
                     pub block: execute_block::Block,
                 }
@@ -201,15 +213,15 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct InitializeBlock {
                     pub header: initialize_block::Header,
                 }
@@ -223,8 +235,11 @@ pub mod api {
                 /// Returns the metadata of a runtime.
                 pub fn metadata(
                     &self,
-                ) -> ::subxt::runtime_api::Payload<types::Metadata, types::metadata::output::Output> {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::Metadata,
+                    types::metadata::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "Metadata",
                         "metadata",
                         types::Metadata {},
@@ -243,9 +258,11 @@ pub mod api {
                 pub fn metadata_at_version(
                     &self,
                     version: types::metadata_at_version::Version,
-                ) -> ::subxt::runtime_api::Payload<types::MetadataAtVersion, types::metadata_at_version::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::MetadataAtVersion,
+                    types::metadata_at_version::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "Metadata",
                         "metadata_at_version",
                         types::MetadataAtVersion { version },
@@ -261,9 +278,11 @@ pub mod api {
                 /// This can be used to call `metadata_at_version`.
                 pub fn metadata_versions(
                     &self,
-                ) -> ::subxt::runtime_api::Payload<types::MetadataVersions, types::metadata_versions::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::MetadataVersions,
+                    types::metadata_versions::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "Metadata",
                         "metadata_versions",
                         types::MetadataVersions {},
@@ -285,15 +304,15 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct Metadata {}
                 pub mod metadata_at_version {
                     use super::runtime_types;
@@ -304,15 +323,15 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct MetadataAtVersion {
                     pub version: metadata_at_version::Version,
                 }
@@ -320,19 +339,19 @@ pub mod api {
                     use super::runtime_types;
                     pub mod output {
                         use super::runtime_types;
-                        pub type Output = ::std::vec::Vec<::core::primitive::u32>;
+                        pub type Output = ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u32>;
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct MetadataVersions {}
             }
         }
@@ -349,9 +368,11 @@ pub mod api {
                 pub fn apply_extrinsic(
                     &self,
                     extrinsic: types::apply_extrinsic::Extrinsic,
-                ) -> ::subxt::runtime_api::Payload<types::ApplyExtrinsic, types::apply_extrinsic::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::ApplyExtrinsic,
+                    types::apply_extrinsic::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "BlockBuilder",
                         "apply_extrinsic",
                         types::ApplyExtrinsic { extrinsic },
@@ -365,9 +386,11 @@ pub mod api {
                 /// Finish the current block.
                 pub fn finalize_block(
                     &self,
-                ) -> ::subxt::runtime_api::Payload<types::FinalizeBlock, types::finalize_block::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::FinalizeBlock,
+                    types::finalize_block::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "BlockBuilder",
                         "finalize_block",
                         types::FinalizeBlock {},
@@ -382,9 +405,11 @@ pub mod api {
                 pub fn inherent_extrinsics(
                     &self,
                     inherent: types::inherent_extrinsics::Inherent,
-                ) -> ::subxt::runtime_api::Payload<types::InherentExtrinsics, types::inherent_extrinsics::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::InherentExtrinsics,
+                    types::inherent_extrinsics::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "BlockBuilder",
                         "inherent_extrinsics",
                         types::InherentExtrinsics { inherent },
@@ -401,9 +426,11 @@ pub mod api {
                     &self,
                     block: types::check_inherents::Block,
                     data: types::check_inherents::Data,
-                ) -> ::subxt::runtime_api::Payload<types::CheckInherents, types::check_inherents::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::CheckInherents,
+                    types::check_inherents::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "BlockBuilder",
                         "check_inherents",
                         types::CheckInherents { block, data },
@@ -419,8 +446,8 @@ pub mod api {
                 use super::runtime_types;
                 pub mod apply_extrinsic {
                     use super::runtime_types;
-                    pub type Extrinsic = ::subxt::utils::UncheckedExtrinsic<
-                        ::subxt::utils::MultiAddress<::subxt::utils::AccountId32, ()>,
+                    pub type Extrinsic = ::subxt::ext::subxt_core::utils::UncheckedExtrinsic<
+                        ::subxt::ext::subxt_core::utils::MultiAddress<::subxt::ext::subxt_core::utils::AccountId32, ()>,
                         runtime_types::madara_runtime::RuntimeCall,
                         runtime_types::sp_runtime::MultiSignature,
                         (
@@ -442,15 +469,15 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct ApplyExtrinsic {
                     pub extrinsic: apply_extrinsic::Extrinsic,
                 }
@@ -462,24 +489,27 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct FinalizeBlock {}
                 pub mod inherent_extrinsics {
                     use super::runtime_types;
                     pub type Inherent = runtime_types::sp_inherents::InherentData;
                     pub mod output {
                         use super::runtime_types;
-                        pub type Output = ::std::vec::Vec<
-                            ::subxt::utils::UncheckedExtrinsic<
-                                ::subxt::utils::MultiAddress<::subxt::utils::AccountId32, ()>,
+                        pub type Output = ::subxt::ext::subxt_core::alloc::vec::Vec<
+                            ::subxt::ext::subxt_core::utils::UncheckedExtrinsic<
+                                ::subxt::ext::subxt_core::utils::MultiAddress<
+                                    ::subxt::ext::subxt_core::utils::AccountId32,
+                                    (),
+                                >,
                                 runtime_types::madara_runtime::RuntimeCall,
                                 runtime_types::sp_runtime::MultiSignature,
                                 (
@@ -496,15 +526,15 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct InherentExtrinsics {
                     pub inherent: inherent_extrinsics::Inherent,
                 }
@@ -512,8 +542,11 @@ pub mod api {
                     use super::runtime_types;
                     pub type Block = runtime_types::sp_runtime::generic::block::Block<
                         runtime_types::sp_runtime::generic::header::Header<::core::primitive::u32>,
-                        ::subxt::utils::UncheckedExtrinsic<
-                            ::subxt::utils::MultiAddress<::subxt::utils::AccountId32, ()>,
+                        ::subxt::ext::subxt_core::utils::UncheckedExtrinsic<
+                            ::subxt::ext::subxt_core::utils::MultiAddress<
+                                ::subxt::ext::subxt_core::utils::AccountId32,
+                                (),
+                            >,
                             runtime_types::madara_runtime::RuntimeCall,
                             runtime_types::sp_runtime::MultiSignature,
                             (
@@ -534,15 +567,15 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct CheckInherents {
                     pub block: check_inherents::Block,
                     pub data: check_inherents::Data,
@@ -570,11 +603,11 @@ pub mod api {
                     source: types::validate_transaction::Source,
                     tx: types::validate_transaction::Tx,
                     block_hash: types::validate_transaction::BlockHash,
-                ) -> ::subxt::runtime_api::Payload<
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
                     types::ValidateTransaction,
                     types::validate_transaction::output::Output,
                 > {
-                    ::subxt::runtime_api::Payload::new_static(
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "TaggedTransactionQueue",
                         "validate_transaction",
                         types::ValidateTransaction { source, tx, block_hash },
@@ -591,8 +624,8 @@ pub mod api {
                 pub mod validate_transaction {
                     use super::runtime_types;
                     pub type Source = runtime_types::sp_runtime::transaction_validity::TransactionSource;
-                    pub type Tx = ::subxt::utils::UncheckedExtrinsic<
-                        ::subxt::utils::MultiAddress<::subxt::utils::AccountId32, ()>,
+                    pub type Tx = ::subxt::ext::subxt_core::utils::UncheckedExtrinsic<
+                        ::subxt::ext::subxt_core::utils::MultiAddress<::subxt::ext::subxt_core::utils::AccountId32, ()>,
                         runtime_types::madara_runtime::RuntimeCall,
                         runtime_types::sp_runtime::MultiSignature,
                         (
@@ -605,7 +638,7 @@ pub mod api {
                             runtime_types::frame_system::extensions::check_weight::CheckWeight,
                         ),
                     >;
-                    pub type BlockHash = ::subxt::utils::H256;
+                    pub type BlockHash = ::subxt::ext::subxt_core::utils::H256;
                     pub mod output {
                         use super::runtime_types;
                         pub type Output = ::core::result::Result<
@@ -615,15 +648,15 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct ValidateTransaction {
                     pub source: validate_transaction::Source,
                     pub tx: validate_transaction::Tx,
@@ -640,9 +673,11 @@ pub mod api {
                 pub fn offchain_worker(
                     &self,
                     header: types::offchain_worker::Header,
-                ) -> ::subxt::runtime_api::Payload<types::OffchainWorker, types::offchain_worker::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::OffchainWorker,
+                    types::offchain_worker::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "OffchainWorkerApi",
                         "offchain_worker",
                         types::OffchainWorker { header },
@@ -665,15 +700,15 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct OffchainWorker {
                     pub header: offchain_worker::Header,
                 }
@@ -689,9 +724,11 @@ pub mod api {
                 /// Currently, only the value provided by this type at genesis will be used.
                 pub fn slot_duration(
                     &self,
-                ) -> ::subxt::runtime_api::Payload<types::SlotDuration, types::slot_duration::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::SlotDuration,
+                    types::slot_duration::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "AuraApi",
                         "slot_duration",
                         types::SlotDuration {},
@@ -705,9 +742,11 @@ pub mod api {
                 /// Return the current set of authorities.
                 pub fn authorities(
                     &self,
-                ) -> ::subxt::runtime_api::Payload<types::Authorities, types::authorities::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::Authorities,
+                    types::authorities::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "AuraApi",
                         "authorities",
                         types::Authorities {},
@@ -729,34 +768,35 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct SlotDuration {}
                 pub mod authorities {
                     use super::runtime_types;
                     pub mod output {
                         use super::runtime_types;
-                        pub type Output =
-                            ::std::vec::Vec<runtime_types::sp_consensus_aura::sr25519::app_sr25519::Public>;
+                        pub type Output = ::subxt::ext::subxt_core::alloc::vec::Vec<
+                            runtime_types::sp_consensus_aura::sr25519::app_sr25519::Public,
+                        >;
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct Authorities {}
             }
         }
@@ -775,11 +815,11 @@ pub mod api {
                 pub fn generate_session_keys(
                     &self,
                     seed: types::generate_session_keys::Seed,
-                ) -> ::subxt::runtime_api::Payload<
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
                     types::GenerateSessionKeys,
                     types::generate_session_keys::output::Output,
                 > {
-                    ::subxt::runtime_api::Payload::new_static(
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "SessionKeys",
                         "generate_session_keys",
                         types::GenerateSessionKeys { seed },
@@ -796,9 +836,11 @@ pub mod api {
                 pub fn decode_session_keys(
                     &self,
                     encoded: types::decode_session_keys::Encoded,
-                ) -> ::subxt::runtime_api::Payload<types::DecodeSessionKeys, types::decode_session_keys::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::DecodeSessionKeys,
+                    types::decode_session_keys::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "SessionKeys",
                         "decode_session_keys",
                         types::DecodeSessionKeys { encoded },
@@ -814,48 +856,49 @@ pub mod api {
                 use super::runtime_types;
                 pub mod generate_session_keys {
                     use super::runtime_types;
-                    pub type Seed = ::core::option::Option<::std::vec::Vec<::core::primitive::u8>>;
+                    pub type Seed =
+                        ::core::option::Option<::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>>;
                     pub mod output {
                         use super::runtime_types;
-                        pub type Output = ::std::vec::Vec<::core::primitive::u8>;
+                        pub type Output = ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>;
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct GenerateSessionKeys {
                     pub seed: generate_session_keys::Seed,
                 }
                 pub mod decode_session_keys {
                     use super::runtime_types;
-                    pub type Encoded = ::std::vec::Vec<::core::primitive::u8>;
+                    pub type Encoded = ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>;
                     pub mod output {
                         use super::runtime_types;
                         pub type Output = ::core::option::Option<
-                            ::std::vec::Vec<(
-                                ::std::vec::Vec<::core::primitive::u8>,
+                            ::subxt::ext::subxt_core::alloc::vec::Vec<(
+                                ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>,
                                 runtime_types::sp_core::crypto::KeyTypeId,
                             )>,
                         >;
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct DecodeSessionKeys {
                     pub encoded: decode_session_keys::Encoded,
                 }
@@ -882,9 +925,11 @@ pub mod api {
                 /// is finalized by the authorities from block B-1.
                 pub fn grandpa_authorities(
                     &self,
-                ) -> ::subxt::runtime_api::Payload<types::GrandpaAuthorities, types::grandpa_authorities::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::GrandpaAuthorities,
+                    types::grandpa_authorities::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "GrandpaApi",
                         "grandpa_authorities",
                         types::GrandpaAuthorities {},
@@ -907,11 +952,11 @@ pub mod api {
                     &self,
                     equivocation_proof: types::submit_report_equivocation_unsigned_extrinsic::EquivocationProof,
                     key_owner_proof: types::submit_report_equivocation_unsigned_extrinsic::KeyOwnerProof,
-                ) -> ::subxt::runtime_api::Payload<
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
                     types::SubmitReportEquivocationUnsignedExtrinsic,
                     types::submit_report_equivocation_unsigned_extrinsic::output::Output,
                 > {
-                    ::subxt::runtime_api::Payload::new_static(
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "GrandpaApi",
                         "submit_report_equivocation_unsigned_extrinsic",
                         types::SubmitReportEquivocationUnsignedExtrinsic { equivocation_proof, key_owner_proof },
@@ -937,11 +982,11 @@ pub mod api {
                     &self,
                     set_id: types::generate_key_ownership_proof::SetId,
                     authority_id: types::generate_key_ownership_proof::AuthorityId,
-                ) -> ::subxt::runtime_api::Payload<
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
                     types::GenerateKeyOwnershipProof,
                     types::generate_key_ownership_proof::output::Output,
                 > {
-                    ::subxt::runtime_api::Payload::new_static(
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "GrandpaApi",
                         "generate_key_ownership_proof",
                         types::GenerateKeyOwnershipProof { set_id, authority_id },
@@ -955,9 +1000,11 @@ pub mod api {
                 /// Get current GRANDPA authority set id.
                 pub fn current_set_id(
                     &self,
-                ) -> ::subxt::runtime_api::Payload<types::CurrentSetId, types::current_set_id::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::CurrentSetId,
+                    types::current_set_id::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "GrandpaApi",
                         "current_set_id",
                         types::CurrentSetId {},
@@ -975,25 +1022,27 @@ pub mod api {
                     use super::runtime_types;
                     pub mod output {
                         use super::runtime_types;
-                        pub type Output =
-                            ::std::vec::Vec<(runtime_types::sp_consensus_grandpa::app::Public, ::core::primitive::u64)>;
+                        pub type Output = ::subxt::ext::subxt_core::alloc::vec::Vec<(
+                            runtime_types::sp_consensus_grandpa::app::Public,
+                            ::core::primitive::u64,
+                        )>;
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct GrandpaAuthorities {}
                 pub mod submit_report_equivocation_unsigned_extrinsic {
                     use super::runtime_types;
                     pub type EquivocationProof = runtime_types::sp_consensus_grandpa::EquivocationProof<
-                        ::subxt::utils::H256,
+                        ::subxt::ext::subxt_core::utils::H256,
                         ::core::primitive::u32,
                     >;
                     pub type KeyOwnerProof = runtime_types::sp_consensus_grandpa::OpaqueKeyOwnershipProof;
@@ -1003,15 +1052,15 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct SubmitReportEquivocationUnsignedExtrinsic {
                     pub equivocation_proof: submit_report_equivocation_unsigned_extrinsic::EquivocationProof,
                     pub key_owner_proof: submit_report_equivocation_unsigned_extrinsic::KeyOwnerProof,
@@ -1027,15 +1076,15 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct GenerateKeyOwnershipProof {
                     pub set_id: generate_key_ownership_proof::SetId,
                     pub authority_id: generate_key_ownership_proof::AuthorityId,
@@ -1048,15 +1097,15 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct CurrentSetId {}
             }
         }
@@ -1069,9 +1118,11 @@ pub mod api {
                 pub fn account_nonce(
                     &self,
                     account: types::account_nonce::Account,
-                ) -> ::subxt::runtime_api::Payload<types::AccountNonce, types::account_nonce::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::AccountNonce,
+                    types::account_nonce::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "AccountNonceApi",
                         "account_nonce",
                         types::AccountNonce { account },
@@ -1087,22 +1138,22 @@ pub mod api {
                 use super::runtime_types;
                 pub mod account_nonce {
                     use super::runtime_types;
-                    pub type Account = ::subxt::utils::AccountId32;
+                    pub type Account = ::subxt::ext::subxt_core::utils::AccountId32;
                     pub mod output {
                         use super::runtime_types;
                         pub type Output = ::core::primitive::u32;
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct AccountNonce {
                     pub account: account_nonce::Account,
                 }
@@ -1116,8 +1167,11 @@ pub mod api {
                 pub fn nonce(
                     &self,
                     contract_address: types::nonce::ContractAddress,
-                ) -> ::subxt::runtime_api::Payload<types::Nonce, types::nonce::output::Output> {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::Nonce,
+                    types::nonce::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "StarknetRuntimeApi",
                         "nonce",
                         types::Nonce { contract_address },
@@ -1133,16 +1187,18 @@ pub mod api {
                     &self,
                     address: types::get_storage_at::Address,
                     key: types::get_storage_at::Key,
-                ) -> ::subxt::runtime_api::Payload<types::GetStorageAt, types::get_storage_at::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::GetStorageAt,
+                    types::get_storage_at::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "StarknetRuntimeApi",
                         "get_storage_at",
                         types::GetStorageAt { address, key },
                         [
-                            145u8, 32u8, 153u8, 129u8, 224u8, 13u8, 103u8, 245u8, 38u8, 250u8, 9u8, 25u8, 204u8, 191u8,
-                            158u8, 16u8, 228u8, 140u8, 212u8, 202u8, 101u8, 15u8, 39u8, 89u8, 16u8, 64u8, 67u8, 83u8,
-                            173u8, 33u8, 235u8, 178u8,
+                            18u8, 36u8, 152u8, 196u8, 209u8, 189u8, 228u8, 139u8, 117u8, 172u8, 178u8, 130u8, 105u8,
+                            146u8, 170u8, 115u8, 218u8, 96u8, 95u8, 83u8, 158u8, 155u8, 49u8, 202u8, 239u8, 155u8,
+                            150u8, 215u8, 228u8, 181u8, 160u8, 96u8,
                         ],
                     )
                 }
@@ -1152,15 +1208,18 @@ pub mod api {
                     address: types::call::Address,
                     function_selector: types::call::FunctionSelector,
                     calldata: types::call::Calldata,
-                ) -> ::subxt::runtime_api::Payload<types::Call, types::call::output::Output> {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::Call,
+                    types::call::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "StarknetRuntimeApi",
                         "call",
                         types::Call { address, function_selector, calldata },
                         [
-                            211u8, 198u8, 56u8, 120u8, 31u8, 134u8, 6u8, 101u8, 71u8, 45u8, 90u8, 198u8, 202u8, 206u8,
-                            47u8, 67u8, 24u8, 215u8, 150u8, 215u8, 242u8, 251u8, 111u8, 130u8, 2u8, 136u8, 12u8, 37u8,
-                            172u8, 2u8, 240u8, 237u8,
+                            105u8, 130u8, 83u8, 121u8, 223u8, 197u8, 70u8, 45u8, 45u8, 172u8, 35u8, 150u8, 112u8,
+                            248u8, 198u8, 160u8, 72u8, 108u8, 197u8, 221u8, 14u8, 80u8, 154u8, 191u8, 164u8, 158u8,
+                            8u8, 190u8, 131u8, 164u8, 51u8, 169u8,
                         ],
                     )
                 }
@@ -1168,11 +1227,11 @@ pub mod api {
                 pub fn contract_class_hash_by_address(
                     &self,
                     address: types::contract_class_hash_by_address::Address,
-                ) -> ::subxt::runtime_api::Payload<
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
                     types::ContractClassHashByAddress,
                     types::contract_class_hash_by_address::output::Output,
                 > {
-                    ::subxt::runtime_api::Payload::new_static(
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "StarknetRuntimeApi",
                         "contract_class_hash_by_address",
                         types::ContractClassHashByAddress { address },
@@ -1187,11 +1246,11 @@ pub mod api {
                 pub fn contract_class_by_class_hash(
                     &self,
                     class_hash: types::contract_class_by_class_hash::ClassHash,
-                ) -> ::subxt::runtime_api::Payload<
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
                     types::ContractClassByClassHash,
                     types::contract_class_by_class_hash::output::Output,
                 > {
-                    ::subxt::runtime_api::Payload::new_static(
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "StarknetRuntimeApi",
                         "contract_class_by_class_hash",
                         types::ContractClassByClassHash { class_hash },
@@ -1205,8 +1264,11 @@ pub mod api {
                 /// Returns the chain id.
                 pub fn chain_id(
                     &self,
-                ) -> ::subxt::runtime_api::Payload<types::ChainId, types::chain_id::output::Output> {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::ChainId,
+                    types::chain_id::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "StarknetRuntimeApi",
                         "chain_id",
                         types::ChainId {},
@@ -1220,9 +1282,11 @@ pub mod api {
                 /// Returns the Starknet OS Cairo program hash.
                 pub fn program_hash(
                     &self,
-                ) -> ::subxt::runtime_api::Payload<types::ProgramHash, types::program_hash::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::ProgramHash,
+                    types::program_hash::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "StarknetRuntimeApi",
                         "program_hash",
                         types::ProgramHash {},
@@ -1236,9 +1300,11 @@ pub mod api {
                 /// Returns the fee token address.
                 pub fn fee_token_addresses(
                     &self,
-                ) -> ::subxt::runtime_api::Payload<types::FeeTokenAddresses, types::fee_token_addresses::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::FeeTokenAddresses,
+                    types::fee_token_addresses::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "StarknetRuntimeApi",
                         "fee_token_addresses",
                         types::FeeTokenAddresses {},
@@ -1254,16 +1320,18 @@ pub mod api {
                     &self,
                     transactions: types::estimate_fee::Transactions,
                     simulation_flags: types::estimate_fee::SimulationFlags,
-                ) -> ::subxt::runtime_api::Payload<types::EstimateFee, types::estimate_fee::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::EstimateFee,
+                    types::estimate_fee::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "StarknetRuntimeApi",
                         "estimate_fee",
                         types::EstimateFee { transactions, simulation_flags },
                         [
-                            75u8, 156u8, 2u8, 219u8, 138u8, 197u8, 128u8, 229u8, 108u8, 224u8, 157u8, 46u8, 201u8,
-                            195u8, 155u8, 65u8, 153u8, 188u8, 62u8, 173u8, 250u8, 34u8, 76u8, 160u8, 23u8, 207u8,
-                            238u8, 54u8, 116u8, 128u8, 215u8, 173u8,
+                            7u8, 153u8, 63u8, 158u8, 151u8, 70u8, 31u8, 55u8, 10u8, 221u8, 196u8, 73u8, 100u8, 171u8,
+                            171u8, 38u8, 43u8, 29u8, 183u8, 9u8, 121u8, 131u8, 9u8, 78u8, 185u8, 0u8, 94u8, 138u8,
+                            182u8, 103u8, 113u8, 20u8,
                         ],
                     )
                 }
@@ -1271,16 +1339,18 @@ pub mod api {
                 pub fn estimate_message_fee(
                     &self,
                     message: types::estimate_message_fee::Message,
-                ) -> ::subxt::runtime_api::Payload<types::EstimateMessageFee, types::estimate_message_fee::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::EstimateMessageFee,
+                    types::estimate_message_fee::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "StarknetRuntimeApi",
                         "estimate_message_fee",
                         types::EstimateMessageFee { message },
                         [
-                            170u8, 172u8, 199u8, 35u8, 52u8, 88u8, 50u8, 192u8, 29u8, 69u8, 215u8, 147u8, 163u8, 214u8,
-                            27u8, 21u8, 8u8, 231u8, 4u8, 54u8, 253u8, 234u8, 32u8, 117u8, 151u8, 208u8, 71u8, 145u8,
-                            135u8, 12u8, 1u8, 36u8,
+                            213u8, 117u8, 66u8, 111u8, 175u8, 98u8, 4u8, 108u8, 96u8, 67u8, 203u8, 236u8, 20u8, 106u8,
+                            136u8, 135u8, 19u8, 84u8, 247u8, 165u8, 165u8, 15u8, 229u8, 16u8, 36u8, 199u8, 222u8,
+                            177u8, 236u8, 92u8, 115u8, 145u8,
                         ],
                     )
                 }
@@ -1289,16 +1359,18 @@ pub mod api {
                     &self,
                     message: types::simulate_message::Message,
                     simulation_flags: types::simulate_message::SimulationFlags,
-                ) -> ::subxt::runtime_api::Payload<types::SimulateMessage, types::simulate_message::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::SimulateMessage,
+                    types::simulate_message::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "StarknetRuntimeApi",
                         "simulate_message",
                         types::SimulateMessage { message, simulation_flags },
                         [
-                            110u8, 41u8, 25u8, 134u8, 109u8, 11u8, 89u8, 35u8, 128u8, 121u8, 90u8, 94u8, 220u8, 0u8,
-                            2u8, 84u8, 106u8, 68u8, 208u8, 93u8, 6u8, 120u8, 188u8, 146u8, 127u8, 106u8, 248u8, 52u8,
-                            0u8, 40u8, 96u8, 16u8,
+                            201u8, 59u8, 205u8, 190u8, 178u8, 5u8, 78u8, 150u8, 233u8, 234u8, 164u8, 141u8, 212u8,
+                            46u8, 234u8, 175u8, 187u8, 9u8, 137u8, 177u8, 233u8, 213u8, 17u8, 217u8, 131u8, 174u8,
+                            109u8, 216u8, 37u8, 215u8, 35u8, 71u8,
                         ],
                     )
                 }
@@ -1307,18 +1379,18 @@ pub mod api {
                     &self,
                     transactions: types::simulate_transactions::Transactions,
                     simulation_flags: types::simulate_transactions::SimulationFlags,
-                ) -> ::subxt::runtime_api::Payload<
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
                     types::SimulateTransactions,
                     types::simulate_transactions::output::Output,
                 > {
-                    ::subxt::runtime_api::Payload::new_static(
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "StarknetRuntimeApi",
                         "simulate_transactions",
                         types::SimulateTransactions { transactions, simulation_flags },
                         [
-                            205u8, 105u8, 32u8, 10u8, 40u8, 93u8, 205u8, 113u8, 29u8, 253u8, 84u8, 1u8, 3u8, 242u8,
-                            225u8, 133u8, 104u8, 218u8, 162u8, 227u8, 116u8, 202u8, 70u8, 147u8, 212u8, 217u8, 224u8,
-                            195u8, 200u8, 134u8, 227u8, 181u8,
+                            117u8, 119u8, 182u8, 214u8, 67u8, 175u8, 138u8, 216u8, 76u8, 68u8, 188u8, 211u8, 17u8,
+                            196u8, 163u8, 49u8, 86u8, 40u8, 194u8, 51u8, 10u8, 171u8, 172u8, 149u8, 222u8, 207u8, 7u8,
+                            135u8, 127u8, 168u8, 211u8, 186u8,
                         ],
                     )
                 }
@@ -1338,9 +1410,11 @@ pub mod api {
                 pub fn extrinsic_filter(
                     &self,
                     xts: types::extrinsic_filter::Xts,
-                ) -> ::subxt::runtime_api::Payload<types::ExtrinsicFilter, types::extrinsic_filter::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::ExtrinsicFilter,
+                    types::extrinsic_filter::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "StarknetRuntimeApi",
                         "extrinsic_filter",
                         types::ExtrinsicFilter { xts },
@@ -1369,18 +1443,37 @@ pub mod api {
                     transactions_before: types::re_execute_transactions::TransactionsBefore,
                     transactions_to_trace: types::re_execute_transactions::TransactionsToTrace,
                     with_state_diff: types::re_execute_transactions::WithStateDiff,
-                ) -> ::subxt::runtime_api::Payload<
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
                     types::ReExecuteTransactions,
                     types::re_execute_transactions::output::Output,
                 > {
-                    ::subxt::runtime_api::Payload::new_static(
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "StarknetRuntimeApi",
                         "re_execute_transactions",
                         types::ReExecuteTransactions { transactions_before, transactions_to_trace, with_state_diff },
                         [
-                            155u8, 2u8, 16u8, 98u8, 101u8, 99u8, 138u8, 5u8, 16u8, 51u8, 170u8, 232u8, 60u8, 236u8,
-                            111u8, 223u8, 96u8, 40u8, 31u8, 76u8, 121u8, 124u8, 101u8, 18u8, 232u8, 3u8, 211u8, 215u8,
-                            13u8, 184u8, 168u8, 78u8,
+                            71u8, 226u8, 127u8, 235u8, 49u8, 58u8, 171u8, 172u8, 245u8, 57u8, 205u8, 26u8, 242u8,
+                            155u8, 120u8, 40u8, 218u8, 118u8, 178u8, 29u8, 160u8, 152u8, 60u8, 106u8, 69u8, 47u8,
+                            108u8, 154u8, 35u8, 5u8, 228u8, 136u8,
+                        ],
+                    )
+                }
+                pub fn get_transaction_re_execution_state_diff(
+                    &self,
+                    transactions_before: types::get_transaction_re_execution_state_diff::TransactionsBefore,
+                    transactions: types::get_transaction_re_execution_state_diff::Transactions,
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::GetTransactionReExecutionStateDiff,
+                    types::get_transaction_re_execution_state_diff::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
+                        "StarknetRuntimeApi",
+                        "get_transaction_re_execution_state_diff",
+                        types::GetTransactionReExecutionStateDiff { transactions_before, transactions },
+                        [
+                            229u8, 136u8, 255u8, 113u8, 96u8, 61u8, 220u8, 206u8, 133u8, 213u8, 105u8, 54u8, 76u8,
+                            121u8, 123u8, 231u8, 53u8, 215u8, 47u8, 243u8, 177u8, 89u8, 51u8, 167u8, 151u8, 103u8,
+                            19u8, 227u8, 16u8, 86u8, 193u8, 189u8,
                         ],
                     )
                 }
@@ -1388,11 +1481,11 @@ pub mod api {
                     &self,
                     xts: types::get_index_and_tx_for_tx_hash::Xts,
                     tx_hash: types::get_index_and_tx_for_tx_hash::TxHash,
-                ) -> ::subxt::runtime_api::Payload<
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
                     types::GetIndexAndTxForTxHash,
                     types::get_index_and_tx_for_tx_hash::output::Output,
                 > {
-                    ::subxt::runtime_api::Payload::new_static(
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "StarknetRuntimeApi",
                         "get_index_and_tx_for_tx_hash",
                         types::GetIndexAndTxForTxHash { xts, tx_hash },
@@ -1406,11 +1499,11 @@ pub mod api {
                 pub fn get_events_for_tx_by_hash(
                     &self,
                     tx_hash: types::get_events_for_tx_by_hash::TxHash,
-                ) -> ::subxt::runtime_api::Payload<
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
                     types::GetEventsForTxByHash,
                     types::get_events_for_tx_by_hash::output::Output,
                 > {
-                    ::subxt::runtime_api::Payload::new_static(
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "StarknetRuntimeApi",
                         "get_events_for_tx_by_hash",
                         types::GetEventsForTxByHash { tx_hash },
@@ -1425,11 +1518,11 @@ pub mod api {
                 pub fn get_tx_execution_outcome(
                     &self,
                     tx_hash: types::get_tx_execution_outcome::TxHash,
-                ) -> ::subxt::runtime_api::Payload<
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
                     types::GetTxExecutionOutcome,
                     types::get_tx_execution_outcome::output::Output,
                 > {
-                    ::subxt::runtime_api::Payload::new_static(
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "StarknetRuntimeApi",
                         "get_tx_execution_outcome",
                         types::GetTxExecutionOutcome { tx_hash },
@@ -1443,9 +1536,11 @@ pub mod api {
                 /// Return the block context
                 pub fn get_block_context(
                     &self,
-                ) -> ::subxt::runtime_api::Payload<types::GetBlockContext, types::get_block_context::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::GetBlockContext,
+                    types::get_block_context::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "StarknetRuntimeApi",
                         "get_block_context",
                         types::GetBlockContext {},
@@ -1459,11 +1554,11 @@ pub mod api {
                 /// Return is fee disabled in state
                 pub fn is_transaction_fee_disabled(
                     &self,
-                ) -> ::subxt::runtime_api::Payload<
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
                     types::IsTransactionFeeDisabled,
                     types::is_transaction_fee_disabled::output::Output,
                 > {
-                    ::subxt::runtime_api::Payload::new_static(
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "StarknetRuntimeApi",
                         "is_transaction_fee_disabled",
                         types::IsTransactionFeeDisabled {},
@@ -1478,9 +1573,11 @@ pub mod api {
                 pub fn get_tx_messages_to_l1(
                     &self,
                     tx_hash: types::get_tx_messages_to_l1::TxHash,
-                ) -> ::subxt::runtime_api::Payload<types::GetTxMessagesToL1, types::get_tx_messages_to_l1::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::GetTxMessagesToL1,
+                    types::get_tx_messages_to_l1::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "StarknetRuntimeApi",
                         "get_tx_messages_to_l1",
                         types::GetTxMessagesToL1 { tx_hash },
@@ -1495,9 +1592,11 @@ pub mod api {
                 pub fn l1_nonce_unused(
                     &self,
                     nonce: types::l1_nonce_unused::Nonce,
-                ) -> ::subxt::runtime_api::Payload<types::L1NonceUnused, types::l1_nonce_unused::output::Output>
-                {
-                    ::subxt::runtime_api::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::L1NonceUnused,
+                    types::l1_nonce_unused::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "StarknetRuntimeApi",
                         "l1_nonce_unused",
                         types::L1NonceUnused { nonce },
@@ -1505,6 +1604,24 @@ pub mod api {
                             210u8, 236u8, 76u8, 166u8, 82u8, 158u8, 90u8, 74u8, 152u8, 155u8, 167u8, 49u8, 230u8, 42u8,
                             155u8, 111u8, 168u8, 113u8, 135u8, 163u8, 139u8, 93u8, 179u8, 212u8, 169u8, 175u8, 53u8,
                             65u8, 142u8, 138u8, 146u8, 232u8,
+                        ],
+                    )
+                }
+                /// Get current L1 gas prices
+                pub fn current_l1_gas_prices(
+                    &self,
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
+                    types::CurrentL1GasPrices,
+                    types::current_l1_gas_prices::output::Output,
+                > {
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
+                        "StarknetRuntimeApi",
+                        "current_l1_gas_prices",
+                        types::CurrentL1GasPrices {},
+                        [
+                            40u8, 91u8, 88u8, 182u8, 124u8, 245u8, 168u8, 15u8, 146u8, 73u8, 30u8, 39u8, 190u8, 189u8,
+                            151u8, 190u8, 44u8, 246u8, 160u8, 167u8, 95u8, 55u8, 76u8, 49u8, 195u8, 140u8, 229u8,
+                            152u8, 135u8, 211u8, 117u8, 177u8,
                         ],
                     )
                 }
@@ -1520,15 +1637,15 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct Nonce {
                     pub contract_address: nonce::ContractAddress,
                 }
@@ -1545,15 +1662,15 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct GetStorageAt {
                     pub address: get_storage_at::Address,
                     pub key: get_storage_at::Key,
@@ -1566,21 +1683,21 @@ pub mod api {
                     pub mod output {
                         use super::runtime_types;
                         pub type Output = ::core::result::Result<
-                            ::std::vec::Vec<runtime_types::mp_felt::Felt252Wrapper>,
+                            ::subxt::ext::subxt_core::alloc::vec::Vec<runtime_types::mp_felt::Felt252Wrapper>,
                             runtime_types::mp_simulations::SimulationError,
                         >;
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct Call {
                     pub address: call::Address,
                     pub function_selector: call::FunctionSelector,
@@ -1595,15 +1712,15 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct ContractClassHashByAddress {
                     pub address: contract_class_hash_by_address::Address,
                 }
@@ -1617,15 +1734,15 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct ContractClassByClassHash {
                     pub class_hash: contract_class_by_class_hash::ClassHash,
                 }
@@ -1637,15 +1754,15 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct ChainId {}
                 pub mod program_hash {
                     use super::runtime_types;
@@ -1655,15 +1772,15 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct ProgramHash {}
                 pub mod fee_token_addresses {
                     use super::runtime_types;
@@ -1673,19 +1790,19 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct FeeTokenAddresses {}
                 pub mod estimate_fee {
                     use super::runtime_types;
-                    pub type Transactions = ::std::vec::Vec<
+                    pub type Transactions = ::subxt::ext::subxt_core::alloc::vec::Vec<
                         runtime_types::blockifier::transaction::account_transaction::AccountTransaction,
                     >;
                     pub type SimulationFlags = runtime_types::mp_simulations::SimulationFlags;
@@ -1693,7 +1810,7 @@ pub mod api {
                         use super::runtime_types;
                         pub type Output = ::core::result::Result<
                             ::core::result::Result<
-                                ::std::vec::Vec<(::core::primitive::u128, ::core::primitive::u128)>,
+                                ::subxt::ext::subxt_core::alloc::vec::Vec<runtime_types::mp_simulations::FeeEstimate>,
                                 runtime_types::mp_simulations::SimulationError,
                             >,
                             runtime_types::mp_simulations::InternalSubstrateError,
@@ -1701,15 +1818,15 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct EstimateFee {
                     pub transactions: estimate_fee::Transactions,
                     pub simulation_flags: estimate_fee::SimulationFlags,
@@ -1721,7 +1838,7 @@ pub mod api {
                         use super::runtime_types;
                         pub type Output = ::core::result::Result<
                             ::core::result::Result<
-                                (::core::primitive::u128, ::core::primitive::u128, ::core::primitive::u128),
+                                runtime_types::mp_simulations::FeeEstimate,
                                 runtime_types::mp_simulations::SimulationError,
                             >,
                             runtime_types::mp_simulations::InternalSubstrateError,
@@ -1729,15 +1846,15 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct EstimateMessageFee {
                     pub message: estimate_message_fee::Message,
                 }
@@ -1757,61 +1874,60 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct SimulateMessage {
                     pub message: simulate_message::Message,
                     pub simulation_flags: simulate_message::SimulationFlags,
                 }
                 pub mod simulate_transactions {
                     use super::runtime_types;
-                    pub type Transactions = ::std::vec::Vec<
+                    pub type Transactions = ::subxt::ext::subxt_core::alloc::vec::Vec<
                         runtime_types::blockifier::transaction::account_transaction::AccountTransaction,
                     >;
                     pub type SimulationFlags = runtime_types::mp_simulations::SimulationFlags;
                     pub mod output {
                         use super::runtime_types;
                         pub type Output = ::core::result::Result<
-                            ::core::result::Result<
-                                ::std::vec::Vec<(
-                                    runtime_types::blockifier::state::cached_state::CommitmentStateDiff,
-                                    ::core::result::Result<
-                                        runtime_types::blockifier::transaction::objects::TransactionExecutionInfo,
-                                        runtime_types::mp_simulations::SimulationError,
-                                    >,
-                                )>,
-                                runtime_types::mp_simulations::SimulationError,
+                            ::subxt::ext::subxt_core::alloc::vec::Vec<
+                                ::core::result::Result<
+                                    runtime_types::mp_simulations::TransactionSimulation,
+                                    runtime_types::mp_simulations::SimulationError,
+                                >,
                             >,
                             runtime_types::mp_simulations::InternalSubstrateError,
                         >;
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct SimulateTransactions {
                     pub transactions: simulate_transactions::Transactions,
                     pub simulation_flags: simulate_transactions::SimulationFlags,
                 }
                 pub mod extrinsic_filter {
                     use super::runtime_types;
-                    pub type Xts = ::std::vec::Vec<
-                        ::subxt::utils::UncheckedExtrinsic<
-                            ::subxt::utils::MultiAddress<::subxt::utils::AccountId32, ()>,
+                    pub type Xts = ::subxt::ext::subxt_core::alloc::vec::Vec<
+                        ::subxt::ext::subxt_core::utils::UncheckedExtrinsic<
+                            ::subxt::ext::subxt_core::utils::MultiAddress<
+                                ::subxt::ext::subxt_core::utils::AccountId32,
+                                (),
+                            >,
                             runtime_types::madara_runtime::RuntimeCall,
                             runtime_types::sp_runtime::MultiSignature,
                             (
@@ -1827,35 +1943,38 @@ pub mod api {
                     >;
                     pub mod output {
                         use super::runtime_types;
-                        pub type Output =
-                            ::std::vec::Vec<runtime_types::blockifier::transaction::transaction_execution::Transaction>;
+                        pub type Output = ::subxt::ext::subxt_core::alloc::vec::Vec<
+                            runtime_types::blockifier::transaction::transaction_execution::Transaction,
+                        >;
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct ExtrinsicFilter {
                     pub xts: extrinsic_filter::Xts,
                 }
                 pub mod re_execute_transactions {
                     use super::runtime_types;
-                    pub type TransactionsBefore =
-                        ::std::vec::Vec<runtime_types::blockifier::transaction::transaction_execution::Transaction>;
-                    pub type TransactionsToTrace =
-                        ::std::vec::Vec<runtime_types::blockifier::transaction::transaction_execution::Transaction>;
+                    pub type TransactionsBefore = ::subxt::ext::subxt_core::alloc::vec::Vec<
+                        runtime_types::blockifier::transaction::transaction_execution::Transaction,
+                    >;
+                    pub type TransactionsToTrace = ::subxt::ext::subxt_core::alloc::vec::Vec<
+                        runtime_types::blockifier::transaction::transaction_execution::Transaction,
+                    >;
                     pub type WithStateDiff = ::core::primitive::bool;
                     pub mod output {
                         use super::runtime_types;
                         pub type Output = ::core::result::Result<
                             ::core::result::Result<
-                                ::std::vec::Vec<(
+                                ::subxt::ext::subxt_core::alloc::vec::Vec<(
                                     runtime_types::blockifier::transaction::objects::TransactionExecutionInfo,
                                     ::core::option::Option<
                                         runtime_types::blockifier::state::cached_state::CommitmentStateDiff,
@@ -1868,25 +1987,61 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct ReExecuteTransactions {
                     pub transactions_before: re_execute_transactions::TransactionsBefore,
                     pub transactions_to_trace: re_execute_transactions::TransactionsToTrace,
                     pub with_state_diff: re_execute_transactions::WithStateDiff,
                 }
+                pub mod get_transaction_re_execution_state_diff {
+                    use super::runtime_types;
+                    pub type TransactionsBefore = ::subxt::ext::subxt_core::alloc::vec::Vec<
+                        runtime_types::blockifier::transaction::transaction_execution::Transaction,
+                    >;
+                    pub type Transactions = ::subxt::ext::subxt_core::alloc::vec::Vec<
+                        runtime_types::blockifier::transaction::transaction_execution::Transaction,
+                    >;
+                    pub mod output {
+                        use super::runtime_types;
+                        pub type Output = ::core::result::Result<
+                            ::core::result::Result<
+                                runtime_types::blockifier::state::cached_state::CommitmentStateDiff,
+                                runtime_types::mp_simulations::SimulationError,
+                            >,
+                            runtime_types::mp_simulations::InternalSubstrateError,
+                        >;
+                    }
+                }
+                #[derive(
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Debug,
+                )]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
+                pub struct GetTransactionReExecutionStateDiff {
+                    pub transactions_before: get_transaction_re_execution_state_diff::TransactionsBefore,
+                    pub transactions: get_transaction_re_execution_state_diff::Transactions,
+                }
                 pub mod get_index_and_tx_for_tx_hash {
                     use super::runtime_types;
-                    pub type Xts = ::std::vec::Vec<
-                        ::subxt::utils::UncheckedExtrinsic<
-                            ::subxt::utils::MultiAddress<::subxt::utils::AccountId32, ()>,
+                    pub type Xts = ::subxt::ext::subxt_core::alloc::vec::Vec<
+                        ::subxt::ext::subxt_core::utils::UncheckedExtrinsic<
+                            ::subxt::ext::subxt_core::utils::MultiAddress<
+                                ::subxt::ext::subxt_core::utils::AccountId32,
+                                (),
+                            >,
                             runtime_types::madara_runtime::RuntimeCall,
                             runtime_types::sp_runtime::MultiSignature,
                             (
@@ -1910,15 +2065,15 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct GetIndexAndTxForTxHash {
                     pub xts: get_index_and_tx_for_tx_hash::Xts,
                     pub tx_hash: get_index_and_tx_for_tx_hash::TxHash,
@@ -1928,19 +2083,20 @@ pub mod api {
                     pub type TxHash = runtime_types::starknet_api::transaction::TransactionHash;
                     pub mod output {
                         use super::runtime_types;
-                        pub type Output = ::std::vec::Vec<runtime_types::starknet_api::transaction::Event>;
+                        pub type Output =
+                            ::subxt::ext::subxt_core::alloc::vec::Vec<runtime_types::starknet_api::transaction::Event>;
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct GetEventsForTxByHash {
                     pub tx_hash: get_events_for_tx_by_hash::TxHash,
                 }
@@ -1949,19 +2105,20 @@ pub mod api {
                     pub type TxHash = runtime_types::starknet_api::transaction::TransactionHash;
                     pub mod output {
                         use super::runtime_types;
-                        pub type Output = ::core::option::Option<::std::vec::Vec<::core::primitive::u8>>;
+                        pub type Output =
+                            ::core::option::Option<::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>>;
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct GetTxExecutionOutcome {
                     pub tx_hash: get_tx_execution_outcome::TxHash,
                 }
@@ -1973,15 +2130,15 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct GetBlockContext {}
                 pub mod is_transaction_fee_disabled {
                     use super::runtime_types;
@@ -1991,34 +2148,36 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct IsTransactionFeeDisabled {}
                 pub mod get_tx_messages_to_l1 {
                     use super::runtime_types;
                     pub type TxHash = runtime_types::starknet_api::transaction::TransactionHash;
                     pub mod output {
                         use super::runtime_types;
-                        pub type Output = ::std::vec::Vec<runtime_types::starknet_api::transaction::MessageToL1>;
+                        pub type Output = ::subxt::ext::subxt_core::alloc::vec::Vec<
+                            runtime_types::starknet_api::transaction::MessageToL1,
+                        >;
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct GetTxMessagesToL1 {
                     pub tx_hash: get_tx_messages_to_l1::TxHash,
                 }
@@ -2031,18 +2190,36 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct L1NonceUnused {
                     pub nonce: l1_nonce_unused::Nonce,
                 }
+                pub mod current_l1_gas_prices {
+                    use super::runtime_types;
+                    pub mod output {
+                        use super::runtime_types;
+                        pub type Output = runtime_types::mp_starknet_inherent::L1GasPrices;
+                    }
+                }
+                #[derive(
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                    Debug,
+                )]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
+                pub struct CurrentL1GasPrices {}
             }
         }
         pub mod convert_transaction_runtime_api {
@@ -2053,11 +2230,11 @@ pub mod api {
                 pub fn convert_account_transaction(
                     &self,
                     transaction: types::convert_account_transaction::Transaction,
-                ) -> ::subxt::runtime_api::Payload<
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
                     types::ConvertAccountTransaction,
                     types::convert_account_transaction::output::Output,
                 > {
-                    ::subxt::runtime_api::Payload::new_static(
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "ConvertTransactionRuntimeApi",
                         "convert_account_transaction",
                         types::ConvertAccountTransaction { transaction },
@@ -2073,11 +2250,11 @@ pub mod api {
                 pub fn convert_l1_transaction(
                     &self,
                     transaction: types::convert_l1_transaction::Transaction,
-                ) -> ::subxt::runtime_api::Payload<
+                ) -> ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload<
                     types::ConvertL1Transaction,
                     types::convert_l1_transaction::output::Output,
                 > {
-                    ::subxt::runtime_api::Payload::new_static(
+                    ::subxt::ext::subxt_core::runtime_api::payload::StaticPayload::new_static(
                         "ConvertTransactionRuntimeApi",
                         "convert_l1_transaction",
                         types::ConvertL1Transaction { transaction },
@@ -2097,8 +2274,11 @@ pub mod api {
                         runtime_types::blockifier::transaction::account_transaction::AccountTransaction;
                     pub mod output {
                         use super::runtime_types;
-                        pub type Output = ::subxt::utils::UncheckedExtrinsic<
-                            ::subxt::utils::MultiAddress<::subxt::utils::AccountId32, ()>,
+                        pub type Output = ::subxt::ext::subxt_core::utils::UncheckedExtrinsic<
+                            ::subxt::ext::subxt_core::utils::MultiAddress<
+                                ::subxt::ext::subxt_core::utils::AccountId32,
+                                (),
+                            >,
                             runtime_types::madara_runtime::RuntimeCall,
                             runtime_types::sp_runtime::MultiSignature,
                             (
@@ -2114,15 +2294,15 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct ConvertAccountTransaction {
                     pub transaction: convert_account_transaction::Transaction,
                 }
@@ -2131,8 +2311,11 @@ pub mod api {
                     pub type Transaction = runtime_types::blockifier::transaction::transactions::L1HandlerTransaction;
                     pub mod output {
                         use super::runtime_types;
-                        pub type Output = ::subxt::utils::UncheckedExtrinsic<
-                            ::subxt::utils::MultiAddress<::subxt::utils::AccountId32, ()>,
+                        pub type Output = ::subxt::ext::subxt_core::utils::UncheckedExtrinsic<
+                            ::subxt::ext::subxt_core::utils::MultiAddress<
+                                ::subxt::ext::subxt_core::utils::AccountId32,
+                                (),
+                            >,
                             runtime_types::madara_runtime::RuntimeCall,
                             runtime_types::sp_runtime::MultiSignature,
                             (
@@ -2148,15 +2331,15 @@ pub mod api {
                     }
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct ConvertL1Transaction {
                     pub transaction: convert_l1_transaction::Transaction,
                 }
@@ -2217,13 +2400,14 @@ pub mod api {
         }
     }
     /// check whether the metadata provided is aligned with this statically generated code.
-    pub fn is_codegen_valid_for(metadata: &::subxt::Metadata) -> bool {
+    pub fn is_codegen_valid_for(metadata: &::subxt::ext::subxt_core::Metadata) -> bool {
         let runtime_metadata_hash =
             metadata.hasher().only_these_pallets(&PALLETS).only_these_runtime_apis(&RUNTIME_APIS).hash();
         runtime_metadata_hash
             == [
-                94u8, 161u8, 169u8, 145u8, 77u8, 120u8, 73u8, 216u8, 37u8, 92u8, 5u8, 38u8, 160u8, 26u8, 186u8, 161u8,
-                27u8, 67u8, 144u8, 28u8, 28u8, 254u8, 188u8, 212u8, 178u8, 207u8, 5u8, 195u8, 252u8, 40u8, 36u8, 182u8,
+                6u8, 51u8, 32u8, 173u8, 203u8, 217u8, 172u8, 127u8, 199u8, 21u8, 53u8, 61u8, 63u8, 0u8, 228u8, 242u8,
+                148u8, 154u8, 237u8, 202u8, 159u8, 6u8, 254u8, 206u8, 233u8, 163u8, 166u8, 81u8, 64u8, 165u8, 168u8,
+                253u8,
             ]
     }
     pub mod system {
@@ -2238,37 +2422,37 @@ pub mod api {
             pub mod types {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// See [`Pallet::remark`].
                 pub struct Remark {
                     pub remark: remark::Remark,
                 }
                 pub mod remark {
                     use super::runtime_types;
-                    pub type Remark = ::std::vec::Vec<::core::primitive::u8>;
+                    pub type Remark = ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>;
                 }
-                impl ::subxt::blocks::StaticExtrinsic for Remark {
+                impl ::subxt::ext::subxt_core::blocks::StaticExtrinsic for Remark {
                     const PALLET: &'static str = "System";
                     const CALL: &'static str = "remark";
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// See [`Pallet::set_heap_pages`].
                 pub struct SetHeapPages {
                     pub pages: set_heap_pages::Pages,
@@ -2277,111 +2461,113 @@ pub mod api {
                     use super::runtime_types;
                     pub type Pages = ::core::primitive::u64;
                 }
-                impl ::subxt::blocks::StaticExtrinsic for SetHeapPages {
+                impl ::subxt::ext::subxt_core::blocks::StaticExtrinsic for SetHeapPages {
                     const PALLET: &'static str = "System";
                     const CALL: &'static str = "set_heap_pages";
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// See [`Pallet::set_code`].
                 pub struct SetCode {
                     pub code: set_code::Code,
                 }
                 pub mod set_code {
                     use super::runtime_types;
-                    pub type Code = ::std::vec::Vec<::core::primitive::u8>;
+                    pub type Code = ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>;
                 }
-                impl ::subxt::blocks::StaticExtrinsic for SetCode {
+                impl ::subxt::ext::subxt_core::blocks::StaticExtrinsic for SetCode {
                     const PALLET: &'static str = "System";
                     const CALL: &'static str = "set_code";
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// See [`Pallet::set_code_without_checks`].
                 pub struct SetCodeWithoutChecks {
                     pub code: set_code_without_checks::Code,
                 }
                 pub mod set_code_without_checks {
                     use super::runtime_types;
-                    pub type Code = ::std::vec::Vec<::core::primitive::u8>;
+                    pub type Code = ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>;
                 }
-                impl ::subxt::blocks::StaticExtrinsic for SetCodeWithoutChecks {
+                impl ::subxt::ext::subxt_core::blocks::StaticExtrinsic for SetCodeWithoutChecks {
                     const PALLET: &'static str = "System";
                     const CALL: &'static str = "set_code_without_checks";
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// See [`Pallet::set_storage`].
                 pub struct SetStorage {
                     pub items: set_storage::Items,
                 }
                 pub mod set_storage {
                     use super::runtime_types;
-                    pub type Items = ::std::vec::Vec<(
-                        ::std::vec::Vec<::core::primitive::u8>,
-                        ::std::vec::Vec<::core::primitive::u8>,
+                    pub type Items = ::subxt::ext::subxt_core::alloc::vec::Vec<(
+                        ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>,
+                        ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>,
                     )>;
                 }
-                impl ::subxt::blocks::StaticExtrinsic for SetStorage {
+                impl ::subxt::ext::subxt_core::blocks::StaticExtrinsic for SetStorage {
                     const PALLET: &'static str = "System";
                     const CALL: &'static str = "set_storage";
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// See [`Pallet::kill_storage`].
                 pub struct KillStorage {
                     pub keys: kill_storage::Keys,
                 }
                 pub mod kill_storage {
                     use super::runtime_types;
-                    pub type Keys = ::std::vec::Vec<::std::vec::Vec<::core::primitive::u8>>;
+                    pub type Keys = ::subxt::ext::subxt_core::alloc::vec::Vec<
+                        ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>,
+                    >;
                 }
-                impl ::subxt::blocks::StaticExtrinsic for KillStorage {
+                impl ::subxt::ext::subxt_core::blocks::StaticExtrinsic for KillStorage {
                     const PALLET: &'static str = "System";
                     const CALL: &'static str = "kill_storage";
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// See [`Pallet::kill_prefix`].
                 pub struct KillPrefix {
                     pub prefix: kill_prefix::Prefix,
@@ -2389,32 +2575,32 @@ pub mod api {
                 }
                 pub mod kill_prefix {
                     use super::runtime_types;
-                    pub type Prefix = ::std::vec::Vec<::core::primitive::u8>;
+                    pub type Prefix = ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>;
                     pub type Subkeys = ::core::primitive::u32;
                 }
-                impl ::subxt::blocks::StaticExtrinsic for KillPrefix {
+                impl ::subxt::ext::subxt_core::blocks::StaticExtrinsic for KillPrefix {
                     const PALLET: &'static str = "System";
                     const CALL: &'static str = "kill_prefix";
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// See [`Pallet::remark_with_event`].
                 pub struct RemarkWithEvent {
                     pub remark: remark_with_event::Remark,
                 }
                 pub mod remark_with_event {
                     use super::runtime_types;
-                    pub type Remark = ::std::vec::Vec<::core::primitive::u8>;
+                    pub type Remark = ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>;
                 }
-                impl ::subxt::blocks::StaticExtrinsic for RemarkWithEvent {
+                impl ::subxt::ext::subxt_core::blocks::StaticExtrinsic for RemarkWithEvent {
                     const PALLET: &'static str = "System";
                     const CALL: &'static str = "remark_with_event";
                 }
@@ -2422,8 +2608,11 @@ pub mod api {
             pub struct TransactionApi;
             impl TransactionApi {
                 /// See [`Pallet::remark`].
-                pub fn remark(&self, remark: types::remark::Remark) -> ::subxt::tx::Payload<types::Remark> {
-                    ::subxt::tx::Payload::new_static(
+                pub fn remark(
+                    &self,
+                    remark: types::remark::Remark,
+                ) -> ::subxt::ext::subxt_core::tx::payload::StaticPayload<types::Remark> {
+                    ::subxt::ext::subxt_core::tx::payload::StaticPayload::new_static(
                         "System",
                         "remark",
                         types::Remark { remark },
@@ -2438,8 +2627,8 @@ pub mod api {
                 pub fn set_heap_pages(
                     &self,
                     pages: types::set_heap_pages::Pages,
-                ) -> ::subxt::tx::Payload<types::SetHeapPages> {
-                    ::subxt::tx::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::tx::payload::StaticPayload<types::SetHeapPages> {
+                    ::subxt::ext::subxt_core::tx::payload::StaticPayload::new_static(
                         "System",
                         "set_heap_pages",
                         types::SetHeapPages { pages },
@@ -2451,8 +2640,11 @@ pub mod api {
                     )
                 }
                 /// See [`Pallet::set_code`].
-                pub fn set_code(&self, code: types::set_code::Code) -> ::subxt::tx::Payload<types::SetCode> {
-                    ::subxt::tx::Payload::new_static(
+                pub fn set_code(
+                    &self,
+                    code: types::set_code::Code,
+                ) -> ::subxt::ext::subxt_core::tx::payload::StaticPayload<types::SetCode> {
+                    ::subxt::ext::subxt_core::tx::payload::StaticPayload::new_static(
                         "System",
                         "set_code",
                         types::SetCode { code },
@@ -2467,8 +2659,8 @@ pub mod api {
                 pub fn set_code_without_checks(
                     &self,
                     code: types::set_code_without_checks::Code,
-                ) -> ::subxt::tx::Payload<types::SetCodeWithoutChecks> {
-                    ::subxt::tx::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::tx::payload::StaticPayload<types::SetCodeWithoutChecks> {
+                    ::subxt::ext::subxt_core::tx::payload::StaticPayload::new_static(
                         "System",
                         "set_code_without_checks",
                         types::SetCodeWithoutChecks { code },
@@ -2480,8 +2672,11 @@ pub mod api {
                     )
                 }
                 /// See [`Pallet::set_storage`].
-                pub fn set_storage(&self, items: types::set_storage::Items) -> ::subxt::tx::Payload<types::SetStorage> {
-                    ::subxt::tx::Payload::new_static(
+                pub fn set_storage(
+                    &self,
+                    items: types::set_storage::Items,
+                ) -> ::subxt::ext::subxt_core::tx::payload::StaticPayload<types::SetStorage> {
+                    ::subxt::ext::subxt_core::tx::payload::StaticPayload::new_static(
                         "System",
                         "set_storage",
                         types::SetStorage { items },
@@ -2496,8 +2691,8 @@ pub mod api {
                 pub fn kill_storage(
                     &self,
                     keys: types::kill_storage::Keys,
-                ) -> ::subxt::tx::Payload<types::KillStorage> {
-                    ::subxt::tx::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::tx::payload::StaticPayload<types::KillStorage> {
+                    ::subxt::ext::subxt_core::tx::payload::StaticPayload::new_static(
                         "System",
                         "kill_storage",
                         types::KillStorage { keys },
@@ -2513,8 +2708,8 @@ pub mod api {
                     &self,
                     prefix: types::kill_prefix::Prefix,
                     subkeys: types::kill_prefix::Subkeys,
-                ) -> ::subxt::tx::Payload<types::KillPrefix> {
-                    ::subxt::tx::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::tx::payload::StaticPayload<types::KillPrefix> {
+                    ::subxt::ext::subxt_core::tx::payload::StaticPayload::new_static(
                         "System",
                         "kill_prefix",
                         types::KillPrefix { prefix, subkeys },
@@ -2529,8 +2724,8 @@ pub mod api {
                 pub fn remark_with_event(
                     &self,
                     remark: types::remark_with_event::Remark,
-                ) -> ::subxt::tx::Payload<types::RemarkWithEvent> {
-                    ::subxt::tx::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::tx::payload::StaticPayload<types::RemarkWithEvent> {
+                    ::subxt::ext::subxt_core::tx::payload::StaticPayload::new_static(
                         "System",
                         "remark_with_event",
                         types::RemarkWithEvent { remark },
@@ -2548,15 +2743,15 @@ pub mod api {
         pub mod events {
             use super::runtime_types;
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             /// An extrinsic completed successfully.
             pub struct ExtrinsicSuccess {
                 pub dispatch_info: extrinsic_success::DispatchInfo,
@@ -2565,20 +2760,20 @@ pub mod api {
                 use super::runtime_types;
                 pub type DispatchInfo = runtime_types::frame_support::dispatch::DispatchInfo;
             }
-            impl ::subxt::events::StaticEvent for ExtrinsicSuccess {
+            impl ::subxt::ext::subxt_core::events::StaticEvent for ExtrinsicSuccess {
                 const PALLET: &'static str = "System";
                 const EVENT: &'static str = "ExtrinsicSuccess";
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             /// An extrinsic failed.
             pub struct ExtrinsicFailed {
                 pub dispatch_error: extrinsic_failed::DispatchError,
@@ -2589,80 +2784,80 @@ pub mod api {
                 pub type DispatchError = runtime_types::sp_runtime::DispatchError;
                 pub type DispatchInfo = runtime_types::frame_support::dispatch::DispatchInfo;
             }
-            impl ::subxt::events::StaticEvent for ExtrinsicFailed {
+            impl ::subxt::ext::subxt_core::events::StaticEvent for ExtrinsicFailed {
                 const PALLET: &'static str = "System";
                 const EVENT: &'static str = "ExtrinsicFailed";
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             /// `:code` was updated.
             pub struct CodeUpdated;
-            impl ::subxt::events::StaticEvent for CodeUpdated {
+            impl ::subxt::ext::subxt_core::events::StaticEvent for CodeUpdated {
                 const PALLET: &'static str = "System";
                 const EVENT: &'static str = "CodeUpdated";
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             /// A new account was created.
             pub struct NewAccount {
                 pub account: new_account::Account,
             }
             pub mod new_account {
                 use super::runtime_types;
-                pub type Account = ::subxt::utils::AccountId32;
+                pub type Account = ::subxt::ext::subxt_core::utils::AccountId32;
             }
-            impl ::subxt::events::StaticEvent for NewAccount {
+            impl ::subxt::ext::subxt_core::events::StaticEvent for NewAccount {
                 const PALLET: &'static str = "System";
                 const EVENT: &'static str = "NewAccount";
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             /// An account was reaped.
             pub struct KilledAccount {
                 pub account: killed_account::Account,
             }
             pub mod killed_account {
                 use super::runtime_types;
-                pub type Account = ::subxt::utils::AccountId32;
+                pub type Account = ::subxt::ext::subxt_core::utils::AccountId32;
             }
-            impl ::subxt::events::StaticEvent for KilledAccount {
+            impl ::subxt::ext::subxt_core::events::StaticEvent for KilledAccount {
                 const PALLET: &'static str = "System";
                 const EVENT: &'static str = "KilledAccount";
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             /// On on-chain remark happened.
             pub struct Remarked {
                 pub sender: remarked::Sender,
@@ -2670,10 +2865,10 @@ pub mod api {
             }
             pub mod remarked {
                 use super::runtime_types;
-                pub type Sender = ::subxt::utils::AccountId32;
-                pub type Hash = ::subxt::utils::H256;
+                pub type Sender = ::subxt::ext::subxt_core::utils::AccountId32;
+                pub type Hash = ::subxt::ext::subxt_core::utils::H256;
             }
-            impl ::subxt::events::StaticEvent for Remarked {
+            impl ::subxt::ext::subxt_core::events::StaticEvent for Remarked {
                 const PALLET: &'static str = "System";
                 const EVENT: &'static str = "Remarked";
             }
@@ -2685,7 +2880,7 @@ pub mod api {
                 pub mod account {
                     use super::runtime_types;
                     pub type Account = runtime_types::frame_system::AccountInfo<::core::primitive::u32, ()>;
-                    pub type Param0 = ::subxt::utils::AccountId32;
+                    pub type Param0 = ::subxt::ext::subxt_core::utils::AccountId32;
                 }
                 pub mod extrinsic_count {
                     use super::runtime_types;
@@ -2703,12 +2898,12 @@ pub mod api {
                 }
                 pub mod block_hash {
                     use super::runtime_types;
-                    pub type BlockHash = ::subxt::utils::H256;
+                    pub type BlockHash = ::subxt::ext::subxt_core::utils::H256;
                     pub type Param0 = ::core::primitive::u32;
                 }
                 pub mod extrinsic_data {
                     use super::runtime_types;
-                    pub type ExtrinsicData = ::std::vec::Vec<::core::primitive::u8>;
+                    pub type ExtrinsicData = ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>;
                     pub type Param0 = ::core::primitive::u32;
                 }
                 pub mod number {
@@ -2717,7 +2912,7 @@ pub mod api {
                 }
                 pub mod parent_hash {
                     use super::runtime_types;
-                    pub type ParentHash = ::subxt::utils::H256;
+                    pub type ParentHash = ::subxt::ext::subxt_core::utils::H256;
                 }
                 pub mod digest {
                     use super::runtime_types;
@@ -2725,10 +2920,10 @@ pub mod api {
                 }
                 pub mod events {
                     use super::runtime_types;
-                    pub type Events = ::std::vec::Vec<
+                    pub type Events = ::subxt::ext::subxt_core::alloc::vec::Vec<
                         runtime_types::frame_system::EventRecord<
                             runtime_types::madara_runtime::RuntimeEvent,
-                            ::subxt::utils::H256,
+                            ::subxt::ext::subxt_core::utils::H256,
                         >,
                     >;
                 }
@@ -2738,8 +2933,9 @@ pub mod api {
                 }
                 pub mod event_topics {
                     use super::runtime_types;
-                    pub type EventTopics = ::std::vec::Vec<(::core::primitive::u32, ::core::primitive::u32)>;
-                    pub type Param0 = ::subxt::utils::H256;
+                    pub type EventTopics =
+                        ::subxt::ext::subxt_core::alloc::vec::Vec<(::core::primitive::u32, ::core::primitive::u32)>;
+                    pub type Param0 = ::subxt::ext::subxt_core::utils::H256;
                 }
                 pub mod last_runtime_upgrade {
                     use super::runtime_types;
@@ -2763,14 +2959,14 @@ pub mod api {
                 /// The full account information for a particular account ID.
                 pub fn account_iter(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::account::Account,
                     (),
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "System",
                         "Account",
                         (),
@@ -2784,18 +2980,18 @@ pub mod api {
                 /// The full account information for a particular account ID.
                 pub fn account(
                     &self,
-                    _0: impl ::std::borrow::Borrow<types::account::Param0>,
-                ) -> ::subxt::storage::address::Address<
-                    ::subxt::storage::address::StaticStorageKey<types::account::Param0>,
+                    _0: impl ::core::borrow::Borrow<types::account::Param0>,
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
+                    ::subxt::ext::subxt_core::storage::address::StaticStorageKey<types::account::Param0>,
                     types::account::Account,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "System",
                         "Account",
-                        ::subxt::storage::address::StaticStorageKey::new(_0.borrow()),
+                        ::subxt::ext::subxt_core::storage::address::StaticStorageKey::new(_0.borrow()),
                         [
                             207u8, 128u8, 217u8, 6u8, 244u8, 231u8, 113u8, 230u8, 246u8, 220u8, 226u8, 62u8, 206u8,
                             203u8, 104u8, 119u8, 181u8, 97u8, 211u8, 3u8, 157u8, 102u8, 196u8, 131u8, 51u8, 221u8,
@@ -2806,14 +3002,14 @@ pub mod api {
                 /// Total extrinsics count for the current block.
                 pub fn extrinsic_count(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::extrinsic_count::ExtrinsicCount,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "System",
                         "ExtrinsicCount",
                         (),
@@ -2827,14 +3023,14 @@ pub mod api {
                 /// The current weight for the block.
                 pub fn block_weight(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::block_weight::BlockWeight,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "System",
                         "BlockWeight",
                         (),
@@ -2848,14 +3044,14 @@ pub mod api {
                 /// Total length (in bytes) for all extrinsics put together, for the current block.
                 pub fn all_extrinsics_len(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::all_extrinsics_len::AllExtrinsicsLen,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "System",
                         "AllExtrinsicsLen",
                         (),
@@ -2869,14 +3065,14 @@ pub mod api {
                 /// Map of block numbers to block hashes.
                 pub fn block_hash_iter(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::block_hash::BlockHash,
                     (),
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "System",
                         "BlockHash",
                         (),
@@ -2890,18 +3086,18 @@ pub mod api {
                 /// Map of block numbers to block hashes.
                 pub fn block_hash(
                     &self,
-                    _0: impl ::std::borrow::Borrow<types::block_hash::Param0>,
-                ) -> ::subxt::storage::address::Address<
-                    ::subxt::storage::address::StaticStorageKey<types::block_hash::Param0>,
+                    _0: impl ::core::borrow::Borrow<types::block_hash::Param0>,
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
+                    ::subxt::ext::subxt_core::storage::address::StaticStorageKey<types::block_hash::Param0>,
                     types::block_hash::BlockHash,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "System",
                         "BlockHash",
-                        ::subxt::storage::address::StaticStorageKey::new(_0.borrow()),
+                        ::subxt::ext::subxt_core::storage::address::StaticStorageKey::new(_0.borrow()),
                         [
                             217u8, 32u8, 215u8, 253u8, 24u8, 182u8, 207u8, 178u8, 157u8, 24u8, 103u8, 100u8, 195u8,
                             165u8, 69u8, 152u8, 112u8, 181u8, 56u8, 192u8, 164u8, 16u8, 20u8, 222u8, 28u8, 214u8,
@@ -2912,14 +3108,14 @@ pub mod api {
                 /// Extrinsics data for the current block (maps an extrinsic's index to its data).
                 pub fn extrinsic_data_iter(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::extrinsic_data::ExtrinsicData,
                     (),
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "System",
                         "ExtrinsicData",
                         (),
@@ -2933,18 +3129,18 @@ pub mod api {
                 /// Extrinsics data for the current block (maps an extrinsic's index to its data).
                 pub fn extrinsic_data(
                     &self,
-                    _0: impl ::std::borrow::Borrow<types::extrinsic_data::Param0>,
-                ) -> ::subxt::storage::address::Address<
-                    ::subxt::storage::address::StaticStorageKey<types::extrinsic_data::Param0>,
+                    _0: impl ::core::borrow::Borrow<types::extrinsic_data::Param0>,
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
+                    ::subxt::ext::subxt_core::storage::address::StaticStorageKey<types::extrinsic_data::Param0>,
                     types::extrinsic_data::ExtrinsicData,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "System",
                         "ExtrinsicData",
-                        ::subxt::storage::address::StaticStorageKey::new(_0.borrow()),
+                        ::subxt::ext::subxt_core::storage::address::StaticStorageKey::new(_0.borrow()),
                         [
                             160u8, 180u8, 122u8, 18u8, 196u8, 26u8, 2u8, 37u8, 115u8, 232u8, 133u8, 220u8, 106u8,
                             245u8, 4u8, 129u8, 42u8, 84u8, 241u8, 45u8, 199u8, 179u8, 128u8, 61u8, 170u8, 137u8, 231u8,
@@ -2955,14 +3151,14 @@ pub mod api {
                 /// The current block number being processed. Set by `execute_block`.
                 pub fn number(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::number::Number,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "System",
                         "Number",
                         (),
@@ -2976,14 +3172,14 @@ pub mod api {
                 /// Hash of the previous block.
                 pub fn parent_hash(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::parent_hash::ParentHash,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "System",
                         "ParentHash",
                         (),
@@ -2997,14 +3193,14 @@ pub mod api {
                 /// Digest of the current block, also part of the block header.
                 pub fn digest(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::digest::Digest,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "System",
                         "Digest",
                         (),
@@ -3024,14 +3220,14 @@ pub mod api {
                 /// just in case someone still reads them from within the runtime.
                 pub fn events(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::events::Events,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "System",
                         "Events",
                         (),
@@ -3045,14 +3241,14 @@ pub mod api {
                 /// The number of events in the `Events<T>` list.
                 pub fn event_count(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::event_count::EventCount,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "System",
                         "EventCount",
                         (),
@@ -3078,14 +3274,14 @@ pub mod api {
                 /// no notification will be triggered thus the event might be lost.
                 pub fn event_topics_iter(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::event_topics::EventTopics,
                     (),
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "System",
                         "EventTopics",
                         (),
@@ -3111,18 +3307,18 @@ pub mod api {
                 /// no notification will be triggered thus the event might be lost.
                 pub fn event_topics(
                     &self,
-                    _0: impl ::std::borrow::Borrow<types::event_topics::Param0>,
-                ) -> ::subxt::storage::address::Address<
-                    ::subxt::storage::address::StaticStorageKey<types::event_topics::Param0>,
+                    _0: impl ::core::borrow::Borrow<types::event_topics::Param0>,
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
+                    ::subxt::ext::subxt_core::storage::address::StaticStorageKey<types::event_topics::Param0>,
                     types::event_topics::EventTopics,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "System",
                         "EventTopics",
-                        ::subxt::storage::address::StaticStorageKey::new(_0.borrow()),
+                        ::subxt::ext::subxt_core::storage::address::StaticStorageKey::new(_0.borrow()),
                         [
                             40u8, 225u8, 14u8, 75u8, 44u8, 176u8, 76u8, 34u8, 143u8, 107u8, 69u8, 133u8, 114u8, 13u8,
                             172u8, 250u8, 141u8, 73u8, 12u8, 65u8, 217u8, 63u8, 120u8, 241u8, 48u8, 106u8, 143u8,
@@ -3134,14 +3330,14 @@ pub mod api {
                 /// happened.
                 pub fn last_runtime_upgrade(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::last_runtime_upgrade::LastRuntimeUpgrade,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "System",
                         "LastRuntimeUpgrade",
                         (),
@@ -3156,14 +3352,14 @@ pub mod api {
                 /// not.
                 pub fn upgraded_to_u32_ref_count(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::upgraded_to_u32_ref_count::UpgradedToU32RefCount,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "System",
                         "UpgradedToU32RefCount",
                         (),
@@ -3179,14 +3375,14 @@ pub mod api {
                 /// (default) if not.
                 pub fn upgraded_to_triple_ref_count(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::upgraded_to_triple_ref_count::UpgradedToTripleRefCount,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "System",
                         "UpgradedToTripleRefCount",
                         (),
@@ -3200,14 +3396,14 @@ pub mod api {
                 /// The execution phase of the block.
                 pub fn execution_phase(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::execution_phase::ExecutionPhase,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "System",
                         "ExecutionPhase",
                         (),
@@ -3227,8 +3423,10 @@ pub mod api {
                 /// Block & extrinsics weights: base values and limits.
                 pub fn block_weights(
                     &self,
-                ) -> ::subxt::constants::Address<runtime_types::frame_system::limits::BlockWeights> {
-                    ::subxt::constants::Address::new_static(
+                ) -> ::subxt::ext::subxt_core::constants::address::StaticAddress<
+                    runtime_types::frame_system::limits::BlockWeights,
+                > {
+                    ::subxt::ext::subxt_core::constants::address::StaticAddress::new_static(
                         "System",
                         "BlockWeights",
                         [
@@ -3241,8 +3439,10 @@ pub mod api {
                 /// The maximum length of a block (in bytes).
                 pub fn block_length(
                     &self,
-                ) -> ::subxt::constants::Address<runtime_types::frame_system::limits::BlockLength> {
-                    ::subxt::constants::Address::new_static(
+                ) -> ::subxt::ext::subxt_core::constants::address::StaticAddress<
+                    runtime_types::frame_system::limits::BlockLength,
+                > {
+                    ::subxt::ext::subxt_core::constants::address::StaticAddress::new_static(
                         "System",
                         "BlockLength",
                         [
@@ -3254,8 +3454,11 @@ pub mod api {
                 }
                 /// Maximum number of block number to block hash mappings to keep (oldest pruned
                 /// first).
-                pub fn block_hash_count(&self) -> ::subxt::constants::Address<::core::primitive::u32> {
-                    ::subxt::constants::Address::new_static(
+                pub fn block_hash_count(
+                    &self,
+                ) -> ::subxt::ext::subxt_core::constants::address::StaticAddress<::core::primitive::u32>
+                {
+                    ::subxt::ext::subxt_core::constants::address::StaticAddress::new_static(
                         "System",
                         "BlockHashCount",
                         [
@@ -3266,8 +3469,12 @@ pub mod api {
                     )
                 }
                 /// The weight of runtime database operations the runtime can invoke.
-                pub fn db_weight(&self) -> ::subxt::constants::Address<runtime_types::sp_weights::RuntimeDbWeight> {
-                    ::subxt::constants::Address::new_static(
+                pub fn db_weight(
+                    &self,
+                ) -> ::subxt::ext::subxt_core::constants::address::StaticAddress<
+                    runtime_types::sp_weights::RuntimeDbWeight,
+                > {
+                    ::subxt::ext::subxt_core::constants::address::StaticAddress::new_static(
                         "System",
                         "DbWeight",
                         [
@@ -3278,8 +3485,12 @@ pub mod api {
                     )
                 }
                 /// Get the chain's current version.
-                pub fn version(&self) -> ::subxt::constants::Address<runtime_types::sp_version::RuntimeVersion> {
-                    ::subxt::constants::Address::new_static(
+                pub fn version(
+                    &self,
+                ) -> ::subxt::ext::subxt_core::constants::address::StaticAddress<
+                    runtime_types::sp_version::RuntimeVersion,
+                > {
+                    ::subxt::ext::subxt_core::constants::address::StaticAddress::new_static(
                         "System",
                         "Version",
                         [
@@ -3294,8 +3505,11 @@ pub mod api {
                 /// This replaces the "ss58Format" property declared in the chain spec. Reason is
                 /// that the runtime should know about the prefix in order to make use of it as
                 /// an identifier of the chain.
-                pub fn ss58_prefix(&self) -> ::subxt::constants::Address<::core::primitive::u16> {
-                    ::subxt::constants::Address::new_static(
+                pub fn ss58_prefix(
+                    &self,
+                ) -> ::subxt::ext::subxt_core::constants::address::StaticAddress<::core::primitive::u16>
+                {
+                    ::subxt::ext::subxt_core::constants::address::StaticAddress::new_static(
                         "System",
                         "SS58Prefix",
                         [
@@ -3318,15 +3532,15 @@ pub mod api {
             pub mod types {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// See [`Pallet::set`].
                 pub struct Set {
                     #[codec(compact)]
@@ -3336,7 +3550,7 @@ pub mod api {
                     use super::runtime_types;
                     pub type Now = ::core::primitive::u64;
                 }
-                impl ::subxt::blocks::StaticExtrinsic for Set {
+                impl ::subxt::ext::subxt_core::blocks::StaticExtrinsic for Set {
                     const PALLET: &'static str = "Timestamp";
                     const CALL: &'static str = "set";
                 }
@@ -3344,8 +3558,11 @@ pub mod api {
             pub struct TransactionApi;
             impl TransactionApi {
                 /// See [`Pallet::set`].
-                pub fn set(&self, now: types::set::Now) -> ::subxt::tx::Payload<types::Set> {
-                    ::subxt::tx::Payload::new_static(
+                pub fn set(
+                    &self,
+                    now: types::set::Now,
+                ) -> ::subxt::ext::subxt_core::tx::payload::StaticPayload<types::Set> {
+                    ::subxt::ext::subxt_core::tx::payload::StaticPayload::new_static(
                         "Timestamp",
                         "set",
                         types::Set { now },
@@ -3376,14 +3593,14 @@ pub mod api {
                 /// The current time for the current block.
                 pub fn now(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::now::Now,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Timestamp",
                         "Now",
                         (),
@@ -3401,14 +3618,14 @@ pub mod api {
                 /// It is then checked at the end of each block execution in the `on_finalize` hook.
                 pub fn did_update(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::did_update::DidUpdate,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Timestamp",
                         "DidUpdate",
                         (),
@@ -3434,8 +3651,11 @@ pub mod api {
                 /// determine a sensible block time. For example, in the Aura pallet it will be
                 /// double this
                 /// period on default settings.
-                pub fn minimum_period(&self) -> ::subxt::constants::Address<::core::primitive::u64> {
-                    ::subxt::constants::Address::new_static(
+                pub fn minimum_period(
+                    &self,
+                ) -> ::subxt::ext::subxt_core::constants::address::StaticAddress<::core::primitive::u64>
+                {
+                    ::subxt::ext::subxt_core::constants::address::StaticAddress::new_static(
                         "Timestamp",
                         "MinimumPeriod",
                         [
@@ -3470,14 +3690,14 @@ pub mod api {
                 /// The current authority set.
                 pub fn authorities(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::authorities::Authorities,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Aura",
                         "Authorities",
                         (),
@@ -3493,14 +3713,14 @@ pub mod api {
                 /// This will be set in `on_initialize`.
                 pub fn current_slot(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::current_slot::CurrentSlot,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Aura",
                         "CurrentSlot",
                         (),
@@ -3526,69 +3746,71 @@ pub mod api {
             pub mod types {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// See [`Pallet::report_equivocation`].
                 pub struct ReportEquivocation {
-                    pub equivocation_proof: ::std::boxed::Box<report_equivocation::EquivocationProof>,
+                    pub equivocation_proof:
+                        ::subxt::ext::subxt_core::alloc::boxed::Box<report_equivocation::EquivocationProof>,
                     pub key_owner_proof: report_equivocation::KeyOwnerProof,
                 }
                 pub mod report_equivocation {
                     use super::runtime_types;
                     pub type EquivocationProof = runtime_types::sp_consensus_grandpa::EquivocationProof<
-                        ::subxt::utils::H256,
+                        ::subxt::ext::subxt_core::utils::H256,
                         ::core::primitive::u32,
                     >;
                     pub type KeyOwnerProof = runtime_types::sp_core::Void;
                 }
-                impl ::subxt::blocks::StaticExtrinsic for ReportEquivocation {
+                impl ::subxt::ext::subxt_core::blocks::StaticExtrinsic for ReportEquivocation {
                     const PALLET: &'static str = "Grandpa";
                     const CALL: &'static str = "report_equivocation";
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// See [`Pallet::report_equivocation_unsigned`].
                 pub struct ReportEquivocationUnsigned {
-                    pub equivocation_proof: ::std::boxed::Box<report_equivocation_unsigned::EquivocationProof>,
+                    pub equivocation_proof:
+                        ::subxt::ext::subxt_core::alloc::boxed::Box<report_equivocation_unsigned::EquivocationProof>,
                     pub key_owner_proof: report_equivocation_unsigned::KeyOwnerProof,
                 }
                 pub mod report_equivocation_unsigned {
                     use super::runtime_types;
                     pub type EquivocationProof = runtime_types::sp_consensus_grandpa::EquivocationProof<
-                        ::subxt::utils::H256,
+                        ::subxt::ext::subxt_core::utils::H256,
                         ::core::primitive::u32,
                     >;
                     pub type KeyOwnerProof = runtime_types::sp_core::Void;
                 }
-                impl ::subxt::blocks::StaticExtrinsic for ReportEquivocationUnsigned {
+                impl ::subxt::ext::subxt_core::blocks::StaticExtrinsic for ReportEquivocationUnsigned {
                     const PALLET: &'static str = "Grandpa";
                     const CALL: &'static str = "report_equivocation_unsigned";
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// See [`Pallet::note_stalled`].
                 pub struct NoteStalled {
                     pub delay: note_stalled::Delay,
@@ -3599,7 +3821,7 @@ pub mod api {
                     pub type Delay = ::core::primitive::u32;
                     pub type BestFinalizedBlockNumber = ::core::primitive::u32;
                 }
-                impl ::subxt::blocks::StaticExtrinsic for NoteStalled {
+                impl ::subxt::ext::subxt_core::blocks::StaticExtrinsic for NoteStalled {
                     const PALLET: &'static str = "Grandpa";
                     const CALL: &'static str = "note_stalled";
                 }
@@ -3611,12 +3833,12 @@ pub mod api {
                     &self,
                     equivocation_proof: types::report_equivocation::EquivocationProof,
                     key_owner_proof: types::report_equivocation::KeyOwnerProof,
-                ) -> ::subxt::tx::Payload<types::ReportEquivocation> {
-                    ::subxt::tx::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::tx::payload::StaticPayload<types::ReportEquivocation> {
+                    ::subxt::ext::subxt_core::tx::payload::StaticPayload::new_static(
                         "Grandpa",
                         "report_equivocation",
                         types::ReportEquivocation {
-                            equivocation_proof: ::std::boxed::Box::new(equivocation_proof),
+                            equivocation_proof: ::subxt::ext::subxt_core::alloc::boxed::Box::new(equivocation_proof),
                             key_owner_proof,
                         },
                         [
@@ -3631,12 +3853,13 @@ pub mod api {
                     &self,
                     equivocation_proof: types::report_equivocation_unsigned::EquivocationProof,
                     key_owner_proof: types::report_equivocation_unsigned::KeyOwnerProof,
-                ) -> ::subxt::tx::Payload<types::ReportEquivocationUnsigned> {
-                    ::subxt::tx::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::tx::payload::StaticPayload<types::ReportEquivocationUnsigned>
+                {
+                    ::subxt::ext::subxt_core::tx::payload::StaticPayload::new_static(
                         "Grandpa",
                         "report_equivocation_unsigned",
                         types::ReportEquivocationUnsigned {
-                            equivocation_proof: ::std::boxed::Box::new(equivocation_proof),
+                            equivocation_proof: ::subxt::ext::subxt_core::alloc::boxed::Box::new(equivocation_proof),
                             key_owner_proof,
                         },
                         [
@@ -3651,8 +3874,8 @@ pub mod api {
                     &self,
                     delay: types::note_stalled::Delay,
                     best_finalized_block_number: types::note_stalled::BestFinalizedBlockNumber,
-                ) -> ::subxt::tx::Payload<types::NoteStalled> {
-                    ::subxt::tx::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::tx::payload::StaticPayload<types::NoteStalled> {
+                    ::subxt::ext::subxt_core::tx::payload::StaticPayload::new_static(
                         "Grandpa",
                         "note_stalled",
                         types::NoteStalled { delay, best_finalized_block_number },
@@ -3670,57 +3893,59 @@ pub mod api {
         pub mod events {
             use super::runtime_types;
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             /// New authority set has been applied.
             pub struct NewAuthorities {
                 pub authority_set: new_authorities::AuthoritySet,
             }
             pub mod new_authorities {
                 use super::runtime_types;
-                pub type AuthoritySet =
-                    ::std::vec::Vec<(runtime_types::sp_consensus_grandpa::app::Public, ::core::primitive::u64)>;
+                pub type AuthoritySet = ::subxt::ext::subxt_core::alloc::vec::Vec<(
+                    runtime_types::sp_consensus_grandpa::app::Public,
+                    ::core::primitive::u64,
+                )>;
             }
-            impl ::subxt::events::StaticEvent for NewAuthorities {
+            impl ::subxt::ext::subxt_core::events::StaticEvent for NewAuthorities {
                 const PALLET: &'static str = "Grandpa";
                 const EVENT: &'static str = "NewAuthorities";
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             /// Current authority set has been paused.
             pub struct Paused;
-            impl ::subxt::events::StaticEvent for Paused {
+            impl ::subxt::ext::subxt_core::events::StaticEvent for Paused {
                 const PALLET: &'static str = "Grandpa";
                 const EVENT: &'static str = "Paused";
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             /// Current authority set has been resumed.
             pub struct Resumed;
-            impl ::subxt::events::StaticEvent for Resumed {
+            impl ::subxt::ext::subxt_core::events::StaticEvent for Resumed {
                 const PALLET: &'static str = "Grandpa";
                 const EVENT: &'static str = "Resumed";
             }
@@ -3760,14 +3985,14 @@ pub mod api {
                 /// State of the current authority set.
                 pub fn state(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::state::State,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Grandpa",
                         "State",
                         (),
@@ -3781,14 +4006,14 @@ pub mod api {
                 /// Pending change: (signaled at, scheduled change).
                 pub fn pending_change(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::pending_change::PendingChange,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Grandpa",
                         "PendingChange",
                         (),
@@ -3802,14 +4027,14 @@ pub mod api {
                 /// next block number where we can force a change.
                 pub fn next_forced(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::next_forced::NextForced,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Grandpa",
                         "NextForced",
                         (),
@@ -3823,14 +4048,14 @@ pub mod api {
                 /// `true` if we are currently stalled.
                 pub fn stalled(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::stalled::Stalled,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Grandpa",
                         "Stalled",
                         (),
@@ -3846,14 +4071,14 @@ pub mod api {
                 /// in the "set" of Grandpa validators from genesis.
                 pub fn current_set_id(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::current_set_id::CurrentSetId,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Grandpa",
                         "CurrentSetId",
                         (),
@@ -3878,14 +4103,14 @@ pub mod api {
                 /// TWOX-NOTE: `SetId` is not under user control.
                 pub fn set_id_session_iter(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::set_id_session::SetIdSession,
                     (),
                     (),
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Grandpa",
                         "SetIdSession",
                         (),
@@ -3910,18 +4135,18 @@ pub mod api {
                 /// TWOX-NOTE: `SetId` is not under user control.
                 pub fn set_id_session(
                     &self,
-                    _0: impl ::std::borrow::Borrow<types::set_id_session::Param0>,
-                ) -> ::subxt::storage::address::Address<
-                    ::subxt::storage::address::StaticStorageKey<types::set_id_session::Param0>,
+                    _0: impl ::core::borrow::Borrow<types::set_id_session::Param0>,
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
+                    ::subxt::ext::subxt_core::storage::address::StaticStorageKey<types::set_id_session::Param0>,
                     types::set_id_session::SetIdSession,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Grandpa",
                         "SetIdSession",
-                        ::subxt::storage::address::StaticStorageKey::new(_0.borrow()),
+                        ::subxt::ext::subxt_core::storage::address::StaticStorageKey::new(_0.borrow()),
                         [
                             47u8, 0u8, 239u8, 121u8, 187u8, 213u8, 254u8, 50u8, 238u8, 10u8, 162u8, 65u8, 189u8, 166u8,
                             37u8, 74u8, 82u8, 81u8, 160u8, 20u8, 180u8, 253u8, 238u8, 18u8, 209u8, 203u8, 38u8, 148u8,
@@ -3936,8 +4161,11 @@ pub mod api {
             pub struct ConstantsApi;
             impl ConstantsApi {
                 /// Max Authorities in use
-                pub fn max_authorities(&self) -> ::subxt::constants::Address<::core::primitive::u32> {
-                    ::subxt::constants::Address::new_static(
+                pub fn max_authorities(
+                    &self,
+                ) -> ::subxt::ext::subxt_core::constants::address::StaticAddress<::core::primitive::u32>
+                {
+                    ::subxt::ext::subxt_core::constants::address::StaticAddress::new_static(
                         "Grandpa",
                         "MaxAuthorities",
                         [
@@ -3948,8 +4176,11 @@ pub mod api {
                     )
                 }
                 /// The maximum number of nominators for each validator.
-                pub fn max_nominators(&self) -> ::subxt::constants::Address<::core::primitive::u32> {
-                    ::subxt::constants::Address::new_static(
+                pub fn max_nominators(
+                    &self,
+                ) -> ::subxt::ext::subxt_core::constants::address::StaticAddress<::core::primitive::u32>
+                {
+                    ::subxt::ext::subxt_core::constants::address::StaticAddress::new_static(
                         "Grandpa",
                         "MaxNominators",
                         [
@@ -3965,8 +4196,11 @@ pub mod api {
                 /// value should relate to the bonding duration of whatever staking system is
                 /// being used (if any). If equivocation handling is not enabled then this value
                 /// can be zero.
-                pub fn max_set_id_session_entries(&self) -> ::subxt::constants::Address<::core::primitive::u64> {
-                    ::subxt::constants::Address::new_static(
+                pub fn max_set_id_session_entries(
+                    &self,
+                ) -> ::subxt::ext::subxt_core::constants::address::StaticAddress<::core::primitive::u64>
+                {
+                    ::subxt::ext::subxt_core::constants::address::StaticAddress::new_static(
                         "Grandpa",
                         "MaxSetIdSessionEntries",
                         [
@@ -3996,15 +4230,15 @@ pub mod api {
             pub mod types {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// See [`Pallet::set_starknet_inherent_data`].
                 pub struct SetStarknetInherentData {
                     pub data: set_starknet_inherent_data::Data,
@@ -4013,20 +4247,20 @@ pub mod api {
                     use super::runtime_types;
                     pub type Data = runtime_types::mp_starknet_inherent::StarknetInherentData;
                 }
-                impl ::subxt::blocks::StaticExtrinsic for SetStarknetInherentData {
+                impl ::subxt::ext::subxt_core::blocks::StaticExtrinsic for SetStarknetInherentData {
                     const PALLET: &'static str = "Starknet";
                     const CALL: &'static str = "set_starknet_inherent_data";
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// See [`Pallet::invoke`].
                 pub struct Invoke {
                     pub transaction: invoke::Transaction,
@@ -4035,20 +4269,20 @@ pub mod api {
                     use super::runtime_types;
                     pub type Transaction = runtime_types::blockifier::transaction::transactions::InvokeTransaction;
                 }
-                impl ::subxt::blocks::StaticExtrinsic for Invoke {
+                impl ::subxt::ext::subxt_core::blocks::StaticExtrinsic for Invoke {
                     const PALLET: &'static str = "Starknet";
                     const CALL: &'static str = "invoke";
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// See [`Pallet::declare`].
                 pub struct Declare {
                     pub transaction: declare::Transaction,
@@ -4057,20 +4291,20 @@ pub mod api {
                     use super::runtime_types;
                     pub type Transaction = runtime_types::blockifier::transaction::transactions::DeclareTransaction;
                 }
-                impl ::subxt::blocks::StaticExtrinsic for Declare {
+                impl ::subxt::ext::subxt_core::blocks::StaticExtrinsic for Declare {
                     const PALLET: &'static str = "Starknet";
                     const CALL: &'static str = "declare";
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// See [`Pallet::deploy_account`].
                 pub struct DeployAccount {
                     pub transaction: deploy_account::Transaction,
@@ -4080,20 +4314,20 @@ pub mod api {
                     pub type Transaction =
                         runtime_types::blockifier::transaction::transactions::DeployAccountTransaction;
                 }
-                impl ::subxt::blocks::StaticExtrinsic for DeployAccount {
+                impl ::subxt::ext::subxt_core::blocks::StaticExtrinsic for DeployAccount {
                     const PALLET: &'static str = "Starknet";
                     const CALL: &'static str = "deploy_account";
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// See [`Pallet::consume_l1_message`].
                 pub struct ConsumeL1Message {
                     pub transaction: consume_l1_message::Transaction,
@@ -4102,31 +4336,9 @@ pub mod api {
                     use super::runtime_types;
                     pub type Transaction = runtime_types::blockifier::transaction::transactions::L1HandlerTransaction;
                 }
-                impl ::subxt::blocks::StaticExtrinsic for ConsumeL1Message {
+                impl ::subxt::ext::subxt_core::blocks::StaticExtrinsic for ConsumeL1Message {
                     const PALLET: &'static str = "Starknet";
                     const CALL: &'static str = "consume_l1_message";
-                }
-                #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
-                    Debug,
-                )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
-                /// See [`Pallet::set_disable_fee`].
-                pub struct SetDisableFee {
-                    pub value: set_disable_fee::Value,
-                }
-                pub mod set_disable_fee {
-                    use super::runtime_types;
-                    pub type Value = ::core::primitive::bool;
-                }
-                impl ::subxt::blocks::StaticExtrinsic for SetDisableFee {
-                    const PALLET: &'static str = "Starknet";
-                    const CALL: &'static str = "set_disable_fee";
                 }
             }
             pub struct TransactionApi;
@@ -4135,21 +4347,25 @@ pub mod api {
                 pub fn set_starknet_inherent_data(
                     &self,
                     data: types::set_starknet_inherent_data::Data,
-                ) -> ::subxt::tx::Payload<types::SetStarknetInherentData> {
-                    ::subxt::tx::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::tx::payload::StaticPayload<types::SetStarknetInherentData>
+                {
+                    ::subxt::ext::subxt_core::tx::payload::StaticPayload::new_static(
                         "Starknet",
                         "set_starknet_inherent_data",
                         types::SetStarknetInherentData { data },
                         [
-                            86u8, 202u8, 45u8, 218u8, 211u8, 140u8, 13u8, 15u8, 101u8, 210u8, 165u8, 123u8, 227u8,
-                            117u8, 56u8, 148u8, 51u8, 250u8, 204u8, 94u8, 84u8, 120u8, 98u8, 208u8, 135u8, 83u8, 158u8,
-                            27u8, 23u8, 212u8, 35u8, 132u8,
+                            103u8, 160u8, 220u8, 87u8, 131u8, 79u8, 248u8, 26u8, 181u8, 167u8, 4u8, 150u8, 226u8, 3u8,
+                            121u8, 116u8, 227u8, 6u8, 232u8, 227u8, 58u8, 123u8, 36u8, 91u8, 225u8, 141u8, 254u8, 68u8,
+                            104u8, 80u8, 19u8, 157u8,
                         ],
                     )
                 }
                 /// See [`Pallet::invoke`].
-                pub fn invoke(&self, transaction: types::invoke::Transaction) -> ::subxt::tx::Payload<types::Invoke> {
-                    ::subxt::tx::Payload::new_static(
+                pub fn invoke(
+                    &self,
+                    transaction: types::invoke::Transaction,
+                ) -> ::subxt::ext::subxt_core::tx::payload::StaticPayload<types::Invoke> {
+                    ::subxt::ext::subxt_core::tx::payload::StaticPayload::new_static(
                         "Starknet",
                         "invoke",
                         types::Invoke { transaction },
@@ -4164,8 +4380,8 @@ pub mod api {
                 pub fn declare(
                     &self,
                     transaction: types::declare::Transaction,
-                ) -> ::subxt::tx::Payload<types::Declare> {
-                    ::subxt::tx::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::tx::payload::StaticPayload<types::Declare> {
+                    ::subxt::ext::subxt_core::tx::payload::StaticPayload::new_static(
                         "Starknet",
                         "declare",
                         types::Declare { transaction },
@@ -4180,8 +4396,8 @@ pub mod api {
                 pub fn deploy_account(
                     &self,
                     transaction: types::deploy_account::Transaction,
-                ) -> ::subxt::tx::Payload<types::DeployAccount> {
-                    ::subxt::tx::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::tx::payload::StaticPayload<types::DeployAccount> {
+                    ::subxt::ext::subxt_core::tx::payload::StaticPayload::new_static(
                         "Starknet",
                         "deploy_account",
                         types::DeployAccount { transaction },
@@ -4196,8 +4412,8 @@ pub mod api {
                 pub fn consume_l1_message(
                     &self,
                     transaction: types::consume_l1_message::Transaction,
-                ) -> ::subxt::tx::Payload<types::ConsumeL1Message> {
-                    ::subxt::tx::Payload::new_static(
+                ) -> ::subxt::ext::subxt_core::tx::payload::StaticPayload<types::ConsumeL1Message> {
+                    ::subxt::ext::subxt_core::tx::payload::StaticPayload::new_static(
                         "Starknet",
                         "consume_l1_message",
                         types::ConsumeL1Message { transaction },
@@ -4205,22 +4421,6 @@ pub mod api {
                             237u8, 77u8, 101u8, 193u8, 205u8, 121u8, 203u8, 12u8, 202u8, 123u8, 212u8, 211u8, 148u8,
                             201u8, 170u8, 113u8, 143u8, 68u8, 195u8, 123u8, 249u8, 75u8, 236u8, 209u8, 158u8, 184u8,
                             87u8, 127u8, 242u8, 184u8, 132u8, 195u8,
-                        ],
-                    )
-                }
-                /// See [`Pallet::set_disable_fee`].
-                pub fn set_disable_fee(
-                    &self,
-                    value: types::set_disable_fee::Value,
-                ) -> ::subxt::tx::Payload<types::SetDisableFee> {
-                    ::subxt::tx::Payload::new_static(
-                        "Starknet",
-                        "set_disable_fee",
-                        types::SetDisableFee { value },
-                        [
-                            92u8, 162u8, 189u8, 184u8, 194u8, 124u8, 88u8, 63u8, 153u8, 33u8, 82u8, 65u8, 243u8, 181u8,
-                            218u8, 62u8, 35u8, 121u8, 67u8, 109u8, 153u8, 149u8, 19u8, 103u8, 198u8, 194u8, 218u8,
-                            31u8, 167u8, 75u8, 225u8, 130u8,
                         ],
                     )
                 }
@@ -4232,26 +4432,32 @@ pub mod api {
                 use super::runtime_types;
                 pub mod pending {
                     use super::runtime_types;
-                    pub type Pending =
-                        ::std::vec::Vec<runtime_types::blockifier::transaction::transaction_execution::Transaction>;
+                    pub type Pending = ::subxt::ext::subxt_core::alloc::vec::Vec<
+                        runtime_types::blockifier::transaction::transaction_execution::Transaction,
+                    >;
                 }
                 pub mod pending_hashes {
                     use super::runtime_types;
-                    pub type PendingHashes = ::std::vec::Vec<runtime_types::starknet_api::transaction::TransactionHash>;
+                    pub type PendingHashes = ::subxt::ext::subxt_core::alloc::vec::Vec<
+                        runtime_types::starknet_api::transaction::TransactionHash,
+                    >;
                 }
                 pub mod tx_events {
                     use super::runtime_types;
-                    pub type TxEvents = ::std::vec::Vec<runtime_types::starknet_api::transaction::Event>;
+                    pub type TxEvents =
+                        ::subxt::ext::subxt_core::alloc::vec::Vec<runtime_types::starknet_api::transaction::Event>;
                     pub type Param0 = runtime_types::starknet_api::transaction::TransactionHash;
                 }
                 pub mod tx_messages {
                     use super::runtime_types;
-                    pub type TxMessages = ::std::vec::Vec<runtime_types::starknet_api::transaction::MessageToL1>;
+                    pub type TxMessages = ::subxt::ext::subxt_core::alloc::vec::Vec<
+                        runtime_types::starknet_api::transaction::MessageToL1,
+                    >;
                     pub type Param0 = runtime_types::starknet_api::transaction::TransactionHash;
                 }
                 pub mod tx_revert_error {
                     use super::runtime_types;
-                    pub type TxRevertError = ::std::string::String;
+                    pub type TxRevertError = ::subxt::ext::subxt_core::alloc::string::String;
                     pub type Param0 = runtime_types::starknet_api::transaction::TransactionHash;
                 }
                 pub mod contracts_state_roots {
@@ -4261,7 +4467,7 @@ pub mod api {
                 }
                 pub mod pending_storage_changes {
                     use super::runtime_types;
-                    pub type PendingStorageChanges = ::std::vec::Vec<(
+                    pub type PendingStorageChanges = ::subxt::ext::subxt_core::alloc::vec::Vec<(
                         runtime_types::starknet_api::state::StorageKey,
                         runtime_types::mp_felt::Felt252Wrapper,
                     )>;
@@ -4320,15 +4526,12 @@ pub mod api {
                 }
                 pub mod l1_messages {
                     use super::runtime_types;
-                    pub type L1Messages = ::std::vec::Vec<runtime_types::starknet_api::core::Nonce>;
+                    pub type L1Messages =
+                        ::subxt::ext::subxt_core::alloc::vec::Vec<runtime_types::starknet_api::core::Nonce>;
                 }
                 pub mod chain_id_storage {
                     use super::runtime_types;
                     pub type ChainIdStorage = runtime_types::mp_felt::Felt252Wrapper;
-                }
-                pub mod disable_transaction_fee_storage {
-                    use super::runtime_types;
-                    pub type DisableTransactionFeeStorage = ::core::primitive::bool;
                 }
             }
             pub struct StorageApi;
@@ -4338,14 +4541,14 @@ pub mod api {
                 /// Current building block's transactions.
                 pub fn pending(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::pending::Pending,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "Pending",
                         (),
@@ -4358,14 +4561,14 @@ pub mod api {
                 }
                 pub fn pending_hashes(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::pending_hashes::PendingHashes,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "PendingHashes",
                         (),
@@ -4378,14 +4581,14 @@ pub mod api {
                 }
                 pub fn tx_events_iter(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::tx_events::TxEvents,
                     (),
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "TxEvents",
                         (),
@@ -4398,18 +4601,18 @@ pub mod api {
                 }
                 pub fn tx_events(
                     &self,
-                    _0: impl ::std::borrow::Borrow<types::tx_events::Param0>,
-                ) -> ::subxt::storage::address::Address<
-                    ::subxt::storage::address::StaticStorageKey<types::tx_events::Param0>,
+                    _0: impl ::core::borrow::Borrow<types::tx_events::Param0>,
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
+                    ::subxt::ext::subxt_core::storage::address::StaticStorageKey<types::tx_events::Param0>,
                     types::tx_events::TxEvents,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "TxEvents",
-                        ::subxt::storage::address::StaticStorageKey::new(_0.borrow()),
+                        ::subxt::ext::subxt_core::storage::address::StaticStorageKey::new(_0.borrow()),
                         [
                             121u8, 221u8, 127u8, 211u8, 86u8, 203u8, 128u8, 198u8, 221u8, 89u8, 110u8, 99u8, 184u8,
                             167u8, 140u8, 177u8, 171u8, 25u8, 236u8, 201u8, 94u8, 6u8, 73u8, 35u8, 221u8, 204u8, 221u8,
@@ -4419,14 +4622,14 @@ pub mod api {
                 }
                 pub fn tx_messages_iter(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::tx_messages::TxMessages,
                     (),
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "TxMessages",
                         (),
@@ -4439,18 +4642,18 @@ pub mod api {
                 }
                 pub fn tx_messages(
                     &self,
-                    _0: impl ::std::borrow::Borrow<types::tx_messages::Param0>,
-                ) -> ::subxt::storage::address::Address<
-                    ::subxt::storage::address::StaticStorageKey<types::tx_messages::Param0>,
+                    _0: impl ::core::borrow::Borrow<types::tx_messages::Param0>,
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
+                    ::subxt::ext::subxt_core::storage::address::StaticStorageKey<types::tx_messages::Param0>,
                     types::tx_messages::TxMessages,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "TxMessages",
-                        ::subxt::storage::address::StaticStorageKey::new(_0.borrow()),
+                        ::subxt::ext::subxt_core::storage::address::StaticStorageKey::new(_0.borrow()),
                         [
                             167u8, 160u8, 91u8, 132u8, 79u8, 241u8, 107u8, 41u8, 163u8, 195u8, 225u8, 232u8, 145u8,
                             217u8, 48u8, 98u8, 150u8, 247u8, 235u8, 102u8, 151u8, 238u8, 11u8, 107u8, 241u8, 54u8,
@@ -4460,14 +4663,14 @@ pub mod api {
                 }
                 pub fn tx_revert_error_iter(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::tx_revert_error::TxRevertError,
                     (),
                     (),
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "TxRevertError",
                         (),
@@ -4480,18 +4683,18 @@ pub mod api {
                 }
                 pub fn tx_revert_error(
                     &self,
-                    _0: impl ::std::borrow::Borrow<types::tx_revert_error::Param0>,
-                ) -> ::subxt::storage::address::Address<
-                    ::subxt::storage::address::StaticStorageKey<types::tx_revert_error::Param0>,
+                    _0: impl ::core::borrow::Borrow<types::tx_revert_error::Param0>,
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
+                    ::subxt::ext::subxt_core::storage::address::StaticStorageKey<types::tx_revert_error::Param0>,
                     types::tx_revert_error::TxRevertError,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "TxRevertError",
-                        ::subxt::storage::address::StaticStorageKey::new(_0.borrow()),
+                        ::subxt::ext::subxt_core::storage::address::StaticStorageKey::new(_0.borrow()),
                         [
                             135u8, 202u8, 162u8, 217u8, 245u8, 163u8, 157u8, 219u8, 170u8, 92u8, 64u8, 59u8, 204u8,
                             168u8, 146u8, 93u8, 221u8, 30u8, 79u8, 181u8, 70u8, 49u8, 136u8, 164u8, 1u8, 234u8, 28u8,
@@ -4504,14 +4707,14 @@ pub mod api {
                 /// Mapping of contract address to state root.
                 pub fn contracts_state_roots_iter(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::contracts_state_roots::ContractsStateRoots,
                     (),
                     (),
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "ContractsStateRoots",
                         (),
@@ -4527,18 +4730,18 @@ pub mod api {
                 /// Mapping of contract address to state root.
                 pub fn contracts_state_roots(
                     &self,
-                    _0: impl ::std::borrow::Borrow<types::contracts_state_roots::Param0>,
-                ) -> ::subxt::storage::address::Address<
-                    ::subxt::storage::address::StaticStorageKey<types::contracts_state_roots::Param0>,
+                    _0: impl ::core::borrow::Borrow<types::contracts_state_roots::Param0>,
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
+                    ::subxt::ext::subxt_core::storage::address::StaticStorageKey<types::contracts_state_roots::Param0>,
                     types::contracts_state_roots::ContractsStateRoots,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "ContractsStateRoots",
-                        ::subxt::storage::address::StaticStorageKey::new(_0.borrow()),
+                        ::subxt::ext::subxt_core::storage::address::StaticStorageKey::new(_0.borrow()),
                         [
                             229u8, 249u8, 42u8, 22u8, 180u8, 204u8, 109u8, 58u8, 8u8, 151u8, 244u8, 138u8, 112u8,
                             214u8, 87u8, 191u8, 95u8, 114u8, 61u8, 127u8, 210u8, 88u8, 229u8, 154u8, 33u8, 62u8, 108u8,
@@ -4551,14 +4754,14 @@ pub mod api {
                 /// Mapping storage key to storage value.
                 pub fn pending_storage_changes_iter(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::pending_storage_changes::PendingStorageChanges,
                     (),
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "PendingStorageChanges",
                         (),
@@ -4574,18 +4777,20 @@ pub mod api {
                 /// Mapping storage key to storage value.
                 pub fn pending_storage_changes(
                     &self,
-                    _0: impl ::std::borrow::Borrow<types::pending_storage_changes::Param0>,
-                ) -> ::subxt::storage::address::Address<
-                    ::subxt::storage::address::StaticStorageKey<types::pending_storage_changes::Param0>,
+                    _0: impl ::core::borrow::Borrow<types::pending_storage_changes::Param0>,
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
+                    ::subxt::ext::subxt_core::storage::address::StaticStorageKey<
+                        types::pending_storage_changes::Param0,
+                    >,
                     types::pending_storage_changes::PendingStorageChanges,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "PendingStorageChanges",
-                        ::subxt::storage::address::StaticStorageKey::new(_0.borrow()),
+                        ::subxt::ext::subxt_core::storage::address::StaticStorageKey::new(_0.borrow()),
                         [
                             164u8, 119u8, 210u8, 206u8, 60u8, 14u8, 39u8, 11u8, 109u8, 110u8, 175u8, 105u8, 56u8,
                             188u8, 73u8, 130u8, 180u8, 56u8, 78u8, 81u8, 108u8, 255u8, 109u8, 246u8, 244u8, 20u8,
@@ -4597,14 +4802,14 @@ pub mod api {
                 /// Safe to use `Identity` as the key is already a hash.
                 pub fn block_hash_iter(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::block_hash::BlockHash,
                     (),
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "BlockHash",
                         (),
@@ -4619,18 +4824,18 @@ pub mod api {
                 /// Safe to use `Identity` as the key is already a hash.
                 pub fn block_hash(
                     &self,
-                    _0: impl ::std::borrow::Borrow<types::block_hash::Param0>,
-                ) -> ::subxt::storage::address::Address<
-                    ::subxt::storage::address::StaticStorageKey<types::block_hash::Param0>,
+                    _0: impl ::core::borrow::Borrow<types::block_hash::Param0>,
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
+                    ::subxt::ext::subxt_core::storage::address::StaticStorageKey<types::block_hash::Param0>,
                     types::block_hash::BlockHash,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "BlockHash",
-                        ::subxt::storage::address::StaticStorageKey::new(_0.borrow()),
+                        ::subxt::ext::subxt_core::storage::address::StaticStorageKey::new(_0.borrow()),
                         [
                             136u8, 185u8, 29u8, 194u8, 72u8, 62u8, 93u8, 202u8, 59u8, 231u8, 199u8, 32u8, 71u8, 128u8,
                             203u8, 237u8, 92u8, 50u8, 122u8, 167u8, 75u8, 26u8, 233u8, 203u8, 104u8, 139u8, 215u8,
@@ -4642,14 +4847,14 @@ pub mod api {
                 /// Safe to use `Identity` as the key is already a hash.
                 pub fn contract_class_hashes_iter(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::contract_class_hashes::ContractClassHashes,
                     (),
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "ContractClassHashes",
                         (),
@@ -4664,18 +4869,18 @@ pub mod api {
                 /// Safe to use `Identity` as the key is already a hash.
                 pub fn contract_class_hashes(
                     &self,
-                    _0: impl ::std::borrow::Borrow<types::contract_class_hashes::Param0>,
-                ) -> ::subxt::storage::address::Address<
-                    ::subxt::storage::address::StaticStorageKey<types::contract_class_hashes::Param0>,
+                    _0: impl ::core::borrow::Borrow<types::contract_class_hashes::Param0>,
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
+                    ::subxt::ext::subxt_core::storage::address::StaticStorageKey<types::contract_class_hashes::Param0>,
                     types::contract_class_hashes::ContractClassHashes,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "ContractClassHashes",
-                        ::subxt::storage::address::StaticStorageKey::new(_0.borrow()),
+                        ::subxt::ext::subxt_core::storage::address::StaticStorageKey::new(_0.borrow()),
                         [
                             158u8, 81u8, 197u8, 1u8, 141u8, 199u8, 204u8, 71u8, 52u8, 47u8, 69u8, 144u8, 29u8, 176u8,
                             20u8, 185u8, 167u8, 111u8, 68u8, 9u8, 169u8, 109u8, 128u8, 191u8, 220u8, 49u8, 77u8, 87u8,
@@ -4687,14 +4892,14 @@ pub mod api {
                 /// Safe to use `Identity` as the key is already a hash.
                 pub fn contract_classes_iter(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::contract_classes::ContractClasses,
                     (),
                     (),
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "ContractClasses",
                         (),
@@ -4709,18 +4914,18 @@ pub mod api {
                 /// Safe to use `Identity` as the key is already a hash.
                 pub fn contract_classes(
                     &self,
-                    _0: impl ::std::borrow::Borrow<types::contract_classes::Param0>,
-                ) -> ::subxt::storage::address::Address<
-                    ::subxt::storage::address::StaticStorageKey<types::contract_classes::Param0>,
+                    _0: impl ::core::borrow::Borrow<types::contract_classes::Param0>,
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
+                    ::subxt::ext::subxt_core::storage::address::StaticStorageKey<types::contract_classes::Param0>,
                     types::contract_classes::ContractClasses,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "ContractClasses",
-                        ::subxt::storage::address::StaticStorageKey::new(_0.borrow()),
+                        ::subxt::ext::subxt_core::storage::address::StaticStorageKey::new(_0.borrow()),
                         [
                             122u8, 220u8, 214u8, 134u8, 98u8, 220u8, 43u8, 8u8, 109u8, 235u8, 171u8, 135u8, 34u8,
                             252u8, 75u8, 164u8, 188u8, 145u8, 4u8, 200u8, 239u8, 151u8, 240u8, 12u8, 225u8, 143u8,
@@ -4732,14 +4937,14 @@ pub mod api {
                 /// Safe to use `Identity` as the key is already a hash.
                 pub fn compiled_class_hashes_iter(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::compiled_class_hashes::CompiledClassHashes,
                     (),
                     (),
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "CompiledClassHashes",
                         (),
@@ -4754,18 +4959,18 @@ pub mod api {
                 /// Safe to use `Identity` as the key is already a hash.
                 pub fn compiled_class_hashes(
                     &self,
-                    _0: impl ::std::borrow::Borrow<types::compiled_class_hashes::Param0>,
-                ) -> ::subxt::storage::address::Address<
-                    ::subxt::storage::address::StaticStorageKey<types::compiled_class_hashes::Param0>,
+                    _0: impl ::core::borrow::Borrow<types::compiled_class_hashes::Param0>,
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
+                    ::subxt::ext::subxt_core::storage::address::StaticStorageKey<types::compiled_class_hashes::Param0>,
                     types::compiled_class_hashes::CompiledClassHashes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "CompiledClassHashes",
-                        ::subxt::storage::address::StaticStorageKey::new(_0.borrow()),
+                        ::subxt::ext::subxt_core::storage::address::StaticStorageKey::new(_0.borrow()),
                         [
                             89u8, 175u8, 65u8, 29u8, 84u8, 174u8, 25u8, 253u8, 36u8, 243u8, 217u8, 154u8, 55u8, 218u8,
                             128u8, 43u8, 63u8, 181u8, 67u8, 219u8, 91u8, 91u8, 135u8, 181u8, 161u8, 184u8, 251u8,
@@ -4777,14 +4982,14 @@ pub mod api {
                 /// Safe to use `Identity` as the key is already a hash.
                 pub fn nonces_iter(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::nonces::Nonces,
                     (),
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "Nonces",
                         (),
@@ -4799,18 +5004,18 @@ pub mod api {
                 /// Safe to use `Identity` as the key is already a hash.
                 pub fn nonces(
                     &self,
-                    _0: impl ::std::borrow::Borrow<types::nonces::Param0>,
-                ) -> ::subxt::storage::address::Address<
-                    ::subxt::storage::address::StaticStorageKey<types::nonces::Param0>,
+                    _0: impl ::core::borrow::Borrow<types::nonces::Param0>,
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
+                    ::subxt::ext::subxt_core::storage::address::StaticStorageKey<types::nonces::Param0>,
                     types::nonces::Nonces,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "Nonces",
-                        ::subxt::storage::address::StaticStorageKey::new(_0.borrow()),
+                        ::subxt::ext::subxt_core::storage::address::StaticStorageKey::new(_0.borrow()),
                         [
                             235u8, 122u8, 110u8, 231u8, 171u8, 151u8, 159u8, 224u8, 190u8, 13u8, 0u8, 106u8, 250u8,
                             25u8, 89u8, 242u8, 164u8, 98u8, 63u8, 56u8, 181u8, 34u8, 0u8, 155u8, 112u8, 144u8, 75u8,
@@ -4822,14 +5027,14 @@ pub mod api {
                 /// Safe to use `Identity` as the key is already a hash.
                 pub fn storage_view_iter(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::storage_view::StorageView,
                     (),
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "StorageView",
                         (),
@@ -4844,18 +5049,18 @@ pub mod api {
                 /// Safe to use `Identity` as the key is already a hash.
                 pub fn storage_view_iter1(
                     &self,
-                    _0: impl ::std::borrow::Borrow<types::storage_view::Param0>,
-                ) -> ::subxt::storage::address::Address<
-                    ::subxt::storage::address::StaticStorageKey<types::storage_view::Param0>,
+                    _0: impl ::core::borrow::Borrow<types::storage_view::Param0>,
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
+                    ::subxt::ext::subxt_core::storage::address::StaticStorageKey<types::storage_view::Param0>,
                     types::storage_view::StorageView,
                     (),
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "StorageView",
-                        ::subxt::storage::address::StaticStorageKey::new(_0.borrow()),
+                        ::subxt::ext::subxt_core::storage::address::StaticStorageKey::new(_0.borrow()),
                         [
                             167u8, 146u8, 218u8, 79u8, 41u8, 243u8, 153u8, 185u8, 246u8, 39u8, 34u8, 194u8, 2u8, 36u8,
                             122u8, 249u8, 16u8, 241u8, 86u8, 76u8, 190u8, 193u8, 234u8, 31u8, 219u8, 20u8, 109u8,
@@ -4867,24 +5072,24 @@ pub mod api {
                 /// Safe to use `Identity` as the key is already a hash.
                 pub fn storage_view(
                     &self,
-                    _0: impl ::std::borrow::Borrow<types::storage_view::Param0>,
-                    _1: impl ::std::borrow::Borrow<types::storage_view::Param1>,
-                ) -> ::subxt::storage::address::Address<
+                    _0: impl ::core::borrow::Borrow<types::storage_view::Param0>,
+                    _1: impl ::core::borrow::Borrow<types::storage_view::Param1>,
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (
-                        ::subxt::storage::address::StaticStorageKey<types::storage_view::Param0>,
-                        ::subxt::storage::address::StaticStorageKey<types::storage_view::Param1>,
+                        ::subxt::ext::subxt_core::storage::address::StaticStorageKey<types::storage_view::Param0>,
+                        ::subxt::ext::subxt_core::storage::address::StaticStorageKey<types::storage_view::Param1>,
                     ),
                     types::storage_view::StorageView,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "StorageView",
                         (
-                            ::subxt::storage::address::StaticStorageKey::new(_0.borrow()),
-                            ::subxt::storage::address::StaticStorageKey::new(_1.borrow()),
+                            ::subxt::ext::subxt_core::storage::address::StaticStorageKey::new(_0.borrow()),
+                            ::subxt::ext::subxt_core::storage::address::StaticStorageKey::new(_1.borrow()),
                         ),
                         [
                             167u8, 146u8, 218u8, 79u8, 41u8, 243u8, 153u8, 185u8, 246u8, 39u8, 34u8, 194u8, 2u8, 36u8,
@@ -4900,14 +5105,14 @@ pub mod api {
                 /// * Find a more relevant name for this.
                 pub fn last_known_eth_block(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::last_known_eth_block::LastKnownEthBlock,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "LastKnownEthBlock",
                         (),
@@ -4921,14 +5126,14 @@ pub mod api {
                 /// The address of the fee token ERC20 contract.
                 pub fn fee_tokens(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::fee_tokens::FeeTokens,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "FeeTokens",
                         (),
@@ -4942,14 +5147,14 @@ pub mod api {
                 /// Current sequencer address.
                 pub fn sequencer_address(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::sequencer_address::SequencerAddress,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "SequencerAddress",
                         (),
@@ -4963,35 +5168,35 @@ pub mod api {
                 /// Current sequencer address.
                 pub fn current_l1_gas_price(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::current_l1_gas_price::CurrentL1GasPrice,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "CurrentL1GasPrice",
                         (),
                         [
-                            56u8, 253u8, 141u8, 81u8, 149u8, 227u8, 78u8, 10u8, 225u8, 183u8, 30u8, 27u8, 184u8, 56u8,
-                            85u8, 101u8, 223u8, 160u8, 202u8, 13u8, 30u8, 34u8, 32u8, 210u8, 207u8, 141u8, 67u8, 32u8,
-                            190u8, 55u8, 113u8, 179u8,
+                            248u8, 97u8, 228u8, 198u8, 54u8, 139u8, 227u8, 46u8, 168u8, 75u8, 39u8, 175u8, 90u8, 64u8,
+                            7u8, 125u8, 60u8, 194u8, 112u8, 56u8, 185u8, 103u8, 196u8, 18u8, 147u8, 135u8, 81u8, 79u8,
+                            193u8, 89u8, 44u8, 172u8,
                         ],
                     )
                 }
                 /// Ensure the sequencer address was updated for this block.
                 pub fn inherent_update(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::inherent_update::InherentUpdate,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "InherentUpdate",
                         (),
@@ -5006,14 +5211,14 @@ pub mod api {
                 /// Based on Nonce value.
                 pub fn l1_messages(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::l1_messages::L1Messages,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "L1Messages",
                         (),
@@ -5027,14 +5232,14 @@ pub mod api {
                 /// ChainID for the palle'a, 'a, t startknet
                 pub fn chain_id_storage(
                     &self,
-                ) -> ::subxt::storage::address::Address<
+                ) -> ::subxt::ext::subxt_core::storage::address::StaticAddress<
                     (),
                     types::chain_id_storage::ChainIdStorage,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
+                    ::subxt::ext::subxt_core::utils::Yes,
                     (),
                 > {
-                    ::subxt::storage::address::Address::new_static(
+                    ::subxt::ext::subxt_core::storage::address::StaticAddress::new_static(
                         "Starknet",
                         "ChainIdStorage",
                         (),
@@ -5042,26 +5247,6 @@ pub mod api {
                             87u8, 138u8, 95u8, 143u8, 30u8, 239u8, 26u8, 4u8, 233u8, 254u8, 230u8, 127u8, 202u8, 46u8,
                             43u8, 183u8, 109u8, 139u8, 38u8, 117u8, 23u8, 193u8, 62u8, 168u8, 132u8, 135u8, 197u8,
                             181u8, 213u8, 31u8, 245u8, 207u8,
-                        ],
-                    )
-                }
-                pub fn disable_transaction_fee_storage(
-                    &self,
-                ) -> ::subxt::storage::address::Address<
-                    (),
-                    types::disable_transaction_fee_storage::DisableTransactionFeeStorage,
-                    ::subxt::storage::address::Yes,
-                    ::subxt::storage::address::Yes,
-                    (),
-                > {
-                    ::subxt::storage::address::Address::new_static(
-                        "Starknet",
-                        "DisableTransactionFeeStorage",
-                        (),
-                        [
-                            88u8, 231u8, 248u8, 41u8, 95u8, 184u8, 137u8, 239u8, 82u8, 175u8, 30u8, 252u8, 70u8, 11u8,
-                            130u8, 142u8, 185u8, 191u8, 23u8, 151u8, 163u8, 226u8, 81u8, 248u8, 246u8, 176u8, 107u8,
-                            179u8, 79u8, 193u8, 82u8, 226u8,
                         ],
                     )
                 }
@@ -5075,8 +5260,11 @@ pub mod api {
                 ///
                 /// This is exposed so that it can be tuned for particular runtime, when
                 /// multiple pallets send unsigned transactions.
-                pub fn unsigned_priority(&self) -> ::subxt::constants::Address<::core::primitive::u64> {
-                    ::subxt::constants::Address::new_static(
+                pub fn unsigned_priority(
+                    &self,
+                ) -> ::subxt::ext::subxt_core::constants::address::StaticAddress<::core::primitive::u64>
+                {
+                    ::subxt::ext::subxt_core::constants::address::StaticAddress::new_static(
                         "Starknet",
                         "UnsignedPriority",
                         [
@@ -5090,8 +5278,11 @@ pub mod api {
                 ///
                 /// This is exposed so that it can be tuned for particular runtime to
                 /// set how long transactions are kept in the mempool.
-                pub fn transaction_longevity(&self) -> ::subxt::constants::Address<::core::primitive::u64> {
-                    ::subxt::constants::Address::new_static(
+                pub fn transaction_longevity(
+                    &self,
+                ) -> ::subxt::ext::subxt_core::constants::address::StaticAddress<::core::primitive::u64>
+                {
+                    ::subxt::ext::subxt_core::constants::address::StaticAddress::new_static(
                         "Starknet",
                         "TransactionLongevity",
                         [
@@ -5102,8 +5293,11 @@ pub mod api {
                     )
                 }
                 /// A bool to disable transaction fees and make all transactions free
-                pub fn disable_transaction_fee(&self) -> ::subxt::constants::Address<::core::primitive::bool> {
-                    ::subxt::constants::Address::new_static(
+                pub fn disable_transaction_fee(
+                    &self,
+                ) -> ::subxt::ext::subxt_core::constants::address::StaticAddress<::core::primitive::bool>
+                {
+                    ::subxt::ext::subxt_core::constants::address::StaticAddress::new_static(
                         "Starknet",
                         "DisableTransactionFee",
                         [
@@ -5113,8 +5307,11 @@ pub mod api {
                         ],
                     )
                 }
-                pub fn protocol_version(&self) -> ::subxt::constants::Address<::core::primitive::u8> {
-                    ::subxt::constants::Address::new_static(
+                pub fn protocol_version(
+                    &self,
+                ) -> ::subxt::ext::subxt_core::constants::address::StaticAddress<::core::primitive::u8>
+                {
+                    ::subxt::ext::subxt_core::constants::address::StaticAddress::new_static(
                         "Starknet",
                         "ProtocolVersion",
                         [
@@ -5124,8 +5321,11 @@ pub mod api {
                         ],
                     )
                 }
-                pub fn program_hash(&self) -> ::subxt::constants::Address<runtime_types::mp_felt::Felt252Wrapper> {
-                    ::subxt::constants::Address::new_static(
+                pub fn program_hash(
+                    &self,
+                ) -> ::subxt::ext::subxt_core::constants::address::StaticAddress<runtime_types::mp_felt::Felt252Wrapper>
+                {
+                    ::subxt::ext::subxt_core::constants::address::StaticAddress::new_static(
                         "Starknet",
                         "ProgramHash",
                         [
@@ -5137,9 +5337,10 @@ pub mod api {
                 }
                 pub fn execution_constants(
                     &self,
-                ) -> ::subxt::constants::Address<runtime_types::blockifier::versioned_constants::VersionedConstants>
-                {
-                    ::subxt::constants::Address::new_static(
+                ) -> ::subxt::ext::subxt_core::constants::address::StaticAddress<
+                    runtime_types::blockifier::versioned_constants::VersionedConstants,
+                > {
+                    ::subxt::ext::subxt_core::constants::address::StaticAddress::new_static(
                         "Starknet",
                         "ExecutionConstants",
                         [
@@ -5161,15 +5362,15 @@ pub mod api {
                 pub mod block {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct BlockInfo {
                         pub block_number: runtime_types::starknet_api::block::BlockNumber,
                         pub block_timestamp: runtime_types::starknet_api::block::BlockTimestamp,
@@ -5178,15 +5379,15 @@ pub mod api {
                         pub use_kzg_da: ::core::primitive::bool,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct GasPrices {
                         pub eth_l1_gas_price: ::core::num::NonZeroU128,
                         pub strk_l1_gas_price: ::core::num::NonZeroU128,
@@ -5198,44 +5399,44 @@ pub mod api {
             pub mod context {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct BlockContext {
                     pub block_info: runtime_types::blockifier::blockifier::block::BlockInfo,
                     pub chain_info: runtime_types::blockifier::context::ChainInfo,
                     pub versioned_constants: runtime_types::blockifier::versioned_constants::VersionedConstants,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct ChainInfo {
                     pub chain_id: runtime_types::starknet_api::core::ChainId,
                     pub fee_token_addresses: runtime_types::blockifier::context::FeeTokenAddresses,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct FeeTokenAddresses {
                     pub strk_fee_token_address: runtime_types::starknet_api::core::ContractAddress,
                     pub eth_fee_token_address: runtime_types::starknet_api::core::ContractAddress,
@@ -5246,122 +5447,131 @@ pub mod api {
                 pub mod call_info {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct CallExecution {
                         pub retdata: runtime_types::blockifier::execution::call_info::Retdata,
-                        pub events: ::std::vec::Vec<runtime_types::blockifier::execution::call_info::OrderedEvent>,
-                        pub l2_to_l1_messages:
-                            ::std::vec::Vec<runtime_types::blockifier::execution::call_info::OrderedL2ToL1Message>,
+                        pub events: ::subxt::ext::subxt_core::alloc::vec::Vec<
+                            runtime_types::blockifier::execution::call_info::OrderedEvent,
+                        >,
+                        pub l2_to_l1_messages: ::subxt::ext::subxt_core::alloc::vec::Vec<
+                            runtime_types::blockifier::execution::call_info::OrderedL2ToL1Message,
+                        >,
                         pub failed: ::core::primitive::bool,
                         pub gas_consumed: ::core::primitive::u64,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct CallInfo {
                         pub call: runtime_types::blockifier::execution::entry_point::CallEntryPoint,
                         pub execution: runtime_types::blockifier::execution::call_info::CallExecution,
                         pub resources: runtime_types::cairo_vm::vm::runners::cairo_runner::ExecutionResources,
-                        pub inner_calls: ::std::vec::Vec<runtime_types::blockifier::execution::call_info::CallInfo>,
-                        pub storage_read_values: ::std::vec::Vec<runtime_types::starknet_api::hash::StarkFelt>,
-                        pub accessed_storage_keys: ::std::vec::Vec<runtime_types::starknet_api::state::StorageKey>,
+                        pub inner_calls: ::subxt::ext::subxt_core::alloc::vec::Vec<
+                            runtime_types::blockifier::execution::call_info::CallInfo,
+                        >,
+                        pub storage_read_values:
+                            ::subxt::ext::subxt_core::alloc::vec::Vec<runtime_types::starknet_api::hash::StarkFelt>,
+                        pub accessed_storage_keys:
+                            ::subxt::ext::subxt_core::alloc::vec::Vec<runtime_types::starknet_api::state::StorageKey>,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct MessageToL1 {
                         pub to_address: runtime_types::starknet_api::core::EthAddress,
                         pub payload: runtime_types::starknet_api::transaction::L2ToL1Payload,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct OrderedEvent {
                         pub order: ::core::primitive::u64,
                         pub event: runtime_types::starknet_api::transaction::EventContent,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct OrderedL2ToL1Message {
                         pub order: ::core::primitive::u64,
                         pub message: runtime_types::blockifier::execution::call_info::MessageToL1,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
-                    pub struct Retdata(pub ::std::vec::Vec<runtime_types::starknet_api::hash::StarkFelt>);
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
+                    pub struct Retdata(
+                        pub ::subxt::ext::subxt_core::alloc::vec::Vec<runtime_types::starknet_api::hash::StarkFelt>,
+                    );
                 }
                 pub mod contract_class {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct ClassInfo {
                         pub contract_class: runtime_types::blockifier::execution::contract_class::ContractClass,
                         pub sierra_program_length: ::core::primitive::u64,
                         pub abi_length: ::core::primitive::u64,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub enum ContractClass {
                         #[codec(index = 0)]
                         V0(runtime_types::blockifier::execution::contract_class::ContractClassV0),
@@ -5369,97 +5579,104 @@ pub mod api {
                         V1(runtime_types::blockifier::execution::contract_class::ContractClassV1),
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct ContractClassV0(
                         pub runtime_types::blockifier::execution::contract_class::ContractClassV0Inner,
                     );
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct ContractClassV0Inner {
                         pub program: runtime_types::cairo_vm::types::program::Program,
-                        pub entry_points_by_type: ::std::vec::Vec<(
+                        pub entry_points_by_type: ::subxt::ext::subxt_core::alloc::vec::Vec<(
                             runtime_types::starknet_api::deprecated_contract_class::EntryPointType,
-                            ::std::vec::Vec<runtime_types::starknet_api::deprecated_contract_class::EntryPoint>,
+                            ::subxt::ext::subxt_core::alloc::vec::Vec<
+                                runtime_types::starknet_api::deprecated_contract_class::EntryPoint,
+                            >,
                         )>,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct ContractClassV1(
                         pub runtime_types::blockifier::execution::contract_class::ContractClassV1Inner,
                     );
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct ContractClassV1Inner {
                         pub program: runtime_types::cairo_vm::types::program::Program,
-                        pub entry_points_by_type: ::std::vec::Vec<(
+                        pub entry_points_by_type: ::subxt::ext::subxt_core::alloc::vec::Vec<(
                             runtime_types::starknet_api::deprecated_contract_class::EntryPointType,
-                            ::std::vec::Vec<runtime_types::blockifier::execution::contract_class::EntryPointV1>,
+                            ::subxt::ext::subxt_core::alloc::vec::Vec<
+                                runtime_types::blockifier::execution::contract_class::EntryPointV1,
+                            >,
                         )>,
-                        pub hints:
-                            ::std::vec::Vec<(::std::string::String, runtime_types::cairo_lang_casm::hints::Hint)>,
+                        pub hints: ::subxt::ext::subxt_core::alloc::vec::Vec<(
+                            ::subxt::ext::subxt_core::alloc::string::String,
+                            runtime_types::cairo_lang_casm::hints::Hint,
+                        )>,
                         pub bytecode_segment_lengths:
                             runtime_types::cairo_lang_starknet_classes::contract_segmentation::NestedIntList,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct EntryPointV1 {
                         pub selector: runtime_types::starknet_api::core::EntryPointSelector,
                         pub offset: runtime_types::starknet_api::deprecated_contract_class::EntryPointOffset,
-                        pub builtins: ::std::vec::Vec<::std::string::String>,
+                        pub builtins:
+                            ::subxt::ext::subxt_core::alloc::vec::Vec<::subxt::ext::subxt_core::alloc::string::String>,
                     }
                 }
                 pub mod deprecated_syscalls {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub enum DeprecatedSyscallSelector {
                         #[codec(index = 0)]
                         CallContract,
@@ -5528,15 +5745,15 @@ pub mod api {
                 pub mod entry_point {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct CallEntryPoint {
                         pub class_hash: ::core::option::Option<runtime_types::starknet_api::core::ClassHash>,
                         pub code_address: ::core::option::Option<runtime_types::starknet_api::core::ContractAddress>,
@@ -5549,15 +5766,15 @@ pub mod api {
                         pub initial_gas: ::core::primitive::u64,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub enum CallType {
                         #[codec(index = 0)]
                         Call,
@@ -5571,32 +5788,32 @@ pub mod api {
                 pub mod cached_state {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct CommitmentStateDiff {
-                        pub address_to_class_hash: ::std::vec::Vec<(
+                        pub address_to_class_hash: ::subxt::ext::subxt_core::alloc::vec::Vec<(
                             runtime_types::starknet_api::core::ContractAddress,
                             runtime_types::starknet_api::core::ClassHash,
                         )>,
-                        pub address_to_nonce: ::std::vec::Vec<(
+                        pub address_to_nonce: ::subxt::ext::subxt_core::alloc::vec::Vec<(
                             runtime_types::starknet_api::core::ContractAddress,
                             runtime_types::starknet_api::core::Nonce,
                         )>,
-                        pub storage_updates: ::std::vec::Vec<(
+                        pub storage_updates: ::subxt::ext::subxt_core::alloc::vec::Vec<(
                             runtime_types::starknet_api::core::ContractAddress,
-                            ::std::vec::Vec<(
+                            ::subxt::ext::subxt_core::alloc::vec::Vec<(
                                 runtime_types::starknet_api::state::StorageKey,
                                 runtime_types::starknet_api::hash::StarkFelt,
                             )>,
                         )>,
-                        pub class_hash_to_compiled_class_hash: ::std::vec::Vec<(
+                        pub class_hash_to_compiled_class_hash: ::subxt::ext::subxt_core::alloc::vec::Vec<(
                             runtime_types::starknet_api::core::ClassHash,
                             runtime_types::starknet_api::core::CompiledClassHash,
                         )>,
@@ -5608,15 +5825,15 @@ pub mod api {
                 pub mod account_transaction {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub enum AccountTransaction {
                         #[codec(index = 0)]
                         Declare(runtime_types::blockifier::transaction::transactions::DeclareTransaction),
@@ -5629,40 +5846,61 @@ pub mod api {
                 pub mod objects {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
+                    pub enum FeeType {
+                        #[codec(index = 0)]
+                        Strk,
+                        #[codec(index = 1)]
+                        Eth,
+                    }
+                    #[derive(
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                        Debug,
+                    )]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct GasVector {
                         pub l1_gas: ::core::primitive::u128,
                         pub l1_data_gas: ::core::primitive::u128,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
-                    pub struct ResourcesMapping(pub ::std::vec::Vec<(::std::string::String, ::core::primitive::u128)>);
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
+                    pub struct ResourcesMapping(
+                        pub  ::subxt::ext::subxt_core::alloc::vec::Vec<(
+                            ::subxt::ext::subxt_core::alloc::string::String,
+                            ::core::primitive::u128,
+                        )>,
+                    );
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct TransactionExecutionInfo {
                         pub validate_call_info:
                             ::core::option::Option<runtime_types::blockifier::execution::call_info::CallInfo>,
@@ -5673,22 +5911,22 @@ pub mod api {
                         pub actual_fee: runtime_types::starknet_api::transaction::Fee,
                         pub da_gas: runtime_types::blockifier::transaction::objects::GasVector,
                         pub actual_resources: runtime_types::blockifier::transaction::objects::ResourcesMapping,
-                        pub revert_error: ::core::option::Option<::std::string::String>,
+                        pub revert_error: ::core::option::Option<::subxt::ext::subxt_core::alloc::string::String>,
                         pub bouncer_resources: runtime_types::blockifier::transaction::objects::ResourcesMapping,
                     }
                 }
                 pub mod transaction_execution {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub enum Transaction {
                         #[codec(index = 0)]
                         AccountTransaction(
@@ -5703,15 +5941,15 @@ pub mod api {
                 pub mod transaction_types {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub enum TransactionType {
                         #[codec(index = 0)]
                         Declare,
@@ -5726,15 +5964,15 @@ pub mod api {
                 pub mod transactions {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct DeclareTransaction {
                         pub tx: runtime_types::starknet_api::transaction::DeclareTransaction,
                         pub tx_hash: runtime_types::starknet_api::transaction::TransactionHash,
@@ -5742,15 +5980,15 @@ pub mod api {
                         pub class_info: runtime_types::blockifier::execution::contract_class::ClassInfo,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct DeployAccountTransaction {
                         pub tx: runtime_types::starknet_api::transaction::DeployAccountTransaction,
                         pub tx_hash: runtime_types::starknet_api::transaction::TransactionHash,
@@ -5758,30 +5996,30 @@ pub mod api {
                         pub only_query: ::core::primitive::bool,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct InvokeTransaction {
                         pub tx: runtime_types::starknet_api::transaction::InvokeTransaction,
                         pub tx_hash: runtime_types::starknet_api::transaction::TransactionHash,
                         pub only_query: ::core::primitive::bool,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct L1HandlerTransaction {
                         pub tx: runtime_types::starknet_api::transaction::L1HandlerTransaction,
                         pub tx_hash: runtime_types::starknet_api::transaction::TransactionHash,
@@ -5792,66 +6030,69 @@ pub mod api {
             pub mod versioned_constants {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct EventSizeLimit {
                     pub max_data_length: ::core::primitive::u64,
                     pub max_keys_length: ::core::primitive::u64,
                     pub max_n_emitted_events: ::core::primitive::u64,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct L2ResourceGasCosts {
                     pub gas_per_data_felt: (::core::primitive::u128, ::core::primitive::u128),
                     pub event_key_factor: (::core::primitive::u128, ::core::primitive::u128),
                     pub gas_per_code_byte: (::core::primitive::u128, ::core::primitive::u128),
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct OSConstants {
                     pub validate_rounding_consts:
                         runtime_types::blockifier::versioned_constants::ValidateRoundingConsts,
-                    pub gas_costs: ::std::vec::Vec<(::std::string::String, ::core::primitive::u64)>,
+                    pub gas_costs: ::subxt::ext::subxt_core::alloc::vec::Vec<(
+                        ::subxt::ext::subxt_core::alloc::string::String,
+                        ::core::primitive::u64,
+                    )>,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct OsResources {
-                    pub execute_syscalls: ::std::vec::Vec<(
+                    pub execute_syscalls: ::subxt::ext::subxt_core::alloc::vec::Vec<(
                         runtime_types::blockifier::execution::deprecated_syscalls::DeprecatedSyscallSelector,
                         runtime_types::cairo_vm::vm::runners::cairo_runner::ExecutionResources,
                     )>,
-                    pub execute_txs_inner: ::std::vec::Vec<(
+                    pub execute_txs_inner: ::subxt::ext::subxt_core::alloc::vec::Vec<(
                         runtime_types::blockifier::transaction::transaction_types::TransactionType,
                         runtime_types::blockifier::versioned_constants::ResourcesByVersion,
                     )>,
@@ -5859,57 +6100,57 @@ pub mod api {
                         runtime_types::cairo_vm::vm::runners::cairo_runner::ExecutionResources,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct ResourcesByVersion {
                     pub resources: runtime_types::blockifier::versioned_constants::ResourcesParams,
                     pub deprecated_resources: runtime_types::blockifier::versioned_constants::ResourcesParams,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct ResourcesParams {
                     pub constant: runtime_types::cairo_vm::vm::runners::cairo_runner::ExecutionResources,
                     pub calldata_factor: runtime_types::cairo_vm::vm::runners::cairo_runner::ExecutionResources,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct ValidateRoundingConsts {
                     pub validate_block_number_rounding: ::core::primitive::u64,
                     pub validate_timestamp_rounding: ::core::primitive::u64,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct VersionedConstants {
                     pub tx_event_limits: runtime_types::blockifier::versioned_constants::EventSizeLimit,
                     pub invoke_tx_max_n_steps: ::core::primitive::u32,
@@ -5918,8 +6159,11 @@ pub mod api {
                     pub validate_max_n_steps: ::core::primitive::u32,
                     pub os_constants: runtime_types::blockifier::versioned_constants::OSConstants,
                     pub os_resources: runtime_types::blockifier::versioned_constants::OsResources,
-                    pub event_size_limit:
-                        ::std::vec::Vec<(::std::string::String, ::core::primitive::u128, ::core::primitive::u128)>,
+                    pub event_size_limit: ::subxt::ext::subxt_core::alloc::vec::Vec<(
+                        ::subxt::ext::subxt_core::alloc::string::String,
+                        ::core::primitive::u128,
+                        ::core::primitive::u128,
+                    )>,
                 }
             }
         }
@@ -5928,30 +6172,30 @@ pub mod api {
             pub mod bounded_vec {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
-                pub struct BoundedVec<_0>(pub ::std::vec::Vec<_0>);
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
+                pub struct BoundedVec<_0>(pub ::subxt::ext::subxt_core::alloc::vec::Vec<_0>);
             }
             pub mod weak_bounded_vec {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
-                pub struct WeakBoundedVec<_0>(pub ::std::vec::Vec<_0>);
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
+                pub struct WeakBoundedVec<_0>(pub ::subxt::ext::subxt_core::alloc::vec::Vec<_0>);
             }
         }
         pub mod cairo_felt {
@@ -5959,31 +6203,31 @@ pub mod api {
             pub mod bigint_felt {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct FeltBigInt {
-                    pub value: ::std::vec::Vec<::core::primitive::u8>,
+                    pub value: ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>,
                 }
             }
             pub mod lib_bigint_felt {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct Felt252 {
                     pub value: runtime_types::cairo_felt::bigint_felt::FeltBigInt,
                 }
@@ -5994,15 +6238,15 @@ pub mod api {
             pub mod hints {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub enum CoreHint {
                     #[codec(index = 0)]
                     AllocSegment { dst: runtime_types::cairo_lang_casm::operand::CellRef },
@@ -6163,15 +6407,15 @@ pub mod api {
                     },
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub enum CoreHintBase {
                     #[codec(index = 0)]
                     Core(runtime_types::cairo_lang_casm::hints::CoreHint),
@@ -6179,15 +6423,15 @@ pub mod api {
                     Deprecated(runtime_types::cairo_lang_casm::hints::DeprecatedHint),
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub enum DeprecatedHint {
                     #[codec(index = 0)]
                     AssertCurrentAccessIndicesIsEmpty,
@@ -6216,15 +6460,15 @@ pub mod api {
                     },
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub enum Hint {
                     #[codec(index = 0)]
                     Core(runtime_types::cairo_lang_casm::hints::CoreHintBase),
@@ -6232,15 +6476,15 @@ pub mod api {
                     Starknet(runtime_types::cairo_lang_casm::hints::StarknetHint),
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub enum StarknetHint {
                     #[codec(index = 0)]
                     SystemCall { system: runtime_types::cairo_lang_casm::operand::ResOperand },
@@ -6257,44 +6501,44 @@ pub mod api {
             pub mod operand {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct BinOpOperand {
                     pub op: runtime_types::cairo_lang_casm::operand::Operation,
                     pub a: runtime_types::cairo_lang_casm::operand::CellRef,
                     pub b: runtime_types::cairo_lang_casm::operand::DerefOrImmediate,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct CellRef {
                     pub register: runtime_types::cairo_lang_casm::operand::Register,
                     pub offset: ::core::primitive::i16,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub enum DerefOrImmediate {
                     #[codec(index = 0)]
                     Deref(runtime_types::cairo_lang_casm::operand::CellRef),
@@ -6302,15 +6546,15 @@ pub mod api {
                     Immediate(runtime_types::cairo_lang_utils::bigint::BigIntAsHex),
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub enum Operation {
                     #[codec(index = 0)]
                     Add,
@@ -6318,15 +6562,15 @@ pub mod api {
                     Mul,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub enum Register {
                     #[codec(index = 0)]
                     AP,
@@ -6334,15 +6578,15 @@ pub mod api {
                     FP,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub enum ResOperand {
                     #[codec(index = 0)]
                     Deref(runtime_types::cairo_lang_casm::operand::CellRef),
@@ -6360,21 +6604,21 @@ pub mod api {
             pub mod contract_segmentation {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub enum NestedIntList {
                     #[codec(index = 0)]
                     Leaf(::core::primitive::u64),
                     #[codec(index = 1)]
                     Node(
-                        ::std::vec::Vec<
+                        ::subxt::ext::subxt_core::alloc::vec::Vec<
                             runtime_types::cairo_lang_starknet_classes::contract_segmentation::NestedIntList,
                         >,
                     ),
@@ -6386,18 +6630,18 @@ pub mod api {
             pub mod bigint {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct BigIntAsHex {
                     pub sign: ::core::primitive::u8,
-                    pub data: ::std::vec::Vec<::core::primitive::u64>,
+                    pub data: ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u64>,
                 }
             }
         }
@@ -6408,22 +6652,22 @@ pub mod api {
                 pub mod hint_processor_definition {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct HintReference {
                         pub offset1: runtime_types::cairo_vm::serde::deserialize_program::OffsetValue,
                         pub offset2: runtime_types::cairo_vm::serde::deserialize_program::OffsetValue,
                         pub dereference: ::core::primitive::bool,
                         pub ap_tracking_data:
                             ::core::option::Option<runtime_types::cairo_vm::serde::deserialize_program::ApTracking>,
-                        pub cairo_type: ::core::option::Option<::std::string::String>,
+                        pub cairo_type: ::core::option::Option<::subxt::ext::subxt_core::alloc::string::String>,
                     }
                 }
             }
@@ -6432,48 +6676,48 @@ pub mod api {
                 pub mod deserialize_program {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct ApTracking {
                         pub group: ::core::primitive::u64,
                         pub offset: ::core::primitive::u64,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct Attribute {
-                        pub name: ::std::string::String,
+                        pub name: ::subxt::ext::subxt_core::alloc::string::String,
                         pub start_pc: ::core::primitive::u64,
                         pub end_pc: ::core::primitive::u64,
-                        pub value: ::std::string::String,
+                        pub value: ::subxt::ext::subxt_core::alloc::string::String,
                         pub flow_tracking_data: ::core::option::Option<
                             runtime_types::cairo_vm::serde::deserialize_program::FlowTrackingData,
                         >,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub enum BuiltinName {
                         #[codec(index = 0)]
                         output,
@@ -6495,145 +6739,151 @@ pub mod api {
                         segment_arena,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct FlowTrackingData {
                         pub ap_tracking: runtime_types::cairo_vm::serde::deserialize_program::ApTracking,
-                        pub reference_ids: ::std::vec::Vec<(::std::string::String, ::core::primitive::u64)>,
+                        pub reference_ids: ::subxt::ext::subxt_core::alloc::vec::Vec<(
+                            ::subxt::ext::subxt_core::alloc::string::String,
+                            ::core::primitive::u64,
+                        )>,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct HintLocation {
                         pub location: runtime_types::cairo_vm::serde::deserialize_program::Location,
                         pub n_prefix_newlines: ::core::primitive::u32,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct HintParams {
-                        pub code: ::std::string::String,
-                        pub accessible_scopes: ::std::vec::Vec<::std::string::String>,
+                        pub code: ::subxt::ext::subxt_core::alloc::string::String,
+                        pub accessible_scopes:
+                            ::subxt::ext::subxt_core::alloc::vec::Vec<::subxt::ext::subxt_core::alloc::string::String>,
                         pub flow_tracking_data: runtime_types::cairo_vm::serde::deserialize_program::FlowTrackingData,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct Identifier {
                         pub pc: ::core::option::Option<::core::primitive::u64>,
-                        pub type_: ::core::option::Option<::std::string::String>,
+                        pub type_: ::core::option::Option<::subxt::ext::subxt_core::alloc::string::String>,
                         pub value: ::core::option::Option<runtime_types::cairo_felt::lib_bigint_felt::Felt252>,
-                        pub full_name: ::core::option::Option<::std::string::String>,
+                        pub full_name: ::core::option::Option<::subxt::ext::subxt_core::alloc::string::String>,
                         pub members: ::core::option::Option<
-                            ::std::vec::Vec<(
-                                ::std::string::String,
+                            ::subxt::ext::subxt_core::alloc::vec::Vec<(
+                                ::subxt::ext::subxt_core::alloc::string::String,
                                 runtime_types::cairo_vm::serde::deserialize_program::Member,
                             )>,
                         >,
-                        pub cairo_type: ::core::option::Option<::std::string::String>,
+                        pub cairo_type: ::core::option::Option<::subxt::ext::subxt_core::alloc::string::String>,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct InputFile {
-                        pub filename: ::std::string::String,
+                        pub filename: ::subxt::ext::subxt_core::alloc::string::String,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct InstructionLocation {
                         pub inst: runtime_types::cairo_vm::serde::deserialize_program::Location,
-                        pub hints: ::std::vec::Vec<runtime_types::cairo_vm::serde::deserialize_program::HintLocation>,
+                        pub hints: ::subxt::ext::subxt_core::alloc::vec::Vec<
+                            runtime_types::cairo_vm::serde::deserialize_program::HintLocation,
+                        >,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct Location {
                         pub end_line: ::core::primitive::u32,
                         pub end_col: ::core::primitive::u32,
                         pub input_file: runtime_types::cairo_vm::serde::deserialize_program::InputFile,
-                        pub parent_location: ::std::boxed::Box<
+                        pub parent_location: ::subxt::ext::subxt_core::alloc::boxed::Box<
                             ::core::option::Option<(
                                 runtime_types::cairo_vm::serde::deserialize_program::Location,
-                                ::std::string::String,
+                                ::subxt::ext::subxt_core::alloc::string::String,
                             )>,
                         >,
                         pub start_line: ::core::primitive::u32,
                         pub start_col: ::core::primitive::u32,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct Member {
-                        pub cairo_type: ::std::string::String,
+                        pub cairo_type: ::subxt::ext::subxt_core::alloc::string::String,
                         pub offset: ::core::primitive::u64,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub enum OffsetValue {
                         #[codec(index = 0)]
                         Immediate(runtime_types::cairo_felt::lib_bigint_felt::Felt252),
@@ -6653,15 +6903,15 @@ pub mod api {
                 pub mod instruction {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub enum Register {
                         #[codec(index = 0)]
                         AP,
@@ -6672,66 +6922,74 @@ pub mod api {
                 pub mod program {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct HintsCollection {
-                        pub hints: ::std::vec::Vec<runtime_types::cairo_vm::serde::deserialize_program::HintParams>,
-                        pub hints_ranges: ::std::vec::Vec<(::core::primitive::u64, ::core::primitive::u64)>,
+                        pub hints: ::subxt::ext::subxt_core::alloc::vec::Vec<
+                            runtime_types::cairo_vm::serde::deserialize_program::HintParams,
+                        >,
+                        pub hints_ranges:
+                            ::subxt::ext::subxt_core::alloc::vec::Vec<(::core::primitive::u64, ::core::primitive::u64)>,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct Program {
                         pub shared_program_data: runtime_types::cairo_vm::types::program::SharedProgramData,
-                        pub constatnts: ::std::vec::Vec<(
-                            ::std::string::String,
+                        pub constatnts: ::subxt::ext::subxt_core::alloc::vec::Vec<(
+                            ::subxt::ext::subxt_core::alloc::string::String,
                             runtime_types::cairo_felt::lib_bigint_felt::Felt252,
                         )>,
-                        pub builtins: ::std::vec::Vec<runtime_types::cairo_vm::serde::deserialize_program::BuiltinName>,
+                        pub builtins: ::subxt::ext::subxt_core::alloc::vec::Vec<
+                            runtime_types::cairo_vm::serde::deserialize_program::BuiltinName,
+                        >,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct SharedProgramData {
-                        pub data: ::std::vec::Vec<runtime_types::cairo_vm::types::relocatable::MaybeRelocatable>,
+                        pub data: ::subxt::ext::subxt_core::alloc::vec::Vec<
+                            runtime_types::cairo_vm::types::relocatable::MaybeRelocatable,
+                        >,
                         pub hints_collection: runtime_types::cairo_vm::types::program::HintsCollection,
                         pub main: ::core::option::Option<::core::primitive::u64>,
                         pub start: ::core::option::Option<::core::primitive::u64>,
                         pub end: ::core::option::Option<::core::primitive::u64>,
-                        pub error_message_attributes:
-                            ::std::vec::Vec<runtime_types::cairo_vm::serde::deserialize_program::Attribute>,
+                        pub error_message_attributes: ::subxt::ext::subxt_core::alloc::vec::Vec<
+                            runtime_types::cairo_vm::serde::deserialize_program::Attribute,
+                        >,
                         pub instruction_locations: ::core::option::Option<
-                            ::std::vec::Vec<(
+                            ::subxt::ext::subxt_core::alloc::vec::Vec<(
                                 ::core::primitive::u64,
                                 runtime_types::cairo_vm::serde::deserialize_program::InstructionLocation,
                             )>,
                         >,
-                        pub identifiers: ::std::vec::Vec<(
-                            ::std::string::String,
+                        pub identifiers: ::subxt::ext::subxt_core::alloc::vec::Vec<(
+                            ::subxt::ext::subxt_core::alloc::string::String,
                             runtime_types::cairo_vm::serde::deserialize_program::Identifier,
                         )>,
-                        pub reference_manager: ::std::vec::Vec<
+                        pub reference_manager: ::subxt::ext::subxt_core::alloc::vec::Vec<
                             runtime_types::cairo_vm::hint_processor::hint_processor_definition::HintReference,
                         >,
                     }
@@ -6739,15 +6997,15 @@ pub mod api {
                 pub mod relocatable {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub enum MaybeRelocatable {
                         #[codec(index = 0)]
                         RelocatableValue(runtime_types::cairo_vm::types::relocatable::Relocatable),
@@ -6755,15 +7013,15 @@ pub mod api {
                         Int(runtime_types::cairo_felt::lib_bigint_felt::Felt252),
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct Relocatable {
                         pub segment_index: ::core::primitive::i64,
                         pub offset: ::core::primitive::u64,
@@ -6777,20 +7035,22 @@ pub mod api {
                     pub mod cairo_runner {
                         use super::runtime_types;
                         #[derive(
-                            :: subxt :: ext :: codec :: Decode,
-                            :: subxt :: ext :: codec :: Encode,
-                            :: subxt :: ext :: scale_decode :: DecodeAsType,
-                            :: subxt :: ext :: scale_encode :: EncodeAsType,
+                            :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                            :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                            :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                            :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                             Debug,
                         )]
-                        # [codec (crate = :: subxt :: ext :: codec)]
-                        #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                        #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                        # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                        #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                        #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                         pub struct ExecutionResources {
                             pub n_steps: ::core::primitive::u64,
                             pub n_memory_holes: ::core::primitive::u64,
-                            pub builtin_instance_counter:
-                                ::std::vec::Vec<(::std::string::String, ::core::primitive::u64)>,
+                            pub builtin_instance_counter: ::subxt::ext::subxt_core::alloc::vec::Vec<(
+                                ::subxt::ext::subxt_core::alloc::string::String,
+                                ::core::primitive::u64,
+                            )>,
                         }
                     }
                 }
@@ -6799,45 +7059,61 @@ pub mod api {
         pub mod finality_grandpa {
             use super::runtime_types;
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
-            pub struct Equivocation<_0, _1, _2> {
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
+            pub struct Equivocation1<_0, _1, _2> {
                 pub round_number: ::core::primitive::u64,
                 pub identity: _0,
                 pub first: (_1, _2),
                 pub second: (_1, _2),
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
+            pub struct Equivocation2<_0, _1, _2> {
+                pub round_number: ::core::primitive::u64,
+                pub identity: _0,
+                pub first: (_1, _2),
+                pub second: (_1, _2),
+            }
+            #[derive(
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Debug,
+            )]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub struct Precommit<_0, _1> {
                 pub target_hash: _0,
                 pub target_number: _1,
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub struct Prevote<_0, _1> {
                 pub target_hash: _0,
                 pub target_number: _1,
@@ -6848,15 +7124,15 @@ pub mod api {
             pub mod dispatch {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub enum DispatchClass {
                     #[codec(index = 0)]
                     Normal,
@@ -6866,30 +7142,30 @@ pub mod api {
                     Mandatory,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct DispatchInfo {
                     pub weight: runtime_types::sp_weights::weight_v2::Weight,
                     pub class: runtime_types::frame_support::dispatch::DispatchClass,
                     pub pays_fee: runtime_types::frame_support::dispatch::Pays,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub enum Pays {
                     #[codec(index = 0)]
                     Yes,
@@ -6897,15 +7173,15 @@ pub mod api {
                     No,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct PerDispatchClass<_0> {
                     pub normal: _0,
                     pub operational: _0,
@@ -6920,127 +7196,127 @@ pub mod api {
                 pub mod check_genesis {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct CheckGenesis;
                 }
                 pub mod check_mortality {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct CheckMortality(pub runtime_types::sp_runtime::generic::era::Era);
                 }
                 pub mod check_non_zero_sender {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct CheckNonZeroSender;
                 }
                 pub mod check_nonce {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct CheckNonce(#[codec(compact)] pub ::core::primitive::u32);
                 }
                 pub mod check_spec_version {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct CheckSpecVersion;
                 }
                 pub mod check_tx_version {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct CheckTxVersion;
                 }
                 pub mod check_weight {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct CheckWeight;
                 }
             }
             pub mod limits {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct BlockLength {
                     pub max: runtime_types::frame_support::dispatch::PerDispatchClass<::core::primitive::u32>,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct BlockWeights {
                     pub base_block: runtime_types::sp_weights::weight_v2::Weight,
                     pub max_block: runtime_types::sp_weights::weight_v2::Weight,
@@ -7049,15 +7325,15 @@ pub mod api {
                     >,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct WeightsPerClass {
                     pub base_extrinsic: runtime_types::sp_weights::weight_v2::Weight,
                     pub max_extrinsic: ::core::option::Option<runtime_types::sp_weights::weight_v2::Weight>,
@@ -7068,57 +7344,64 @@ pub mod api {
             pub mod pallet {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// Contains a variant per dispatchable extrinsic that this pallet has.
                 pub enum Call {
                     #[codec(index = 0)]
                     /// See [`Pallet::remark`].
-                    remark { remark: ::std::vec::Vec<::core::primitive::u8> },
+                    remark { remark: ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8> },
                     #[codec(index = 1)]
                     /// See [`Pallet::set_heap_pages`].
                     set_heap_pages { pages: ::core::primitive::u64 },
                     #[codec(index = 2)]
                     /// See [`Pallet::set_code`].
-                    set_code { code: ::std::vec::Vec<::core::primitive::u8> },
+                    set_code { code: ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8> },
                     #[codec(index = 3)]
                     /// See [`Pallet::set_code_without_checks`].
-                    set_code_without_checks { code: ::std::vec::Vec<::core::primitive::u8> },
+                    set_code_without_checks { code: ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8> },
                     #[codec(index = 4)]
                     /// See [`Pallet::set_storage`].
                     set_storage {
-                        items: ::std::vec::Vec<(
-                            ::std::vec::Vec<::core::primitive::u8>,
-                            ::std::vec::Vec<::core::primitive::u8>,
+                        items: ::subxt::ext::subxt_core::alloc::vec::Vec<(
+                            ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>,
+                            ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>,
                         )>,
                     },
                     #[codec(index = 5)]
                     /// See [`Pallet::kill_storage`].
-                    kill_storage { keys: ::std::vec::Vec<::std::vec::Vec<::core::primitive::u8>> },
+                    kill_storage {
+                        keys: ::subxt::ext::subxt_core::alloc::vec::Vec<
+                            ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>,
+                        >,
+                    },
                     #[codec(index = 6)]
                     /// See [`Pallet::kill_prefix`].
-                    kill_prefix { prefix: ::std::vec::Vec<::core::primitive::u8>, subkeys: ::core::primitive::u32 },
+                    kill_prefix {
+                        prefix: ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>,
+                        subkeys: ::core::primitive::u32,
+                    },
                     #[codec(index = 7)]
                     /// See [`Pallet::remark_with_event`].
-                    remark_with_event { remark: ::std::vec::Vec<::core::primitive::u8> },
+                    remark_with_event { remark: ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8> },
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// Error for the System pallet
                 pub enum Error {
                     #[codec(index = 0)]
@@ -7147,15 +7430,15 @@ pub mod api {
                     CallFiltered,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// Event for the System pallet.
                 pub enum Event {
                     #[codec(index = 0)]
@@ -7172,25 +7455,28 @@ pub mod api {
                     CodeUpdated,
                     #[codec(index = 3)]
                     /// A new account was created.
-                    NewAccount { account: ::subxt::utils::AccountId32 },
+                    NewAccount { account: ::subxt::ext::subxt_core::utils::AccountId32 },
                     #[codec(index = 4)]
                     /// An account was reaped.
-                    KilledAccount { account: ::subxt::utils::AccountId32 },
+                    KilledAccount { account: ::subxt::ext::subxt_core::utils::AccountId32 },
                     #[codec(index = 5)]
                     /// On on-chain remark happened.
-                    Remarked { sender: ::subxt::utils::AccountId32, hash: ::subxt::utils::H256 },
+                    Remarked {
+                        sender: ::subxt::ext::subxt_core::utils::AccountId32,
+                        hash: ::subxt::ext::subxt_core::utils::H256,
+                    },
                 }
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub struct AccountInfo<_0, _1> {
                 pub nonce: _0,
                 pub consumers: ::core::primitive::u32,
@@ -7199,45 +7485,45 @@ pub mod api {
                 pub data: _1,
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub struct EventRecord<_0, _1> {
                 pub phase: runtime_types::frame_system::Phase,
                 pub event: _0,
-                pub topics: ::std::vec::Vec<_1>,
+                pub topics: ::subxt::ext::subxt_core::alloc::vec::Vec<_1>,
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub struct LastRuntimeUpgradeInfo {
                 #[codec(compact)]
                 pub spec_version: ::core::primitive::u32,
-                pub spec_name: ::std::string::String,
+                pub spec_name: ::subxt::ext::subxt_core::alloc::string::String,
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub enum Phase {
                 #[codec(index = 0)]
                 ApplyExtrinsic(::core::primitive::u32),
@@ -7250,26 +7536,26 @@ pub mod api {
         pub mod madara_runtime {
             use super::runtime_types;
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub struct Runtime;
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub enum RuntimeCall {
                 #[codec(index = 0)]
                 System(runtime_types::frame_system::pallet::Call),
@@ -7281,15 +7567,15 @@ pub mod api {
                 Starknet(runtime_types::pallet_starknet::pallet::Call),
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub enum RuntimeError {
                 #[codec(index = 0)]
                 System(runtime_types::frame_system::pallet::Error),
@@ -7299,15 +7585,15 @@ pub mod api {
                 Starknet(runtime_types::pallet_starknet::pallet::Error),
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub enum RuntimeEvent {
                 #[codec(index = 0)]
                 System(runtime_types::frame_system::pallet::Event),
@@ -7318,96 +7604,132 @@ pub mod api {
         pub mod mp_felt {
             use super::runtime_types;
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub struct Felt252Wrapper(pub [::core::primitive::u8; 32usize]);
         }
         pub mod mp_simulations {
             use super::runtime_types;
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
+            pub struct FeeEstimate {
+                pub gas_consumed: ::core::primitive::u128,
+                pub gas_price: ::core::primitive::u128,
+                pub data_gas_consumed: ::core::primitive::u128,
+                pub data_gas_price: ::core::primitive::u128,
+                pub overall_fee: ::core::primitive::u128,
+                pub fee_type: runtime_types::blockifier::transaction::objects::FeeType,
+            }
+            #[derive(
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Debug,
+            )]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub enum InternalSubstrateError {
                 #[codec(index = 0)]
                 FailedToCreateATransactionalStorageExecution,
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub enum SimulationError {
                 #[codec(index = 0)]
                 ContractNotFound,
                 #[codec(index = 1)]
-                TransactionExecutionFailed(::std::string::String),
+                TransactionExecutionFailed(::subxt::ext::subxt_core::alloc::string::String),
                 #[codec(index = 2)]
                 MissingL1GasUsage,
                 #[codec(index = 3)]
                 StateDiff,
+                #[codec(index = 4)]
+                EstimateFeeFailed(::subxt::ext::subxt_core::alloc::string::String),
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub struct SimulationFlags {
                 pub validate: ::core::primitive::bool,
                 pub charge_fee: ::core::primitive::bool,
+            }
+            #[derive(
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
+                Debug,
+            )]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
+            pub struct TransactionSimulation {
+                pub execution_info: runtime_types::blockifier::transaction::objects::TransactionExecutionInfo,
+                pub state_diff: runtime_types::blockifier::state::cached_state::CommitmentStateDiff,
+                pub fee_estimate: runtime_types::mp_simulations::FeeEstimate,
             }
         }
         pub mod mp_starknet_inherent {
             use super::runtime_types;
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub struct L1GasPrices {
                 pub eth_l1_gas_price: ::core::num::NonZeroU128,
                 pub strk_l1_gas_price: ::core::num::NonZeroU128,
                 pub eth_l1_data_gas_price: ::core::num::NonZeroU128,
                 pub strk_l1_data_gas_price: ::core::num::NonZeroU128,
+                pub last_update_timestamp: ::core::primitive::u128,
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub struct StarknetInherentData {
                 pub sequencer_address: [::core::primitive::u8; 32usize],
                 pub l1_gas_price: runtime_types::mp_starknet_inherent::L1GasPrices,
@@ -7418,23 +7740,23 @@ pub mod api {
             pub mod pallet {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// Contains a variant per dispatchable extrinsic that this pallet has.
                 pub enum Call {
                     #[codec(index = 0)]
                     /// See [`Pallet::report_equivocation`].
                     report_equivocation {
-                        equivocation_proof: ::std::boxed::Box<
+                        equivocation_proof: ::subxt::ext::subxt_core::alloc::boxed::Box<
                             runtime_types::sp_consensus_grandpa::EquivocationProof<
-                                ::subxt::utils::H256,
+                                ::subxt::ext::subxt_core::utils::H256,
                                 ::core::primitive::u32,
                             >,
                         >,
@@ -7443,9 +7765,9 @@ pub mod api {
                     #[codec(index = 1)]
                     /// See [`Pallet::report_equivocation_unsigned`].
                     report_equivocation_unsigned {
-                        equivocation_proof: ::std::boxed::Box<
+                        equivocation_proof: ::subxt::ext::subxt_core::alloc::boxed::Box<
                             runtime_types::sp_consensus_grandpa::EquivocationProof<
-                                ::subxt::utils::H256,
+                                ::subxt::ext::subxt_core::utils::H256,
                                 ::core::primitive::u32,
                             >,
                         >,
@@ -7456,15 +7778,15 @@ pub mod api {
                     note_stalled { delay: ::core::primitive::u32, best_finalized_block_number: ::core::primitive::u32 },
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// The `Error` enum of this pallet.
                 pub enum Error {
                     #[codec(index = 0)]
@@ -7492,22 +7814,24 @@ pub mod api {
                     DuplicateOffenceReport,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// The `Event` enum of this pallet
                 pub enum Event {
                     #[codec(index = 0)]
                     /// New authority set has been applied.
                     NewAuthorities {
-                        authority_set:
-                            ::std::vec::Vec<(runtime_types::sp_consensus_grandpa::app::Public, ::core::primitive::u64)>,
+                        authority_set: ::subxt::ext::subxt_core::alloc::vec::Vec<(
+                            runtime_types::sp_consensus_grandpa::app::Public,
+                            ::core::primitive::u64,
+                        )>,
                     },
                     #[codec(index = 1)]
                     /// Current authority set has been paused.
@@ -7518,15 +7842,15 @@ pub mod api {
                 }
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub struct StoredPendingChange<_0> {
                 pub scheduled_at: _0,
                 pub delay: _0,
@@ -7537,15 +7861,15 @@ pub mod api {
                 pub forced: ::core::option::Option<_0>,
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub enum StoredState<_0> {
                 #[codec(index = 0)]
                 Live,
@@ -7562,15 +7886,15 @@ pub mod api {
             pub mod pallet {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// The Starknet pallet external functions.
                 /// Dispatchable functions allows users to interact with the pallet and invoke state
                 /// changes.
@@ -7598,20 +7922,17 @@ pub mod api {
                     consume_l1_message {
                         transaction: runtime_types::blockifier::transaction::transactions::L1HandlerTransaction,
                     },
-                    #[codec(index = 5)]
-                    /// See [`Pallet::set_disable_fee`].
-                    set_disable_fee { value: ::core::primitive::bool },
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// The Starknet pallet custom errors.
                 /// ERRORS
                 pub enum Error {
@@ -7671,15 +7992,15 @@ pub mod api {
             pub mod pallet {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 /// Contains a variant per dispatchable extrinsic that this pallet has.
                 pub enum Call {
                     #[codec(index = 0)]
@@ -7694,15 +8015,15 @@ pub mod api {
         pub mod sp_arithmetic {
             use super::runtime_types;
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub enum ArithmeticError {
                 #[codec(index = 0)]
                 Underflow,
@@ -7719,15 +8040,15 @@ pub mod api {
                 pub mod app_sr25519 {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct Public(pub runtime_types::sp_core::sr25519::Public);
                 }
             }
@@ -7737,42 +8058,42 @@ pub mod api {
             pub mod app {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct Public(pub runtime_types::sp_core::ed25519::Public);
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct Signature(pub runtime_types::sp_core::ed25519::Signature);
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub enum Equivocation<_0, _1> {
                 #[codec(index = 0)]
                 Prevote(
-                    runtime_types::finality_grandpa::Equivocation<
+                    runtime_types::finality_grandpa::Equivocation1<
                         runtime_types::sp_consensus_grandpa::app::Public,
                         runtime_types::finality_grandpa::Prevote<_0, _1>,
                         runtime_types::sp_consensus_grandpa::app::Signature,
@@ -7780,7 +8101,7 @@ pub mod api {
                 ),
                 #[codec(index = 1)]
                 Precommit(
-                    runtime_types::finality_grandpa::Equivocation<
+                    runtime_types::finality_grandpa::Equivocation2<
                         runtime_types::sp_consensus_grandpa::app::Public,
                         runtime_types::finality_grandpa::Precommit<_0, _1>,
                         runtime_types::sp_consensus_grandpa::app::Signature,
@@ -7788,56 +8109,56 @@ pub mod api {
                 ),
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub struct EquivocationProof<_0, _1> {
                 pub set_id: ::core::primitive::u64,
                 pub equivocation: runtime_types::sp_consensus_grandpa::Equivocation<_0, _1>,
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
-            pub struct OpaqueKeyOwnershipProof(pub ::std::vec::Vec<::core::primitive::u8>);
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
+            pub struct OpaqueKeyOwnershipProof(pub ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>);
         }
         pub mod sp_consensus_slots {
             use super::runtime_types;
             #[derive(
-                :: subxt :: ext :: codec :: CompactAs,
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: CompactAs,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub struct Slot(pub ::core::primitive::u64);
             #[derive(
-                :: subxt :: ext :: codec :: CompactAs,
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: CompactAs,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub struct SlotDuration(pub ::core::primitive::u64);
         }
         pub mod sp_core {
@@ -7845,134 +8166,136 @@ pub mod api {
             pub mod crypto {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct KeyTypeId(pub [::core::primitive::u8; 4usize]);
             }
             pub mod ecdsa {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct Signature(pub [::core::primitive::u8; 65usize]);
             }
             pub mod ed25519 {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct Public(pub [::core::primitive::u8; 32usize]);
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct Signature(pub [::core::primitive::u8; 64usize]);
             }
             pub mod sr25519 {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct Public(pub [::core::primitive::u8; 32usize]);
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct Signature(pub [::core::primitive::u8; 64usize]);
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
-            pub struct OpaqueMetadata(pub ::std::vec::Vec<::core::primitive::u8>);
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
+            pub struct OpaqueMetadata(pub ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>);
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub enum Void {}
         }
         pub mod sp_inherents {
             use super::runtime_types;
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub struct CheckInherentsResult {
                 pub okay: ::core::primitive::bool,
                 pub fatal_error: ::core::primitive::bool,
                 pub errors: runtime_types::sp_inherents::InherentData,
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub struct InherentData {
-                pub data:
-                    ::subxt::utils::KeyedVec<[::core::primitive::u8; 8usize], ::std::vec::Vec<::core::primitive::u8>>,
+                pub data: ::subxt::ext::subxt_core::utils::KeyedVec<
+                    [::core::primitive::u8; 8usize],
+                    ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>,
+                >,
             }
         }
         pub mod sp_runtime {
@@ -7982,54 +8305,65 @@ pub mod api {
                 pub mod block {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct Block<_0, _1> {
                         pub header: _0,
-                        pub extrinsics: ::std::vec::Vec<_1>,
+                        pub extrinsics: ::subxt::ext::subxt_core::alloc::vec::Vec<_1>,
                     }
                 }
                 pub mod digest {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct Digest {
-                        pub logs: ::std::vec::Vec<runtime_types::sp_runtime::generic::digest::DigestItem>,
+                        pub logs: ::subxt::ext::subxt_core::alloc::vec::Vec<
+                            runtime_types::sp_runtime::generic::digest::DigestItem,
+                        >,
                     }
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub enum DigestItem {
                         #[codec(index = 6)]
-                        PreRuntime([::core::primitive::u8; 4usize], ::std::vec::Vec<::core::primitive::u8>),
+                        PreRuntime(
+                            [::core::primitive::u8; 4usize],
+                            ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>,
+                        ),
                         #[codec(index = 4)]
-                        Consensus([::core::primitive::u8; 4usize], ::std::vec::Vec<::core::primitive::u8>),
+                        Consensus(
+                            [::core::primitive::u8; 4usize],
+                            ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>,
+                        ),
                         #[codec(index = 5)]
-                        Seal([::core::primitive::u8; 4usize], ::std::vec::Vec<::core::primitive::u8>),
+                        Seal(
+                            [::core::primitive::u8; 4usize],
+                            ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>,
+                        ),
                         #[codec(index = 0)]
-                        Other(::std::vec::Vec<::core::primitive::u8>),
+                        Other(::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>),
                         #[codec(index = 8)]
                         RuntimeEnvironmentUpdated,
                     }
@@ -8037,15 +8371,15 @@ pub mod api {
                 pub mod era {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub enum Era {
                         #[codec(index = 0)]
                         Immortal,
@@ -8564,21 +8898,21 @@ pub mod api {
                 pub mod header {
                     use super::runtime_types;
                     #[derive(
-                        :: subxt :: ext :: codec :: Decode,
-                        :: subxt :: ext :: codec :: Encode,
-                        :: subxt :: ext :: scale_decode :: DecodeAsType,
-                        :: subxt :: ext :: scale_encode :: EncodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                        :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                        :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                         Debug,
                     )]
-                    # [codec (crate = :: subxt :: ext :: codec)]
-                    #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                    #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                    # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                    #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                    #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                     pub struct Header<_0> {
-                        pub parent_hash: ::subxt::utils::H256,
+                        pub parent_hash: ::subxt::ext::subxt_core::utils::H256,
                         #[codec(compact)]
                         pub number: _0,
-                        pub state_root: ::subxt::utils::H256,
-                        pub extrinsics_root: ::subxt::utils::H256,
+                        pub state_root: ::subxt::ext::subxt_core::utils::H256,
+                        pub extrinsics_root: ::subxt::ext::subxt_core::utils::H256,
                         pub digest: runtime_types::sp_runtime::generic::digest::Digest,
                     }
                 }
@@ -8586,15 +8920,15 @@ pub mod api {
             pub mod transaction_validity {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub enum InvalidTransaction {
                     #[codec(index = 0)]
                     Call,
@@ -8620,15 +8954,15 @@ pub mod api {
                     BadSigner,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub enum TransactionSource {
                     #[codec(index = 0)]
                     InBlock,
@@ -8638,15 +8972,15 @@ pub mod api {
                     External,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub enum TransactionValidityError {
                     #[codec(index = 0)]
                     Invalid(runtime_types::sp_runtime::transaction_validity::InvalidTransaction),
@@ -8654,15 +8988,15 @@ pub mod api {
                     Unknown(runtime_types::sp_runtime::transaction_validity::UnknownTransaction),
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub enum UnknownTransaction {
                     #[codec(index = 0)]
                     CannotLookup,
@@ -8672,33 +9006,37 @@ pub mod api {
                     Custom(::core::primitive::u8),
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct ValidTransaction {
                     pub priority: ::core::primitive::u64,
-                    pub requires: ::std::vec::Vec<::std::vec::Vec<::core::primitive::u8>>,
-                    pub provides: ::std::vec::Vec<::std::vec::Vec<::core::primitive::u8>>,
+                    pub requires: ::subxt::ext::subxt_core::alloc::vec::Vec<
+                        ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>,
+                    >,
+                    pub provides: ::subxt::ext::subxt_core::alloc::vec::Vec<
+                        ::subxt::ext::subxt_core::alloc::vec::Vec<::core::primitive::u8>,
+                    >,
                     pub longevity: ::core::primitive::u64,
                     pub propagate: ::core::primitive::bool,
                 }
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub enum DispatchError {
                 #[codec(index = 0)]
                 Other,
@@ -8730,29 +9068,29 @@ pub mod api {
                 RootNotAllowed,
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub struct ModuleError {
                 pub index: ::core::primitive::u8,
                 pub error: [::core::primitive::u8; 4usize],
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub enum MultiSignature {
                 #[codec(index = 0)]
                 Ed25519(runtime_types::sp_core::ed25519::Signature),
@@ -8762,15 +9100,15 @@ pub mod api {
                 Ecdsa(runtime_types::sp_core::ecdsa::Signature),
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub enum TokenError {
                 #[codec(index = 0)]
                 FundsUnavailable,
@@ -8794,15 +9132,15 @@ pub mod api {
                 Blocked,
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub enum TransactionalError {
                 #[codec(index = 0)]
                 LimitReached,
@@ -8813,22 +9151,25 @@ pub mod api {
         pub mod sp_version {
             use super::runtime_types;
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub struct RuntimeVersion {
-                pub spec_name: ::std::string::String,
-                pub impl_name: ::std::string::String,
+                pub spec_name: ::subxt::ext::subxt_core::alloc::string::String,
+                pub impl_name: ::subxt::ext::subxt_core::alloc::string::String,
                 pub authoring_version: ::core::primitive::u32,
                 pub spec_version: ::core::primitive::u32,
                 pub impl_version: ::core::primitive::u32,
-                pub apis: ::std::vec::Vec<([::core::primitive::u8; 8usize], ::core::primitive::u32)>,
+                pub apis: ::subxt::ext::subxt_core::alloc::vec::Vec<(
+                    [::core::primitive::u8; 8usize],
+                    ::core::primitive::u32,
+                )>,
                 pub transaction_version: ::core::primitive::u32,
                 pub state_version: ::core::primitive::u8,
             }
@@ -8838,15 +9179,15 @@ pub mod api {
             pub mod weight_v2 {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct Weight {
                     #[codec(compact)]
                     pub ref_time: ::core::primitive::u64,
@@ -8855,15 +9196,15 @@ pub mod api {
                 }
             }
             #[derive(
-                :: subxt :: ext :: codec :: Decode,
-                :: subxt :: ext :: codec :: Encode,
-                :: subxt :: ext :: scale_decode :: DecodeAsType,
-                :: subxt :: ext :: scale_encode :: EncodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                 Debug,
             )]
-            # [codec (crate = :: subxt :: ext :: codec)]
-            #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-            #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+            # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+            #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+            #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
             pub struct RuntimeDbWeight {
                 pub read: ::core::primitive::u64,
                 pub write: ::core::primitive::u64,
@@ -8874,133 +9215,133 @@ pub mod api {
             pub mod block {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: CompactAs,
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: CompactAs,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct BlockNumber(pub ::core::primitive::u64);
                 #[derive(
-                    :: subxt :: ext :: codec :: CompactAs,
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: CompactAs,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct BlockTimestamp(pub ::core::primitive::u64);
             }
             pub mod core {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
-                pub struct ChainId(pub ::std::string::String);
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
+                pub struct ChainId(pub ::subxt::ext::subxt_core::alloc::string::String);
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct ClassHash(pub runtime_types::starknet_api::hash::StarkFelt);
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct CompiledClassHash(pub runtime_types::starknet_api::hash::StarkFelt);
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct ContractAddress(pub runtime_types::starknet_api::core::PatriciaKey);
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct EntryPointSelector(pub runtime_types::starknet_api::hash::StarkFelt);
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
-                pub struct EthAddress(pub ::subxt::utils::H160);
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
+                pub struct EthAddress(pub ::subxt::ext::subxt_core::utils::H160);
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct Nonce(pub runtime_types::starknet_api::hash::StarkFelt);
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct PatriciaKey(pub runtime_types::starknet_api::hash::StarkFelt);
             }
             pub mod data_availability {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub enum DataAvailabilityMode {
                     #[codec(index = 0)]
                     L1,
@@ -9011,41 +9352,41 @@ pub mod api {
             pub mod deprecated_contract_class {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct EntryPoint {
                     pub selector: runtime_types::starknet_api::core::EntryPointSelector,
                     pub offset: runtime_types::starknet_api::deprecated_contract_class::EntryPointOffset,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: CompactAs,
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: CompactAs,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct EntryPointOffset(pub ::core::primitive::u64);
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub enum EntryPointType {
                     #[codec(index = 0)]
                     Constructor,
@@ -9058,76 +9399,80 @@ pub mod api {
             pub mod hash {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct StarkFelt(pub [::core::primitive::u8; 32usize]);
             }
             pub mod state {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct StorageKey(pub runtime_types::starknet_api::core::PatriciaKey);
             }
             pub mod transaction {
                 use super::runtime_types;
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
-                pub struct AccountDeploymentData(pub ::std::vec::Vec<runtime_types::starknet_api::hash::StarkFelt>);
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
+                pub struct AccountDeploymentData(
+                    pub ::subxt::ext::subxt_core::alloc::vec::Vec<runtime_types::starknet_api::hash::StarkFelt>,
+                );
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
-                pub struct Calldata(pub ::std::vec::Vec<runtime_types::starknet_api::hash::StarkFelt>);
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
+                pub struct Calldata(
+                    pub ::subxt::ext::subxt_core::alloc::vec::Vec<runtime_types::starknet_api::hash::StarkFelt>,
+                );
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct ContractAddressSalt(pub runtime_types::starknet_api::hash::StarkFelt);
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub enum DeclareTransaction {
                     #[codec(index = 0)]
                     V0(runtime_types::starknet_api::transaction::DeclareTransactionV0V1),
@@ -9139,15 +9484,15 @@ pub mod api {
                     V3(runtime_types::starknet_api::transaction::DeclareTransactionV3),
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct DeclareTransactionV0V1 {
                     pub max_fee: runtime_types::starknet_api::transaction::Fee,
                     pub signature: runtime_types::starknet_api::transaction::TransactionSignature,
@@ -9156,15 +9501,15 @@ pub mod api {
                     pub sender_address: runtime_types::starknet_api::core::ContractAddress,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct DeclareTransactionV2 {
                     pub max_fee: runtime_types::starknet_api::transaction::Fee,
                     pub signature: runtime_types::starknet_api::transaction::TransactionSignature,
@@ -9174,15 +9519,15 @@ pub mod api {
                     pub sender_address: runtime_types::starknet_api::core::ContractAddress,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct DeclareTransactionV3 {
                     pub resource_bounds: runtime_types::starknet_api::transaction::ResourceBoundsMapping,
                     pub tip: runtime_types::starknet_api::transaction::Tip,
@@ -9199,15 +9544,15 @@ pub mod api {
                     pub account_deployment_data: runtime_types::starknet_api::transaction::AccountDeploymentData,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub enum DeployAccountTransaction {
                     #[codec(index = 0)]
                     V1(runtime_types::starknet_api::transaction::DeployAccountTransactionV1),
@@ -9215,15 +9560,15 @@ pub mod api {
                     V3(runtime_types::starknet_api::transaction::DeployAccountTransactionV3),
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct DeployAccountTransactionV1 {
                     pub max_fee: runtime_types::starknet_api::transaction::Fee,
                     pub signature: runtime_types::starknet_api::transaction::TransactionSignature,
@@ -9233,15 +9578,15 @@ pub mod api {
                     pub constructor_calldata: runtime_types::starknet_api::transaction::Calldata,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct DeployAccountTransactionV3 {
                     pub resource_bounds: runtime_types::starknet_api::transaction::ResourceBoundsMapping,
                     pub tip: runtime_types::starknet_api::transaction::Tip,
@@ -9257,77 +9602,80 @@ pub mod api {
                     pub paymaster_data: runtime_types::starknet_api::transaction::PaymasterData,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct Event {
                     pub from_address: runtime_types::starknet_api::core::ContractAddress,
                     pub content: runtime_types::starknet_api::transaction::EventContent,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct EventContent {
-                    pub keys: ::std::vec::Vec<runtime_types::starknet_api::transaction::EventKey>,
+                    pub keys:
+                        ::subxt::ext::subxt_core::alloc::vec::Vec<runtime_types::starknet_api::transaction::EventKey>,
                     pub data: runtime_types::starknet_api::transaction::EventData,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
-                pub struct EventData(pub ::std::vec::Vec<runtime_types::starknet_api::hash::StarkFelt>);
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
+                pub struct EventData(
+                    pub ::subxt::ext::subxt_core::alloc::vec::Vec<runtime_types::starknet_api::hash::StarkFelt>,
+                );
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct EventKey(pub runtime_types::starknet_api::hash::StarkFelt);
                 #[derive(
-                    :: subxt :: ext :: codec :: CompactAs,
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: CompactAs,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct Fee(pub ::core::primitive::u128);
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub enum InvokeTransaction {
                     #[codec(index = 0)]
                     V0(runtime_types::starknet_api::transaction::InvokeTransactionV0),
@@ -9337,15 +9685,15 @@ pub mod api {
                     V3(runtime_types::starknet_api::transaction::InvokeTransactionV3),
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct InvokeTransactionV0 {
                     pub max_fee: runtime_types::starknet_api::transaction::Fee,
                     pub signature: runtime_types::starknet_api::transaction::TransactionSignature,
@@ -9354,15 +9702,15 @@ pub mod api {
                     pub calldata: runtime_types::starknet_api::transaction::Calldata,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct InvokeTransactionV1 {
                     pub max_fee: runtime_types::starknet_api::transaction::Fee,
                     pub signature: runtime_types::starknet_api::transaction::TransactionSignature,
@@ -9371,15 +9719,15 @@ pub mod api {
                     pub calldata: runtime_types::starknet_api::transaction::Calldata,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct InvokeTransactionV3 {
                     pub resource_bounds: runtime_types::starknet_api::transaction::ResourceBoundsMapping,
                     pub tip: runtime_types::starknet_api::transaction::Tip,
@@ -9395,15 +9743,15 @@ pub mod api {
                     pub account_deployment_data: runtime_types::starknet_api::transaction::AccountDeploymentData,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct L1HandlerTransaction {
                     pub version: runtime_types::starknet_api::transaction::TransactionVersion,
                     pub nonce: runtime_types::starknet_api::core::Nonce,
@@ -9412,52 +9760,56 @@ pub mod api {
                     pub calldata: runtime_types::starknet_api::transaction::Calldata,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
-                pub struct L2ToL1Payload(pub ::std::vec::Vec<runtime_types::starknet_api::hash::StarkFelt>);
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
+                pub struct L2ToL1Payload(
+                    pub ::subxt::ext::subxt_core::alloc::vec::Vec<runtime_types::starknet_api::hash::StarkFelt>,
+                );
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct MessageToL1 {
                     pub from_address: runtime_types::starknet_api::core::ContractAddress,
                     pub to_address: runtime_types::starknet_api::core::EthAddress,
                     pub payload: runtime_types::starknet_api::transaction::L2ToL1Payload,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
-                pub struct PaymasterData(pub ::std::vec::Vec<runtime_types::starknet_api::hash::StarkFelt>);
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
+                pub struct PaymasterData(
+                    pub ::subxt::ext::subxt_core::alloc::vec::Vec<runtime_types::starknet_api::hash::StarkFelt>,
+                );
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub enum Resource {
                     #[codec(index = 0)]
                     L1Gas,
@@ -9465,79 +9817,81 @@ pub mod api {
                     L2Gas,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct ResourceBounds {
                     pub max_amount: ::core::primitive::u64,
                     pub max_price_per_unit: ::core::primitive::u128,
                 }
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct ResourceBoundsMapping(
-                    pub  ::subxt::utils::KeyedVec<
+                    pub  ::subxt::ext::subxt_core::utils::KeyedVec<
                         runtime_types::starknet_api::transaction::Resource,
                         runtime_types::starknet_api::transaction::ResourceBounds,
                     >,
                 );
                 #[derive(
-                    :: subxt :: ext :: codec :: CompactAs,
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: CompactAs,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct Tip(pub ::core::primitive::u64);
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct TransactionHash(pub runtime_types::starknet_api::hash::StarkFelt);
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
-                pub struct TransactionSignature(pub ::std::vec::Vec<runtime_types::starknet_api::hash::StarkFelt>);
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
+                pub struct TransactionSignature(
+                    pub ::subxt::ext::subxt_core::alloc::vec::Vec<runtime_types::starknet_api::hash::StarkFelt>,
+                );
                 #[derive(
-                    :: subxt :: ext :: codec :: Decode,
-                    :: subxt :: ext :: codec :: Encode,
-                    :: subxt :: ext :: scale_decode :: DecodeAsType,
-                    :: subxt :: ext :: scale_encode :: EncodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Decode,
+                    :: subxt :: ext :: subxt_core :: ext :: codec :: Encode,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_decode :: DecodeAsType,
+                    :: subxt :: ext :: subxt_core :: ext :: scale_encode :: EncodeAsType,
                     Debug,
                 )]
-                # [codec (crate = :: subxt :: ext :: codec)]
-                #[decode_as_type(crate_path = ":: subxt :: ext :: scale_decode")]
-                #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
+                # [codec (crate = :: subxt :: ext :: subxt_core :: ext :: codec)]
+                #[decode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_decode")]
+                #[encode_as_type(crate_path = ":: subxt :: ext :: subxt_core :: ext :: scale_encode")]
                 pub struct TransactionVersion(pub runtime_types::starknet_api::hash::StarkFelt);
             }
         }

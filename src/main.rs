@@ -23,7 +23,7 @@ pub struct CliArgs {
     eth_priv_key: String,
     #[clap(long, env, default_value = "http://127.0.0.1:9944")]
     rollup_seq_url: String,
-    #[clap(long, env, default_value = "")]
+    #[clap(long, env, default_value = "0xabcd")]
     rollup_priv_key: String,
     #[clap(long, env, default_value_t = 31337)]
     eth_chain_id: u64,

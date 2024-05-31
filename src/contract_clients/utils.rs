@@ -1,3 +1,4 @@
+use ethers::abi::AbiEncode;
 use ethers::types::U256;
 use hex::encode;
 use starknet_accounts::SingleOwnerAccount;
@@ -19,8 +20,11 @@ pub fn build_single_owner_account<'a>(
     account_address: &str,
     is_legacy: bool,
 ) -> RpcAccount<'a> {
+    
+    log::debug!(">>>> build_single_owner_account : priv key : {:?} | account address : {:?}", private_key, &account_address);
+    
     let signer = LocalWallet::from(SigningKey::from_secret_scalar(FieldElement::from_hex_be(private_key).unwrap()));
-    let account_address = FieldElement::from_hex_be(account_address).expect("Invalid Contract Address");
+    let account_address = FieldElement::from_hex_be(&account_address).expect("Invalid Contract Address");
     let execution_encoding = if is_legacy {
         starknet_accounts::ExecutionEncoding::Legacy
     } else {

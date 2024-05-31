@@ -97,8 +97,8 @@ impl StarknetTokenBridge {
             account.declare_contract_params_sierra(TOKEN_BRIDGE_SIERRA_PATH, TOKEN_BRIDGE_CASM_PATH);
 
         #[allow(unused_variables)]
-        let flattened_class_erc20 = contract_artifact_erc20.flatten().unwrap();
-        let flattened_class_bridge = contract_artifact_bridge.flatten().unwrap();
+        let flattened_class_erc20 = contract_artifact_erc20;
+        let flattened_class_bridge = contract_artifact_bridge;
 
         let declare_txn = account
             .declare(Arc::new(flattened_class_bridge), class_hash_bridge)

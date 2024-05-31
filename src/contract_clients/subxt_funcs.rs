@@ -37,12 +37,12 @@ pub async fn declare_contract_subxt(declare_txn: DeclareTransaction) -> Result<(
     Ok(())
 }
 
-pub async fn toggle_fee(val: bool) -> Result<(), Box<dyn std::error::Error>> {
-    let api = OnlineClient::<SubstrateConfig>::new().await?;
-    let fee_call = appchain::tx().starknet().set_disable_fee(val);
-    api.tx().create_unsigned(&fee_call).unwrap().submit_and_watch().await.unwrap();
-    Ok(())
-}
+// pub async fn toggle_fee(val: bool) -> Result<(), Box<dyn std::error::Error>> {
+//     let api = OnlineClient::<SubstrateConfig>::new().await?;
+//     let fee_call = appchain::tx().starknet().set_disable_fee(val);
+//     api.tx().create_unsigned(&fee_call).unwrap().submit_and_watch().await.unwrap();
+//     Ok(())
+// }
 
 pub async fn declare_transaction_build_subxt(
     class_hash: FieldElement,

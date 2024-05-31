@@ -105,7 +105,9 @@ pub fn save_to_json(key: &str, value: &JsonValueType) -> Result<(), io::Error> {
     Ok(())
 }
 
-fn convert_to_hex(address: &str) -> String {
+pub fn convert_to_hex(address: &str) -> String {
     let big_uint = address.parse::<BigUint>().map_err(|_| "Invalid number");
-    big_uint.expect("error converting decimal string ---> hex string").to_str_radix(16)
+    let hex = big_uint.expect("error converting decimal string ---> hex string").to_str_radix(16);
+    let hash = "0x".to_string() + &hex;
+    hash
 }
