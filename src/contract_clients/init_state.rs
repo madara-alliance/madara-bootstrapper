@@ -9,10 +9,11 @@ use clap::Parser;
 use indexmap::IndexMap;
 use log::log;
 use parity_scale_codec::Encode;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 use starknet_accounts::{Account, AccountFactory, ConnectedAccount, OpenZeppelinAccountFactory};
 use starknet_api::core::{ClassHash, ContractAddress, Nonce, PatriciaKey};
+use starknet_api::deprecated_contract_class::{EntryPoint, EntryPointType};
 use starknet_api::hash::{StarkFelt, StarkHash};
 use starknet_api::transaction::{
     DeclareTransaction as DeclareTransactionEnum, DeclareTransactionV0V1, Fee, TransactionHash, TransactionSignature,
@@ -36,6 +37,14 @@ use crate::utils::constants::{
 use crate::utils::mapper::map_entrypoint_selector;
 use crate::utils::{invoke_contract, save_to_json, wait_for_transaction, JsonValueType, convert_to_hex};
 use crate::CliArgs;
+
+#[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
+pub struct CustomDeclareV0Transaction {
+    pub declare_transaction: DeclareTransactionV0V1,
+    pub program_vec: Vec<u8>,
+    pub entrypoints: IndexMap<EntryPointType, Vec<EntryPoint>>,
+    pub abi_length: usize
+}
 
 pub async fn init_and_deploy_eth_and_account(
     clients: &Config,
@@ -195,10 +204,17 @@ async fn declare_contract_middleware(input: DeclarationInput<'_>) -> FieldElemen
             };
             let abi_length = contract_abi_artifact.abi.len();
 
+            let params: CustomDeclareV0Transaction = CustomDeclareV0Transaction {
+                declare_transaction: declare_txn,
+                program_vec: encoded_p,
+                entrypoints: entry_points_by_type,
+                abi_length,
+            };
+
             let json_body = &json!({
                 "jsonrpc": "2.0",
                 "method": "madara_declareV0",
-                "params": [declare_txn, encoded_p, entry_points_by_type, abi_length],
+                "params": [params],
                 "id": 4
             });
             
@@ -207,7 +223,7 @@ async fn declare_contract_middleware(input: DeclarationInput<'_>) -> FieldElemen
 
             match raw_txn_rpc {
                 Result::Ok(val) => {
-                    // log::debug!("Txn Sent Successfully : {:?}", val);
+                    log::debug!("Txn Sent Successfully : {:?}", val);
                     log::debug!("Declare Success : {:?}", contract_abi_artifact.class_hash().unwrap());
                 }
                 Result::Err(err) => {
