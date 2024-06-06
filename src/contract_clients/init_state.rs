@@ -2,13 +2,9 @@ use std::str::FromStr;
 use std::sync::Arc;
 use std::time::Duration;
 
-use blockifier::execution::contract_class::{ClassInfo, ContractClass, ContractClassV0, ContractClassV0Inner};
-use blockifier::transaction::transactions::DeclareTransaction;
-use cairo_vm::types::program::Program;
-use clap::Parser;
+use blockifier::execution::contract_class::ContractClassV0Inner;
 use indexmap::IndexMap;
-use log::log;
-use parity_scale_codec::Encode;
+use parity_scale_codec::{Encode};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use starknet_accounts::{Account, AccountFactory, ConnectedAccount, OpenZeppelinAccountFactory};
@@ -16,26 +12,29 @@ use starknet_api::core::{ClassHash, ContractAddress, Nonce, PatriciaKey};
 use starknet_api::deprecated_contract_class::{EntryPoint, EntryPointType};
 use starknet_api::hash::{StarkFelt, StarkHash};
 use starknet_api::transaction::{
-    DeclareTransaction as DeclareTransactionEnum, DeclareTransactionV0V1, Fee, TransactionHash, TransactionSignature,
+    Calldata, ContractAddressSalt, DeclareTransactionV0V1, Fee, TransactionHash, TransactionSignature,
 };
-use starknet_core::types::contract::legacy::LegacyContractClass;
-use starknet_core::types::{BlockId, BlockTag};
+use starknet_core::types::contract::legacy::{LegacyContractClass};
+use starknet_core::types::{BlockId, BlockTag, CompressedLegacyContractClass, ContractClass};
 use starknet_ff::FieldElement;
 use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::{JsonRpcClient, Provider};
 use starknet_signers::{LocalWallet, SigningKey};
 use tokio::time::sleep;
+use url::Url;
 
-use crate::bridge::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
+use crate::bridge::helpers::account_actions::{calculate_deployed_address, AccountActions, get_contract_address_from_deploy_tx};
 use crate::contract_clients::config::Config;
+use crate::contract_clients::subxt_funcs::appchain::tx;
 // use crate::contract_clients::subxt_funcs::toggle_fee;
 use crate::contract_clients::utils::{build_single_owner_account, RpcAccount};
 use crate::utils::constants::{
-    ERC20_CASM_PATH, ERC20_SIERRA_PATH, LEGACY_BRIDGE_PATH, LEGACY_BRIDGE_PROGRAM_PATH, OZ_ACCOUNT_PATH,
-    OZ_ACCOUNT_PROGRAM_PATH, PROXY_PATH, PROXY_PROGRAM_PATH,
+    ERC20_CASM_PATH, ERC20_SIERRA_PATH, LEGACY_BRIDGE_PATH, LEGACY_BRIDGE_PROGRAM_PATH, OZ_ACCOUNT_CASM_PATH,
+    OZ_ACCOUNT_PATH, OZ_ACCOUNT_PROGRAM_PATH, OZ_ACCOUNT_SIERRA_PATH, PROXY_LEGACY_PATH, PROXY_PATH,
+    PROXY_PROGRAM_PATH,
 };
-use crate::utils::mapper::map_entrypoint_selector;
-use crate::utils::{invoke_contract, save_to_json, wait_for_transaction, JsonValueType, convert_to_hex};
+use crate::utils::mapper::{abi_mapper, map_entrypoint_selector, to_raw_legacy_entrypoint};
+use crate::utils::{convert_to_hex, invoke_contract, save_to_json, wait_for_transaction, JsonValueType};
 use crate::CliArgs;
 
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
@@ -43,14 +42,38 @@ pub struct CustomDeclareV0Transaction {
     pub declare_transaction: DeclareTransactionV0V1,
     pub program_vec: Vec<u8>,
     pub entrypoints: IndexMap<EntryPointType, Vec<EntryPoint>>,
-    pub abi_length: usize
+    pub abi_length: usize,
 }
+
+#[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
+pub struct RpcResult<T> {
+    jsonrpc: String,
+    result: T,
+    id: u64,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct DeclareV0Result {
+    pub txn_hash: TransactionHash,
+    pub class_hash: ClassHash,
+}
+
+pub const TEMP_ACCOUNT_PRIV_KEY: &str = "0xbeef";
 
 pub async fn init_and_deploy_eth_and_account(
     clients: &Config,
     arg_config: &CliArgs,
-) -> (FieldElement, FieldElement, FieldElement, FieldElement, FieldElement, FieldElement, FieldElement) {
+) -> (FieldElement, FieldElement, FieldElement, FieldElement, FieldElement, FieldElement, FieldElement, FieldElement) {
     // toggle_fee(true).await.expect("Error in disabling the fee on configured app-chain");
+    let legacy_proxy_class_hash = declare_contract_middleware(DeclarationInput::LegacyDeclarationInputs(
+        String::from(PROXY_LEGACY_PATH),
+        String::from(PROXY_LEGACY_PATH),
+        arg_config.rollup_seq_url.clone(),
+    ))
+    .await;
+    log::debug!("Legacy Proxy Class Hash Declared !!!");
+    save_to_json("legacy_proxy_class_hash", &JsonValueType::StringType(legacy_proxy_class_hash.to_string())).unwrap();
+    sleep(Duration::from_secs(10)).await;
 
     let legacy_eth_bridge_class_hash = declare_contract_middleware(DeclarationInput::LegacyDeclarationInputs(
         String::from(LEGACY_BRIDGE_PATH),
@@ -62,7 +85,7 @@ pub async fn init_and_deploy_eth_and_account(
     save_to_json("legacy_eth_bridge_class_hash", &JsonValueType::StringType(legacy_eth_bridge_class_hash.to_string()))
         .unwrap();
     sleep(Duration::from_secs(10)).await;
-    
+
     let oz_account_class_hash = declare_contract_middleware(DeclarationInput::LegacyDeclarationInputs(
         String::from(OZ_ACCOUNT_PATH),
         String::from(OZ_ACCOUNT_PROGRAM_PATH),
@@ -72,7 +95,7 @@ pub async fn init_and_deploy_eth_and_account(
     log::debug!("OZ Account Class Hash Declared !!!");
     save_to_json("oz_account_class_hash", &JsonValueType::StringType(oz_account_class_hash.to_string())).unwrap();
     sleep(Duration::from_secs(10)).await;
-    
+
     let proxy_class_hash = declare_contract_middleware(DeclarationInput::LegacyDeclarationInputs(
         String::from(PROXY_PATH),
         String::from(PROXY_PROGRAM_PATH),
@@ -84,21 +107,50 @@ pub async fn init_and_deploy_eth_and_account(
 
     log::debug!(">>>> Waiting for block to be mined [/]");
     sleep(Duration::from_secs(10)).await;
-    
-    let account_address =
-        deploy_account_using_priv_key(arg_config.rollup_priv_key.clone(), clients.provider_l2(), oz_account_class_hash)
+
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    // Making temp account for declaration of OZ account Cairo 1 contract
+    let account_address_temp =
+        deploy_account_using_priv_key(TEMP_ACCOUNT_PRIV_KEY.to_string(), clients.provider_l2(), oz_account_class_hash)
             .await;
-    save_to_json("account_address", &JsonValueType::StringType(account_address.to_string())).unwrap();
     sleep(Duration::from_secs(10)).await;
-    
+
+    let user_account_temp = build_single_owner_account(
+        clients.provider_l2(),
+        TEMP_ACCOUNT_PRIV_KEY,
+        &convert_to_hex(&account_address_temp.to_string()),
+        false,
+    );
+    let oz_account_caio_1_class_hash = declare_contract_middleware(DeclarationInput::DeclarationInputs(
+        String::from(OZ_ACCOUNT_SIERRA_PATH),
+        String::from(OZ_ACCOUNT_CASM_PATH),
+        user_account_temp.clone(),
+    ))
+    .await;
+    save_to_json("oz_account_caio_1_class_hash", &JsonValueType::StringType(oz_account_caio_1_class_hash.to_string()))
+        .unwrap();
+    sleep(Duration::from_secs(10)).await;
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+    // Using Account Cairo 1 contract
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    let account_address = deploy_account_using_priv_key(
+        arg_config.rollup_priv_key.clone(),
+        clients.provider_l2(),
+        oz_account_caio_1_class_hash,
+    )
+    .await;
+    sleep(Duration::from_secs(10)).await;
+    save_to_json("account_address", &JsonValueType::StringType(account_address.to_string())).unwrap();
     let user_account = build_single_owner_account(
         clients.provider_l2(),
-        &*arg_config.rollup_priv_key,
+        &arg_config.rollup_priv_key,
         &convert_to_hex(&account_address.to_string()),
         false,
     );
-    
-    // cairo 1 declarations through account
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+    // cairo 1 declaration through account of the user
     let erc_20_class_hash = declare_contract_middleware(DeclarationInput::DeclarationInputs(
         String::from(ERC20_SIERRA_PATH),
         String::from(ERC20_CASM_PATH),
@@ -107,11 +159,12 @@ pub async fn init_and_deploy_eth_and_account(
     .await;
     log::debug!("ERC20 Class Hash declared !!! : {:?}", erc_20_class_hash);
     save_to_json("erc_20_class_hash", &JsonValueType::StringType(erc_20_class_hash.to_string())).unwrap();
+    sleep(Duration::from_secs(10)).await;
 
     let eth_proxy_address = deploy_proxy_contract(
         &user_account,
         account_address,
-        proxy_class_hash,
+        legacy_proxy_class_hash,
         // salt taken from : https://sepolia.starkscan.co/tx/0x06a5a493cf33919e58aa4c75777bffdef97c0e39cac968896d7bee8cc67905a1
         FieldElement::from_str("0x322c2610264639f6b2cee681ac53fa65c37e187ea24292d1b21d859c55e1a78").unwrap(),
         FieldElement::ONE,
@@ -119,32 +172,37 @@ pub async fn init_and_deploy_eth_and_account(
     .await;
     log::debug!("ETH Proxy Address : {:?}", eth_proxy_address);
     save_to_json("l2_eth_address_proxy", &JsonValueType::StringType(eth_proxy_address.to_string())).unwrap();
+    sleep(Duration::from_secs(10)).await;
 
     let eth_bridge_proxy_address = deploy_proxy_contract(
         &user_account,
         account_address,
-        proxy_class_hash,
-        FieldElement::from_str("0xabcdabcd").unwrap(),
+        legacy_proxy_class_hash,
+        FieldElement::from_str("0xabcdabcdabcd").unwrap(),
         FieldElement::ZERO,
     )
     .await;
-    log::debug!("ETH Bridge Proxy Address : {:?}", eth_proxy_address);
+    log::debug!("ETH Bridge Proxy Address : {:?}", eth_bridge_proxy_address);
     save_to_json("ETH_l2_bridge_address_proxy", &JsonValueType::StringType(eth_proxy_address.to_string())).unwrap();
+    sleep(Duration::from_secs(10)).await;
 
     init_governance_proxy(&user_account, eth_proxy_address, &arg_config.rollup_priv_key).await;
+    sleep(Duration::from_secs(10)).await;
     init_governance_proxy(&user_account, eth_bridge_proxy_address, &arg_config.rollup_priv_key).await;
+    sleep(Duration::from_secs(10)).await;
 
     let token_bridge_proxy_address = deploy_proxy_contract(
         &user_account,
         account_address,
-        proxy_class_hash,
-        FieldElement::from_str("0xabcdabcd").unwrap(),
+        legacy_proxy_class_hash,
+        FieldElement::from_str("0xabcdabcdabcdabcdabcd").unwrap(),
         FieldElement::ZERO,
     )
     .await;
     log::debug!("Token Bridge Proxy Address : {:?}", eth_proxy_address);
     save_to_json("ERC20_l2_bridge_address_proxy", &JsonValueType::StringType(token_bridge_proxy_address.to_string()))
         .unwrap();
+    sleep(Duration::from_secs(10)).await;
 
     (
         erc_20_class_hash,
@@ -154,6 +212,7 @@ pub async fn init_and_deploy_eth_and_account(
         eth_bridge_proxy_address,
         token_bridge_proxy_address,
         proxy_class_hash,
+        legacy_proxy_class_hash,
     )
 }
 
@@ -176,7 +235,7 @@ async fn declare_contract_middleware(input: DeclarationInput<'_>) -> FieldElemen
                 .expect("Error in declaring the contract using Cairo 1 declaration using the provided account !!!");
             sierra.class_hash()
         }
-        DeclarationInput::LegacyDeclarationInputs(artifact_path, program_artifact_path, url) => {
+        DeclarationInput::LegacyDeclarationInputs(artifact_path, _program_artifact_path, url) => {
             let contract_artifact: ContractClassV0Inner = serde_json::from_reader(
                 std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + &artifact_path).unwrap(),
             )
@@ -184,13 +243,14 @@ async fn declare_contract_middleware(input: DeclarationInput<'_>) -> FieldElemen
 
             let contract_abi_artifact: LegacyContractClass = serde_json::from_reader(
                 std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + &artifact_path).unwrap(),
-            ).unwrap();
-            
+            )
+            .unwrap();
+
             let empty_vector_stark_hash: Vec<StarkHash> = Vec::new();
             let empty_array: [u8; 32] = [0; 32];
 
             let class_info = contract_artifact.clone();
-            
+
             let program = class_info.program;
             let encoded_p = program.encode();
             let entry_points_by_type = class_info.entry_points_by_type;
@@ -217,16 +277,19 @@ async fn declare_contract_middleware(input: DeclarationInput<'_>) -> FieldElemen
                 "params": [params],
                 "id": 4
             });
-            
+
             let req_client = reqwest::Client::new();
             let raw_txn_rpc = req_client.post(url).json(json_body).send().await;
 
             match raw_txn_rpc {
-                Result::Ok(val) => {
-                    log::debug!("Txn Sent Successfully : {:?}", val);
+                Ok(val) => {
+                    log::debug!(
+                        "Txn Sent Successfully : {:?}",
+                        val.json::<RpcResult<DeclareV0Result>>().await.unwrap()
+                    );
                     log::debug!("Declare Success : {:?}", contract_abi_artifact.class_hash().unwrap());
                 }
-                Result::Err(err) => {
+                Err(err) => {
                     log::debug!("Error : Error sending the transaction using RPC");
                     log::debug!("{:?}", err);
                 }
@@ -257,7 +320,7 @@ async fn deploy_account_using_priv_key(
     save_to_json("account_address", &JsonValueType::StringType(account_address.to_string())).unwrap();
 
     let sent_txn = deploy_txn.send().await.expect("Error in deploying the OZ account");
-    
+
     log::debug!("deploy account txn_hash : {:?}", sent_txn.transaction_hash);
     wait_for_transaction(provider, sent_txn.transaction_hash).await.unwrap();
 
@@ -275,7 +338,7 @@ async fn deploy_proxy_contract(
         .invoke_contract(
             account_address,
             "deploy_contract",
-            vec![class_hash, salt, FieldElement::ONE, FieldElement::ZERO, deploy_from_zero],
+            vec![class_hash, salt, deploy_from_zero, FieldElement::ONE, FieldElement::ZERO],
             None,
         )
         .send()
@@ -283,7 +346,26 @@ async fn deploy_proxy_contract(
         .expect("Error deploying the contract proxy.");
 
     wait_for_transaction(account.provider(), txn.transaction_hash).await.unwrap();
-    get_contract_address_from_deploy_tx(account.provider(), &txn).await.unwrap()
+
+    log::debug!(">>>>> txn hash (proxy deployment) : {:?}", txn.transaction_hash);
+
+    let deployed_address_event = get_contract_address_from_deploy_tx(account.provider(), &txn).await.unwrap();
+    log::debug!(">>>>> [IMP] >>>>> : {:?}", deployed_address_event);
+
+    // Not needed anymore as event is fired in the new contract
+    // let calldata_vec: Vec<StarkFelt> = Vec::from([
+    //     StarkFelt::new(FieldElement::ZERO.to_bytes_be()).unwrap(),
+    // ]);
+    // 
+    // let deployed_address = calculate_deployed_address(
+    //     ContractAddressSalt(StarkHash::new(salt.to_bytes_be()).unwrap()),
+    //     ClassHash(StarkHash::new(class_hash.to_bytes_be()).unwrap()),
+    //     &Calldata(Arc::new(calldata_vec)),
+    //     if deploy_from_zero == FieldElement::ONE {ContractAddress::from(0_u8)} else { ContractAddress(PatriciaKey(StarkHash::new(account_address.to_bytes_be()).unwrap())) },
+    // )
+    // .await;
+
+    deployed_address_event
 }
 
 async fn init_governance_proxy(account: &RpcAccount<'_>, contract_address: FieldElement, p_key: &str) {
@@ -293,7 +375,7 @@ async fn init_governance_proxy(account: &RpcAccount<'_>, contract_address: Field
         "init_governance",
         vec![],
         p_key,
-        &account.address().to_string(),
+        &convert_to_hex(&account.address().to_string()),
     )
     .await;
     wait_for_transaction(account.provider(), txn.transaction_hash).await.unwrap();

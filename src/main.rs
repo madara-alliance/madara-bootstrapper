@@ -21,7 +21,7 @@ pub struct CliArgs {
     eth_rpc: String,
     #[clap(long, env, default_value = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80")]
     eth_priv_key: String,
-    #[clap(long, env, default_value = "http://127.0.0.1:9944")]
+    #[clap(long, env, default_value = "https://f997-2405-201-4059-e00f-8443-d21f-2c93-4733.ngrok-free.app")]
     rollup_seq_url: String,
     #[clap(long, env, default_value = "0xabcd")]
     rollup_priv_key: String,
@@ -70,6 +70,7 @@ pub async fn deploy_bridges(config: &CliArgs) {
         eth_bridge_proxy_address,
         _token_bridge_proxy_address,
         proxy_class_hash,
+        legacy_proxy_class_hash,
     ) = init_and_deploy_eth_and_account(&clients, config).await;
     log::debug!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> [ETH BRIDGE] ⏳");
     deploy_eth_bridge(
@@ -82,6 +83,7 @@ pub async fn deploy_bridges(config: &CliArgs) {
         erc_20_class_hash,
         account_address,
         proxy_class_hash,
+        legacy_proxy_class_hash,
     )
     .await
     .expect("Error in deploying ETH bridge");

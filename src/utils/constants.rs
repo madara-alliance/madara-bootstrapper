@@ -10,4 +10,5 @@ pub const OZ_ACCOUNT_PATH: &str = "src/contracts/OpenZeppelinAccount.json";
 pub const OZ_ACCOUNT_PROGRAM_PATH: &str = "src/contracts/program_OpenZeppelinAccount.json";
 pub const PROXY_PATH: &str = "src/contracts/proxy.json";
 pub const PROXY_PROGRAM_PATH: &str = "src/contracts/program_proxy.json";
-pub const MAX_FEE_OVERRIDE: &str = "0x100000";
+pub const MAX_FEE_OVERRIDE: &str = "0x10000000000000000000000";
+pub const PROXY_LEGACY_PATH: &str = "src/contracts/proxy_legacy.json";

@@ -15,7 +15,7 @@ use starknet_proxy_client::proxy_support::ProxySupportTrait;
 use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
 
 use crate::contract_clients::utils::{field_element_to_u256, RpcAccount};
-use crate::utils::{invoke_contract, wait_for_transaction};
+use crate::utils::{convert_to_hex, invoke_contract, wait_for_transaction};
 
 #[async_trait]
 pub trait BridgeDeployable {
@@ -72,7 +72,7 @@ impl StarknetLegacyEthBridge {
                 FieldElement::ONE,
             ],
             deployer_priv_key,
-            &account.address().to_string(),
+            &convert_to_hex(&account.address().to_string()),
         )
         .await;
 

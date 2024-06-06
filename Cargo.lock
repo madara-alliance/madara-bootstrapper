@@ -3736,6 +3736,7 @@ dependencies = [
  "env_logger",
  "ethereum-instance",
  "ethers",
+ "flate2",
  "hex",
  "indexmap 2.2.6",
  "log",

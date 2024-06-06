@@ -1,9 +1,14 @@
 use indexmap::IndexMap;
+// use starknet_api::state::EntryPoint;
+use log::log;
 use starknet_api::core::EntryPointSelector;
 use starknet_api::deprecated_contract_class::{EntryPoint, EntryPointOffset, EntryPointType};
 use starknet_api::hash::StarkFelt;
-// use starknet_api::state::EntryPoint;
-use starknet_core::types::contract::legacy::{LegacyEntrypointOffset, RawLegacyEntryPoint, RawLegacyEntryPoints};
+use starknet_core::types::contract::legacy::{
+    LegacyEntrypointOffset, RawLegacyAbiEntry, RawLegacyEntryPoint, RawLegacyEntryPoints, RawLegacyEvent,
+    RawLegacyFunction, RawLegacyMember, RawLegacyStruct,
+};
+use starknet_core::types::{LegacyContractAbiEntry, LegacyEntryPointsByType, LegacyStructMember};
 
 // pub fn map_builtins(p: &Program) -> Vec<BuiltinNameSubxt> {
 //     let mut builtins: Vec<BuiltinNameSubxt> = vec![];
@@ -290,6 +295,29 @@ use starknet_core::types::contract::legacy::{LegacyEntrypointOffset, RawLegacyEn
 //     vec_reference_manager
 // }
 
+pub fn to_raw_legacy_entrypoint(entrypoints: LegacyEntryPointsByType) -> RawLegacyEntryPoints {
+    let mut vec_constructor: Vec<RawLegacyEntryPoint> = vec![];
+    let mut vec_external: Vec<RawLegacyEntryPoint> = vec![];
+    let mut vec_l1_handler: Vec<RawLegacyEntryPoint> = vec![];
+
+    for x in entrypoints.constructor {
+        vec_constructor
+            .push(RawLegacyEntryPoint { offset: LegacyEntrypointOffset::U64AsInt(x.offset), selector: x.selector })
+    }
+    for x in entrypoints.external {
+        vec_external
+            .push(RawLegacyEntryPoint { offset: LegacyEntrypointOffset::U64AsInt(x.offset), selector: x.selector })
+    }
+    for x in entrypoints.l1_handler {
+        vec_l1_handler
+            .push(RawLegacyEntryPoint { offset: LegacyEntrypointOffset::U64AsInt(x.offset), selector: x.selector })
+    }
+
+    let raw = RawLegacyEntryPoints { constructor: vec_constructor, external: vec_external, l1_handler: vec_l1_handler };
+
+    raw
+}
+
 pub fn map_entrypoint_selector(entrypoints: RawLegacyEntryPoints) -> IndexMap<EntryPointType, Vec<EntryPoint>> {
     let mut vec_entrypoints: IndexMap<EntryPointType, Vec<EntryPoint>> = IndexMap::new();
 
@@ -322,4 +350,47 @@ fn gen_val_entrypoint(x: RawLegacyEntryPoint) -> EntryPoint {
             LegacyEntrypointOffset::U64AsInt(val) => EntryPointOffset(val),
         },
     }
+}
+
+pub fn abi_mapper(abi: Vec<LegacyContractAbiEntry>) -> Vec<RawLegacyAbiEntry> {
+    let mut new_abi: Vec<RawLegacyAbiEntry> = Vec::new();
+
+    for x in abi {
+        match x {
+            LegacyContractAbiEntry::Event(val) => {
+                new_abi.push(RawLegacyAbiEntry::Event(RawLegacyEvent {
+                    data: val.data,
+                    keys: val.keys,
+                    name: val.name,
+                }));
+            }
+            LegacyContractAbiEntry::Function(val) => {
+                new_abi.push(RawLegacyAbiEntry::Function(RawLegacyFunction {
+                    inputs: val.inputs,
+                    name: val.name,
+                    state_mutability: val.state_mutability,
+                    outputs: val.outputs,
+                }));
+            }
+            LegacyContractAbiEntry::Struct(val) => {
+                new_abi.push(RawLegacyAbiEntry::Struct(RawLegacyStruct {
+                    members: map_abi_struct_members(val.members),
+                    name: val.name,
+                    size: val.size,
+                }));
+            }
+        }
+    }
+
+    new_abi
+}
+
+fn map_abi_struct_members(members: Vec<LegacyStructMember>) -> Vec<RawLegacyMember> {
+    let mut members_mapped: Vec<RawLegacyMember> = Vec::new();
+
+    for x in members {
+        members_mapped.push(RawLegacyMember { name: x.name, offset: x.offset, r#type: x.r#type })
+    }
+
+    members_mapped
 }

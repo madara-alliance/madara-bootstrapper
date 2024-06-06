@@ -11,7 +11,7 @@ use crate::contract_clients::config::Config;
 use crate::contract_clients::eth_bridge::{BridgeDeployable, StarknetLegacyEthBridge};
 use crate::contract_clients::starknet_sovereign::StarknetSovereignContract;
 use crate::contract_clients::utils::{build_single_owner_account, RpcAccount};
-use crate::utils::{invoke_contract, save_to_json, wait_for_transaction, JsonValueType};
+use crate::utils::{convert_to_hex, invoke_contract, save_to_json, wait_for_transaction, JsonValueType};
 use crate::CliArgs;
 
 pub async fn deploy_eth_bridge(
@@ -24,6 +24,7 @@ pub async fn deploy_eth_bridge(
     eth_erc20_class_hash: FieldElement,
     deployer_account_address: FieldElement,
     proxy_class_hash: FieldElement,
+    legacy_proxy_class_hash: FieldElement,
 ) -> Result<(StarknetLegacyEthBridge, FieldElement, FieldElement), anyhow::Error> {
     let eth_bridge = StarknetLegacyEthBridge::deploy(core_contract.client().clone()).await;
 
@@ -32,12 +33,13 @@ pub async fn deploy_eth_bridge(
     save_to_json("ETH_l1_bridge_address", &JsonValueType::EthAddress(eth_bridge.address()))?;
 
     // sleeping for changing the vars in madara and rebooting
-    sleep(Duration::from_secs(300)).await;
+    // Not needed ig :)
+    sleep(Duration::from_secs(10)).await;
 
     let account = build_single_owner_account(
         clients.provider_l2(),
         &arg_config.rollup_priv_key,
-        &deployer_account_address.to_string(),
+        &convert_to_hex(&deployer_account_address.to_string()),
         false,
     );
 
@@ -45,7 +47,7 @@ pub async fn deploy_eth_bridge(
         clients.provider_l2(),
         legacy_eth_bridge_class_hash,
         legacy_eth_bridge_proxy_address,
-        proxy_class_hash,
+        legacy_proxy_class_hash,
         &account,
         &arg_config.rollup_priv_key,
     )
@@ -81,7 +83,7 @@ pub async fn deploy_eth_bridge(
             l2_bridge_address,
             eth_address,
             &arg_config.rollup_priv_key,
-            &account.address().to_string(),
+            &convert_to_hex(&account.address().to_string()),
         )
         .await;
     log::debug!("ETH Bridge L2 setup complete [✅]");
@@ -126,7 +128,7 @@ pub async fn deploy_eth_token_on_l2(
             FieldElement::ONE,
         ],
         private_key,
-        &account.address().to_string(),
+        &convert_to_hex(&account.address().to_string()),
     )
     .await;
 
