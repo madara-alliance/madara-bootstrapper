@@ -6,7 +6,7 @@ between a madara/katana appchain and
 another L2 or L1 network. It will also declare wallet
 contracts from **OpenZappeline**, **Argent** and
 **Braavos**. You can find the full list of contracts
-here :
+in [##Info]()
 
 | Contract                                      | Source Link                                                                                                                                 | Local Path                                                                                                       |
 | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
@@ -59,9 +59,6 @@ There are three test in the repository :
   the tests are e2e tests.
 - You also would need to restart
   both the chains after running each test.
-- While running the erc20 bridge deposit and withdraw
-  test you need to uncomment the lines 109-115 in file
-  [src/contract_clients/token_bridge.rs](src/contract_clients/token_bridge.rs)
 
 ```shell
 # 1. Run madara instance with eth as settlement layer :
@@ -117,6 +114,10 @@ RUST_LOG=debug cargo run
    ```
 
 **IMP 🚨** : It will store all the addresses in [data/addresses.json](data/addresses.json)
+
+## Info ℹ️
+
+
 
 ### To generate the madara subxt artifacts
 

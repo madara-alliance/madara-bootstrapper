@@ -7,6 +7,7 @@ pub mod utils;
 
 use clap::Parser;
 use dotenv::dotenv;
+use starknet_ff::FieldElement;
 
 use crate::bridge::deploy_erc20_bridge::deploy_erc20_bridge;
 // use crate::bridge::deploy_erc20_bridge::deploy_erc20_bridge;
@@ -14,6 +15,7 @@ use crate::bridge::deploy_eth_bridge::deploy_eth_bridge;
 use crate::contract_clients::config::Config;
 use crate::contract_clients::init_state::init_and_deploy_eth_and_account;
 use crate::contract_clients::starknet_sovereign::StarknetSovereignContract;
+use crate::contract_clients::token_bridge::StarknetTokenBridge;
 use crate::contract_clients::utils::get_bridge_init_configs;
 use crate::non_bridge::deployer::deploy_non_bridge_contracts;
 use crate::utils::{convert_to_hex, save_to_json, JsonValueType};
@@ -57,7 +59,24 @@ pub async fn main() {
     deploy_bridges(&args).await;
 }
 
-pub async fn deploy_bridges(config: &CliArgs) {
+pub struct DeployBridgeOutput {
+    pub starknet_sovereign_contract: StarknetSovereignContract,
+    pub starknet_token_bridge: StarknetTokenBridge,
+    pub erc_20_class_hash: FieldElement,
+    pub legacy_eth_bridge_class_hash: FieldElement,
+    pub account_address: FieldElement,
+    pub eth_proxy_address: FieldElement,
+    pub eth_bridge_proxy_address: FieldElement,
+    pub token_bridge_proxy_address: FieldElement,
+    pub proxy_class_hash: FieldElement,
+    pub legacy_proxy_class_hash: FieldElement,
+    pub starkgate_proxy_class_hash: FieldElement,
+    pub erc20_legacy_class_hash: FieldElement,
+    pub l2_bridge_address: FieldElement,
+    pub l2_erc20_token_address: FieldElement,
+}
+
+pub async fn deploy_bridges(config: &CliArgs) -> DeployBridgeOutput {
     let clients = Config::init(config).await;
     let core_contract_client = StarknetSovereignContract::deploy(&clients).await;
     log::debug!("Core address [📦] : {:?}", core_contract_client.address());
@@ -97,7 +116,7 @@ pub async fn deploy_bridges(config: &CliArgs) {
     .expect("Error in deploying ETH bridge");
     log::debug!("ETH BRIDGE DEPLOYED [✅]");
     log::debug!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>[ERC20 BRIDGE] ⏳");
-    deploy_erc20_bridge(
+    let (starknet_token_bridge, l2_bridge_address, l2_erc20_token_address) = deploy_erc20_bridge(
         &clients,
         config,
         &core_contract_client,
@@ -113,4 +132,21 @@ pub async fn deploy_bridges(config: &CliArgs) {
     log::debug!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>[NON BRIDGE CONTRACTS] ⏳");
     deploy_non_bridge_contracts(&clients, config, account_address).await;
     log::debug!("NON BRIDGE CONTRACTS DEPLOYED [✅]");
+
+    DeployBridgeOutput {
+        starknet_sovereign_contract: core_contract_client,
+        starknet_token_bridge,
+        erc_20_class_hash,
+        legacy_eth_bridge_class_hash,
+        account_address,
+        eth_proxy_address,
+        eth_bridge_proxy_address,
+        token_bridge_proxy_address,
+        proxy_class_hash,
+        legacy_proxy_class_hash,
+        starkgate_proxy_class_hash,
+        erc20_legacy_class_hash,
+        l2_bridge_address,
+        l2_erc20_token_address,
+    }
 }

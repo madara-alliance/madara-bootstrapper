@@ -4,7 +4,7 @@ mod eth_bridge;
 
 use constants::{
     APP_CHAIN_ID, ETH_CHAIN_ID, ETH_PRIV_KEY, ETH_RPC, FEE_TOKEN_ADDRESS, L1_DEPLOYER_ADDRESS, L1_WAIT_TIME,
-    L2_DEPLOYER_ADDRESS, ROLLUP_PRIV_KEY, ROLLUP_SEQ_URL, SN_OS_CONFIG_HASH_VERSION, SN_OS_PROGRAM_HASH,
+    ROLLUP_PRIV_KEY, ROLLUP_SEQ_URL, SN_OS_CONFIG_HASH_VERSION, SN_OS_PROGRAM_HASH,
 };
 use rstest::rstest;
 
@@ -28,35 +28,47 @@ async fn deploy_bridge() -> Result<(), anyhow::Error> {
 
 #[rstest]
 #[tokio::test]
-// #[ignore]
+#[ignore]
 async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
-
     let clients = Config::init(&get_config()).await;
-    let core_contract_client = StarknetSovereignContract::deploy(&clients).await;
-    log::debug!("Core address [📦] : {:?}", core_contract_client.address());
-    let (program_hash, config_hash) = get_bridge_init_configs(&get_config());
-    core_contract_client.initialize_core_contract(0u64.into(), 0u64.into(), program_hash, config_hash).await;
-    log::debug!("Bridge init successful [✅]");
+    let out = deploy_bridges(&get_config()).await;
 
-    let _ = eth_bridge_test_helper(&clients, &get_config(), &core_contract_client).await;
+    let _ = eth_bridge_test_helper(
+        &clients,
+        &get_config(),
+        &out.starknet_sovereign_contract,
+        out.legacy_eth_bridge_class_hash,
+        out.eth_bridge_proxy_address,
+        out.eth_proxy_address,
+        out.erc_20_class_hash,
+        out.account_address,
+        out.proxy_class_hash,
+        out.legacy_proxy_class_hash,
+        out.starkgate_proxy_class_hash,
+        out.erc20_legacy_class_hash
+    )
+    .await;
 
     Ok(())
 }
 
 #[rstest]
 #[tokio::test]
-#[ignore]
+// #[ignore]
 async fn deposit_and_withdraw_erc20_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
-
     let clients = Config::init(&get_config()).await;
-    let core_contract_client = StarknetSovereignContract::deploy(&clients).await;
-    log::debug!("Core address [📦] : {:?}", core_contract_client.address());
-    let (program_hash, config_hash) = get_bridge_init_configs(&get_config());
-    core_contract_client.initialize_core_contract(0u64.into(), 0u64.into(), program_hash, config_hash).await;
-    log::debug!("Bridge init successful [✅]");
-    let _ = erc20_bridge_test_helper(&clients, &get_config(), &core_contract_client).await;
+    let out = deploy_bridges(&get_config()).await;
+
+    let _ = erc20_bridge_test_helper(
+        &clients,
+        &get_config(),
+        out.l2_erc20_token_address,
+        out.starknet_token_bridge,
+        out.l2_bridge_address,
+    )
+    .await;
 
     Ok(())
 }
@@ -69,7 +81,6 @@ fn get_config() -> CliArgs {
         rollup_priv_key: String::from(ROLLUP_PRIV_KEY),
         eth_chain_id: String::from(ETH_CHAIN_ID).parse().unwrap(),
         l1_deployer_address: String::from(L1_DEPLOYER_ADDRESS),
-        l2_deployer_address: String::from(L2_DEPLOYER_ADDRESS),
         l1_wait_time: String::from(L1_WAIT_TIME),
         sn_os_program_hash: String::from(SN_OS_PROGRAM_HASH),
         config_hash_version: String::from(SN_OS_CONFIG_HASH_VERSION),

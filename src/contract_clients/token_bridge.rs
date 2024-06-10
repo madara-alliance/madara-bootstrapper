@@ -28,6 +28,7 @@ use crate::bridge::helpers::account_actions::{get_contract_address_from_deploy_t
 use crate::contract_clients::eth_bridge::BridgeDeployable;
 use crate::contract_clients::init_state::{declare_contract_middleware, DeclarationInput};
 use crate::contract_clients::utils::{build_single_owner_account, field_element_to_u256};
+use crate::tests::constants::ERC20_L2_CLASS_HASH;
 use crate::utils::constants::{TOKEN_BRIDGE_CASM_PATH, TOKEN_BRIDGE_SIERRA_PATH};
 use crate::utils::{invoke_contract, pad_bytes, save_to_json, wait_for_transaction, JsonValueType};
 
@@ -243,8 +244,7 @@ impl StarknetTokenBridge {
             l2_bridge,
             "set_erc20_class_hash",
             vec![
-                FieldElement::from_hex_be("0x03aa3ecb2cd9133927565413894391635c4895bb2abd32b34089b24c3ac63236")
-                    .unwrap(), // class hash
+                FieldElement::from_hex_be(ERC20_L2_CLASS_HASH).unwrap(), // class hash
             ],
             priv_key,
             l2_address,

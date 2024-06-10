@@ -1,12 +1,13 @@
 pub const ETH_RPC: &str = "http://127.0.0.1:8545";
 pub const ETH_PRIV_KEY: &str = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
 pub const ROLLUP_SEQ_URL: &str = "http://127.0.0.1:9944";
-pub const ROLLUP_PRIV_KEY: &str = "";
+pub const ROLLUP_PRIV_KEY: &str = "0xabcd";
 pub const ETH_CHAIN_ID: &str = "31337";
 pub const L1_DEPLOYER_ADDRESS: &str = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
-pub const L2_DEPLOYER_ADDRESS: &str = "0x0000000000000000000000000000000000000000000000000000000000000004";
 pub const L1_WAIT_TIME: &str = "15";
 pub const FEE_TOKEN_ADDRESS: &str = "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7";
 pub const SN_OS_PROGRAM_HASH: &str = "0x41fc2a467ef8649580631912517edcab7674173f1dbfa2e9b64fbcd82bc4d79";
 pub const SN_OS_CONFIG_HASH_VERSION: &str = "StarknetOsConfig1";
 pub const APP_CHAIN_ID: &str = "MADARA";
+pub const L2_DEPLOYER_ADDRESS: &str = "0x4fe5eea46caa0a1f344fafce82b39d66b552f00d3cd12e89073ef4b4ab37860";
+pub const ERC20_L2_CLASS_HASH: &str = "0x5ffbcfeb50d200a0677c48a129a11245a3fc519d1d98d76882d1c9a1b19c6ed";
