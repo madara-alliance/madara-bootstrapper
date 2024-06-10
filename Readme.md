@@ -117,8 +117,6 @@ RUST_LOG=debug cargo run
 
 ## Info ℹ️
 
-
-
 ### To generate the madara subxt artifacts
 
 **NOT NEEDED AS OF NOW**
