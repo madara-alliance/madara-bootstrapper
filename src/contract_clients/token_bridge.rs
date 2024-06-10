@@ -1,18 +1,16 @@
 use std::sync::Arc;
+use std::time::Duration;
 
 use async_trait::async_trait;
 use ethers::addressbook::Address;
-use ethers::core::rand;
 use ethers::prelude::U256;
 use ethers::types::Bytes;
-use rand::Rng;
 use starkgate_manager_client::clients::starkgate_manager::StarkgateManagerContractClient;
 use starkgate_manager_client::deploy_starkgate_manager_behind_unsafe_proxy;
 use starkgate_manager_client::interfaces::manager::StarkgateManagerTrait;
 use starkgate_registry_client::clients::starkgate_registry::StarkgateRegistryContractClient;
 use starkgate_registry_client::deploy_starkgate_registry_behind_unsafe_proxy;
-use starknet_accounts::Account;
-use starknet_core::utils::get_selector_from_name;
+use starknet_accounts::{Account, ConnectedAccount};
 use starknet_erc20_client::clients::erc20::ERC20ContractClient;
 use starknet_erc20_client::deploy_dai_erc20_behind_unsafe_proxy;
 use starknet_erc20_client::interfaces::erc20::ERC20TokenTrait;
@@ -23,13 +21,15 @@ use starknet_proxy_client::proxy_support::ProxySupportTrait;
 use starknet_token_bridge_client::clients::token_bridge::StarknetTokenBridgeContractClient;
 use starknet_token_bridge_client::deploy_starknet_token_bridge_behind_unsafe_proxy;
 use starknet_token_bridge_client::interfaces::token_bridge::StarknetTokenBridgeTrait;
+use tokio::time::sleep;
 use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
 
 use crate::bridge::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::contract_clients::eth_bridge::BridgeDeployable;
+use crate::contract_clients::init_state::{declare_contract_middleware, DeclarationInput};
 use crate::contract_clients::utils::{build_single_owner_account, field_element_to_u256};
-use crate::utils::constants::{ERC20_CASM_PATH, ERC20_SIERRA_PATH, TOKEN_BRIDGE_CASM_PATH, TOKEN_BRIDGE_SIERRA_PATH};
-use crate::utils::{invoke_contract, pad_bytes, wait_for_transaction};
+use crate::utils::constants::{TOKEN_BRIDGE_CASM_PATH, TOKEN_BRIDGE_SIERRA_PATH};
+use crate::utils::{invoke_contract, pad_bytes, save_to_json, wait_for_transaction, JsonValueType};
 
 pub struct StarknetTokenBridge {
     manager: StarkgateManagerContractClient,
@@ -88,55 +88,53 @@ impl StarknetTokenBridge {
         rpc_provider_l2: &JsonRpcClient<HttpTransport>,
         priv_key: &str,
         l2_deployer_address: &str,
+        _token_bridge_proxy_address: FieldElement,
     ) -> FieldElement {
         let account = build_single_owner_account(rpc_provider_l2, priv_key, l2_deployer_address, false);
-        #[allow(unused_variables)]
-        let (class_hash_erc20, contract_artifact_erc20) =
-            account.declare_contract_params_sierra(ERC20_SIERRA_PATH, ERC20_CASM_PATH);
-        let (class_hash_bridge, contract_artifact_bridge) =
-            account.declare_contract_params_sierra(TOKEN_BRIDGE_SIERRA_PATH, TOKEN_BRIDGE_CASM_PATH);
 
-        #[allow(unused_variables)]
-        let flattened_class_erc20 = contract_artifact_erc20;
-        let flattened_class_bridge = contract_artifact_bridge;
+        let token_bridge_class_hash = declare_contract_middleware(DeclarationInput::DeclarationInputs(
+            String::from(TOKEN_BRIDGE_SIERRA_PATH),
+            String::from(TOKEN_BRIDGE_CASM_PATH),
+            account.clone(),
+        ))
+        .await;
+        sleep(Duration::from_secs(10)).await;
+        save_to_json("L2_token_bridge_class_hash", &JsonValueType::StringType(token_bridge_class_hash.to_string()))
+            .unwrap();
 
-        let declare_txn = account
-            .declare(Arc::new(flattened_class_bridge), class_hash_bridge)
-            .send()
-            .await
-            .expect("L2 Bridge initiation failed");
-        wait_for_transaction(rpc_provider_l2, declare_txn.transaction_hash).await.unwrap();
-        // for individual test :
-        // let declare_txn_2 = account
-        //     .declare(Arc::new(flattened_class_erc20), class_hash_erc20)
-        //     .send()
-        //     .await
-        //     .expect("L2 Bridge initiation failed");
-        // wait_for_transaction(rpc_provider_l2, declare_txn_2.transaction_hash).await.unwrap();
+        log::debug!("token_bridge_class_hash : {:?}", token_bridge_class_hash);
 
-        let mut rng = rand::thread_rng();
-        let random: u32 = rng.gen();
-
-        let deploy_tx = account
+        let deploy_contract_implementation_token_bridge = account
             .invoke_contract(
-                FieldElement::from_hex_be("0x1").unwrap(),
+                account.address(),
                 "deploy_contract",
                 vec![
-                    FieldElement::from_hex_be("0x0358663e6ed9d37efd33d4661e20b2bad143e0f92076b0c91fe65f31ccf55046")
-                        .unwrap(), // class_hash
-                    FieldElement::from_dec_str(&random.to_string()).unwrap(), // contract_address_salt
-                    FieldElement::ONE,                                        // constructor_calldata_len
-                    FieldElement::ZERO,                                       // constructor_calldata (upgrade_delay)
+                    token_bridge_class_hash,
+                    FieldElement::ZERO,
+                    FieldElement::ZERO,
+                    FieldElement::ONE,
+                    FieldElement::ZERO,
                 ],
                 None,
             )
             .send()
             .await
-            .expect("Error deploying the contract");
+            .expect("Error deploying the l2 contract proxy.");
+        wait_for_transaction(
+            account.provider(),
+            deploy_contract_implementation_token_bridge.transaction_hash,
+            "deploy_l2_contracts : deploy_contract : token bridge",
+        )
+        .await
+        .unwrap();
+        sleep(Duration::from_secs(10)).await;
+        let address_token_bridge_impl =
+            get_contract_address_from_deploy_tx(account.provider(), &deploy_contract_implementation_token_bridge)
+                .await
+                .unwrap();
+        log::debug!("contract address (token bridge) : {:?}", address_token_bridge_impl);
 
-        wait_for_transaction(rpc_provider_l2, deploy_tx.transaction_hash).await.unwrap();
-
-        get_contract_address_from_deploy_tx(rpc_provider_l2, &deploy_tx).await.unwrap()
+        address_token_bridge_impl
     }
 
     /// Initialize Starknet Token Bridge.
@@ -185,21 +183,22 @@ impl StarknetTokenBridge {
     ) {
         let tx = invoke_contract(
             rpc_provider_l2,
-            FieldElement::from_hex_be("0x1").unwrap(),
-            "__execute__",
-            vec![
-                l2_bridge,                                                  // contract_address
-                get_selector_from_name("register_app_role_admin").unwrap(), // selector
-                FieldElement::ONE,                                          // calldata_len
-                FieldElement::from_hex_be(l2_address).unwrap(),             // admin_address
-            ],
+            l2_bridge,
+            "register_app_role_admin",
+            vec![FieldElement::from_hex_be(l2_address).unwrap()],
             priv_key,
             l2_address,
         )
         .await;
 
-        wait_for_transaction(rpc_provider_l2, tx.transaction_hash).await.unwrap();
-        log::trace!("setup_l2_bridge : register_app_role_admin //");
+        wait_for_transaction(
+            rpc_provider_l2,
+            tx.transaction_hash,
+            "setup_l2_bridge : token bridge : register_app_role_admin",
+        )
+        .await
+        .unwrap();
+        log::debug!("setup_l2_bridge : register_app_role_admin //");
 
         let tx = invoke_contract(
             rpc_provider_l2,
@@ -211,8 +210,14 @@ impl StarknetTokenBridge {
         )
         .await;
 
-        wait_for_transaction(rpc_provider_l2, tx.transaction_hash).await.unwrap();
-        log::trace!("setup_l2_bridge : register_app_governor //");
+        wait_for_transaction(
+            rpc_provider_l2,
+            tx.transaction_hash,
+            "setup_l2_bridge : token bridge : register_app_governor",
+        )
+        .await
+        .unwrap();
+        log::debug!("setup_l2_bridge : register_app_governor //");
 
         let tx = invoke_contract(
             rpc_provider_l2,
@@ -224,8 +229,14 @@ impl StarknetTokenBridge {
         )
         .await;
 
-        wait_for_transaction(rpc_provider_l2, tx.transaction_hash).await.unwrap();
-        log::trace!("setup_l2_bridge : set_l2_token_governance //");
+        wait_for_transaction(
+            rpc_provider_l2,
+            tx.transaction_hash,
+            "setup_l2_bridge : token bridge : set_l2_token_governance",
+        )
+        .await
+        .unwrap();
+        log::debug!("setup_l2_bridge : set_l2_token_governance //");
 
         let tx = invoke_contract(
             rpc_provider_l2,
@@ -240,8 +251,14 @@ impl StarknetTokenBridge {
         )
         .await;
 
-        wait_for_transaction(rpc_provider_l2, tx.transaction_hash).await.unwrap();
-        log::trace!("setup_l2_bridge : set_erc20_class_hash //");
+        wait_for_transaction(
+            rpc_provider_l2,
+            tx.transaction_hash,
+            "setup_l2_bridge : token bridge : set_erc20_class_hash",
+        )
+        .await
+        .unwrap();
+        log::debug!("setup_l2_bridge : set_erc20_class_hash //");
 
         let tx = invoke_contract(
             rpc_provider_l2,
@@ -252,8 +269,10 @@ impl StarknetTokenBridge {
             l2_address,
         )
         .await;
-        wait_for_transaction(rpc_provider_l2, tx.transaction_hash).await.unwrap();
-        log::trace!("setup_l2_bridge : set_l1_bridge //");
+        wait_for_transaction(rpc_provider_l2, tx.transaction_hash, "setup_l2_bridge : token bridge : set_l1_bridge")
+            .await
+            .unwrap();
+        log::debug!("setup_l2_bridge : set_l1_bridge //");
     }
 
     pub async fn register_app_role_admin(&self, address: Address) {

@@ -4,36 +4,29 @@ use std::time::Duration;
 
 use blockifier::execution::contract_class::ContractClassV0Inner;
 use indexmap::IndexMap;
-use parity_scale_codec::{Encode};
+use parity_scale_codec::Encode;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use starknet_accounts::{Account, AccountFactory, ConnectedAccount, OpenZeppelinAccountFactory};
 use starknet_api::core::{ClassHash, ContractAddress, Nonce, PatriciaKey};
 use starknet_api::deprecated_contract_class::{EntryPoint, EntryPointType};
 use starknet_api::hash::{StarkFelt, StarkHash};
-use starknet_api::transaction::{
-    Calldata, ContractAddressSalt, DeclareTransactionV0V1, Fee, TransactionHash, TransactionSignature,
-};
-use starknet_core::types::contract::legacy::{LegacyContractClass};
-use starknet_core::types::{BlockId, BlockTag, CompressedLegacyContractClass, ContractClass};
+use starknet_api::transaction::{DeclareTransactionV0V1, Fee, TransactionHash, TransactionSignature};
+use starknet_core::types::contract::legacy::LegacyContractClass;
+use starknet_core::types::{BlockId, BlockTag};
 use starknet_ff::FieldElement;
 use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::{JsonRpcClient, Provider};
 use starknet_signers::{LocalWallet, SigningKey};
 use tokio::time::sleep;
-use url::Url;
 
-use crate::bridge::helpers::account_actions::{calculate_deployed_address, AccountActions, get_contract_address_from_deploy_tx};
+use crate::bridge::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::contract_clients::config::Config;
-use crate::contract_clients::subxt_funcs::appchain::tx;
-// use crate::contract_clients::subxt_funcs::toggle_fee;
 use crate::contract_clients::utils::{build_single_owner_account, RpcAccount};
 use crate::utils::constants::{
-    ERC20_CASM_PATH, ERC20_SIERRA_PATH, LEGACY_BRIDGE_PATH, LEGACY_BRIDGE_PROGRAM_PATH, OZ_ACCOUNT_CASM_PATH,
-    OZ_ACCOUNT_PATH, OZ_ACCOUNT_PROGRAM_PATH, OZ_ACCOUNT_SIERRA_PATH, PROXY_LEGACY_PATH, PROXY_PATH,
-    PROXY_PROGRAM_PATH,
+    ERC20_CASM_PATH, ERC20_LEGACY_PATH, ERC20_SIERRA_PATH, LEGACY_BRIDGE_PATH, OZ_ACCOUNT_CASM_PATH, OZ_ACCOUNT_PATH,
+    OZ_ACCOUNT_SIERRA_PATH, PROXY_LEGACY_PATH, STARKGATE_PROXY_PATH,
 };
-use crate::utils::mapper::{abi_mapper, map_entrypoint_selector, to_raw_legacy_entrypoint};
 use crate::utils::{convert_to_hex, invoke_contract, save_to_json, wait_for_transaction, JsonValueType};
 use crate::CliArgs;
 
@@ -63,10 +56,20 @@ pub const TEMP_ACCOUNT_PRIV_KEY: &str = "0xbeef";
 pub async fn init_and_deploy_eth_and_account(
     clients: &Config,
     arg_config: &CliArgs,
-) -> (FieldElement, FieldElement, FieldElement, FieldElement, FieldElement, FieldElement, FieldElement, FieldElement) {
+) -> (
+    FieldElement,
+    FieldElement,
+    FieldElement,
+    FieldElement,
+    FieldElement,
+    FieldElement,
+    FieldElement,
+    FieldElement,
+    FieldElement,
+    FieldElement,
+) {
     // toggle_fee(true).await.expect("Error in disabling the fee on configured app-chain");
     let legacy_proxy_class_hash = declare_contract_middleware(DeclarationInput::LegacyDeclarationInputs(
-        String::from(PROXY_LEGACY_PATH),
         String::from(PROXY_LEGACY_PATH),
         arg_config.rollup_seq_url.clone(),
     ))
@@ -75,9 +78,27 @@ pub async fn init_and_deploy_eth_and_account(
     save_to_json("legacy_proxy_class_hash", &JsonValueType::StringType(legacy_proxy_class_hash.to_string())).unwrap();
     sleep(Duration::from_secs(10)).await;
 
+    let starkgate_proxy_class_hash = declare_contract_middleware(DeclarationInput::LegacyDeclarationInputs(
+        String::from(STARKGATE_PROXY_PATH),
+        arg_config.rollup_seq_url.clone(),
+    ))
+    .await;
+    log::debug!("Starkgate Proxy Class Hash Declared !!!");
+    save_to_json("starkgate_proxy_class_hash", &JsonValueType::StringType(starkgate_proxy_class_hash.to_string()))
+        .unwrap();
+    sleep(Duration::from_secs(10)).await;
+
+    let erc20_legacy_class_hash = declare_contract_middleware(DeclarationInput::LegacyDeclarationInputs(
+        String::from(ERC20_LEGACY_PATH),
+        arg_config.rollup_seq_url.clone(),
+    ))
+    .await;
+    log::debug!("ERC20 Legacy Class Hash Declared !!!");
+    save_to_json("erc20_legacy_class_hash", &JsonValueType::StringType(erc20_legacy_class_hash.to_string())).unwrap();
+    sleep(Duration::from_secs(10)).await;
+
     let legacy_eth_bridge_class_hash = declare_contract_middleware(DeclarationInput::LegacyDeclarationInputs(
         String::from(LEGACY_BRIDGE_PATH),
-        String::from(LEGACY_BRIDGE_PROGRAM_PATH),
         arg_config.rollup_seq_url.clone(),
     ))
     .await;
@@ -88,22 +109,12 @@ pub async fn init_and_deploy_eth_and_account(
 
     let oz_account_class_hash = declare_contract_middleware(DeclarationInput::LegacyDeclarationInputs(
         String::from(OZ_ACCOUNT_PATH),
-        String::from(OZ_ACCOUNT_PROGRAM_PATH),
         arg_config.rollup_seq_url.clone(),
     ))
     .await;
     log::debug!("OZ Account Class Hash Declared !!!");
     save_to_json("oz_account_class_hash", &JsonValueType::StringType(oz_account_class_hash.to_string())).unwrap();
     sleep(Duration::from_secs(10)).await;
-
-    let proxy_class_hash = declare_contract_middleware(DeclarationInput::LegacyDeclarationInputs(
-        String::from(PROXY_PATH),
-        String::from(PROXY_PROGRAM_PATH),
-        arg_config.rollup_seq_url.clone(),
-    ))
-    .await;
-    log::debug!("Proxy Class Hash Declared !!!");
-    save_to_json("proxy_class_hash", &JsonValueType::StringType(proxy_class_hash.to_string())).unwrap();
 
     log::debug!(">>>> Waiting for block to be mined [/]");
     sleep(Duration::from_secs(10)).await;
@@ -183,12 +194,25 @@ pub async fn init_and_deploy_eth_and_account(
     )
     .await;
     log::debug!("ETH Bridge Proxy Address : {:?}", eth_bridge_proxy_address);
-    save_to_json("ETH_l2_bridge_address_proxy", &JsonValueType::StringType(eth_proxy_address.to_string())).unwrap();
+    save_to_json("ETH_l2_bridge_address_proxy", &JsonValueType::StringType(eth_bridge_proxy_address.to_string()))
+        .unwrap();
     sleep(Duration::from_secs(10)).await;
 
-    init_governance_proxy(&user_account, eth_proxy_address, &arg_config.rollup_priv_key).await;
+    init_governance_proxy(
+        &user_account,
+        eth_proxy_address,
+        &arg_config.rollup_priv_key,
+        "eth_proxy_address : init_governance_proxy",
+    )
+    .await;
     sleep(Duration::from_secs(10)).await;
-    init_governance_proxy(&user_account, eth_bridge_proxy_address, &arg_config.rollup_priv_key).await;
+    init_governance_proxy(
+        &user_account,
+        eth_bridge_proxy_address,
+        &arg_config.rollup_priv_key,
+        "eth_bridge_proxy_address : init_governance_proxy",
+    )
+    .await;
     sleep(Duration::from_secs(10)).await;
 
     let token_bridge_proxy_address = deploy_proxy_contract(
@@ -199,9 +223,17 @@ pub async fn init_and_deploy_eth_and_account(
         FieldElement::ZERO,
     )
     .await;
-    log::debug!("Token Bridge Proxy Address : {:?}", eth_proxy_address);
+    log::debug!("Token Bridge Proxy Address : {:?}", token_bridge_proxy_address);
     save_to_json("ERC20_l2_bridge_address_proxy", &JsonValueType::StringType(token_bridge_proxy_address.to_string()))
         .unwrap();
+    sleep(Duration::from_secs(10)).await;
+    init_governance_proxy(
+        &user_account,
+        token_bridge_proxy_address,
+        &arg_config.rollup_priv_key,
+        "token_bridge_proxy_address : init_governance_proxy",
+    )
+    .await;
     sleep(Duration::from_secs(10)).await;
 
     (
@@ -211,19 +243,22 @@ pub async fn init_and_deploy_eth_and_account(
         eth_proxy_address,
         eth_bridge_proxy_address,
         token_bridge_proxy_address,
-        proxy_class_hash,
+        FieldElement::ZERO,
         legacy_proxy_class_hash,
+        starkgate_proxy_class_hash,
+        erc20_legacy_class_hash,
     )
 }
 
-enum DeclarationInput<'a> {
+pub(crate) enum DeclarationInput<'a> {
     // inputs : sierra_path, casm_path
     DeclarationInputs(String, String, RpcAccount<'a>),
     // input : artifact_path
-    LegacyDeclarationInputs(String, String, String),
+    LegacyDeclarationInputs(String, String),
 }
 
-async fn declare_contract_middleware(input: DeclarationInput<'_>) -> FieldElement {
+#[allow(private_interfaces)]
+pub async fn declare_contract_middleware(input: DeclarationInput<'_>) -> FieldElement {
     match input {
         DeclarationInput::DeclarationInputs(sierra_path, casm_path, account) => {
             let (class_hash, sierra) = account.declare_contract_params_sierra(&sierra_path, &casm_path);
@@ -235,7 +270,7 @@ async fn declare_contract_middleware(input: DeclarationInput<'_>) -> FieldElemen
                 .expect("Error in declaring the contract using Cairo 1 declaration using the provided account !!!");
             sierra.class_hash()
         }
-        DeclarationInput::LegacyDeclarationInputs(artifact_path, _program_artifact_path, url) => {
+        DeclarationInput::LegacyDeclarationInputs(artifact_path, url) => {
             let contract_artifact: ContractClassV0Inner = serde_json::from_reader(
                 std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + &artifact_path).unwrap(),
             )
@@ -260,7 +295,7 @@ async fn declare_contract_middleware(input: DeclarationInput<'_>) -> FieldElemen
                 signature: TransactionSignature(empty_vector_stark_hash),
                 nonce: Nonce(StarkFelt(empty_array)),
                 class_hash: ClassHash(StarkHash { 0: contract_abi_artifact.class_hash().unwrap().to_bytes_be() }),
-                sender_address: ContractAddress(PatriciaKey { 0: StarkHash { 0: FieldElement::ONE.to_bytes_be() } }),
+                sender_address: ContractAddress(PatriciaKey(StarkHash { 0: FieldElement::ONE.to_bytes_be() })),
             };
             let abi_length = contract_abi_artifact.abi.len();
 
@@ -322,7 +357,7 @@ async fn deploy_account_using_priv_key(
     let sent_txn = deploy_txn.send().await.expect("Error in deploying the OZ account");
 
     log::debug!("deploy account txn_hash : {:?}", sent_txn.transaction_hash);
-    wait_for_transaction(provider, sent_txn.transaction_hash).await.unwrap();
+    wait_for_transaction(provider, sent_txn.transaction_hash, "deploy_account_using_priv_key").await.unwrap();
 
     account_address
 }
@@ -345,30 +380,19 @@ async fn deploy_proxy_contract(
         .await
         .expect("Error deploying the contract proxy.");
 
-    wait_for_transaction(account.provider(), txn.transaction_hash).await.unwrap();
+    wait_for_transaction(account.provider(), txn.transaction_hash, "deploy_proxy_contract : deploy_contract")
+        .await
+        .unwrap();
 
     log::debug!(">>>>> txn hash (proxy deployment) : {:?}", txn.transaction_hash);
 
     let deployed_address_event = get_contract_address_from_deploy_tx(account.provider(), &txn).await.unwrap();
     log::debug!(">>>>> [IMP] >>>>> : {:?}", deployed_address_event);
 
-    // Not needed anymore as event is fired in the new contract
-    // let calldata_vec: Vec<StarkFelt> = Vec::from([
-    //     StarkFelt::new(FieldElement::ZERO.to_bytes_be()).unwrap(),
-    // ]);
-    // 
-    // let deployed_address = calculate_deployed_address(
-    //     ContractAddressSalt(StarkHash::new(salt.to_bytes_be()).unwrap()),
-    //     ClassHash(StarkHash::new(class_hash.to_bytes_be()).unwrap()),
-    //     &Calldata(Arc::new(calldata_vec)),
-    //     if deploy_from_zero == FieldElement::ONE {ContractAddress::from(0_u8)} else { ContractAddress(PatriciaKey(StarkHash::new(account_address.to_bytes_be()).unwrap())) },
-    // )
-    // .await;
-
     deployed_address_event
 }
 
-async fn init_governance_proxy(account: &RpcAccount<'_>, contract_address: FieldElement, p_key: &str) {
+async fn init_governance_proxy(account: &RpcAccount<'_>, contract_address: FieldElement, p_key: &str, tag: &str) {
     let txn = invoke_contract(
         account.provider(),
         contract_address,
@@ -378,5 +402,5 @@ async fn init_governance_proxy(account: &RpcAccount<'_>, contract_address: Field
         &convert_to_hex(&account.address().to_string()),
     )
     .await;
-    wait_for_transaction(account.provider(), txn.transaction_hash).await.unwrap();
+    wait_for_transaction(account.provider(), txn.transaction_hash, tag).await.unwrap();
 }

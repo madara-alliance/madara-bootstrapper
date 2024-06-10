@@ -1,6 +1,5 @@
 use indexmap::IndexMap;
 // use starknet_api::state::EntryPoint;
-use log::log;
 use starknet_api::core::EntryPointSelector;
 use starknet_api::deprecated_contract_class::{EntryPoint, EntryPointOffset, EntryPointType};
 use starknet_api::hash::StarkFelt;
@@ -313,9 +312,7 @@ pub fn to_raw_legacy_entrypoint(entrypoints: LegacyEntryPointsByType) -> RawLega
             .push(RawLegacyEntryPoint { offset: LegacyEntrypointOffset::U64AsInt(x.offset), selector: x.selector })
     }
 
-    let raw = RawLegacyEntryPoints { constructor: vec_constructor, external: vec_external, l1_handler: vec_l1_handler };
-
-    raw
+    RawLegacyEntryPoints { constructor: vec_constructor, external: vec_external, l1_handler: vec_l1_handler }
 }
 
 pub fn map_entrypoint_selector(entrypoints: RawLegacyEntryPoints) -> IndexMap<EntryPointType, Vec<EntryPoint>> {

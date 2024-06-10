@@ -1,12 +1,13 @@
 use std::str::FromStr;
 use std::time::Duration;
 
-use starknet_accounts::Account;
+use starknet_accounts::{Account, ConnectedAccount};
 use starknet_ff::FieldElement;
 use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::JsonRpcClient;
 use tokio::time::sleep;
 
+use crate::bridge::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::contract_clients::config::Config;
 use crate::contract_clients::eth_bridge::{BridgeDeployable, StarknetLegacyEthBridge};
 use crate::contract_clients::starknet_sovereign::StarknetSovereignContract;
@@ -14,6 +15,7 @@ use crate::contract_clients::utils::{build_single_owner_account, RpcAccount};
 use crate::utils::{convert_to_hex, invoke_contract, save_to_json, wait_for_transaction, JsonValueType};
 use crate::CliArgs;
 
+#[allow(clippy::too_many_arguments)]
 pub async fn deploy_eth_bridge(
     clients: &Config,
     arg_config: &CliArgs,
@@ -21,10 +23,12 @@ pub async fn deploy_eth_bridge(
     legacy_eth_bridge_class_hash: FieldElement,
     legacy_eth_bridge_proxy_address: FieldElement,
     eth_proxy_address: FieldElement,
-    eth_erc20_class_hash: FieldElement,
+    _eth_erc20_class_hash: FieldElement,
     deployer_account_address: FieldElement,
-    proxy_class_hash: FieldElement,
-    legacy_proxy_class_hash: FieldElement,
+    _proxy_class_hash: FieldElement,
+    _legacy_proxy_class_hash: FieldElement,
+    starkgate_proxy_class_hash: FieldElement,
+    erc20_legacy_class_hash: FieldElement,
 ) -> Result<(StarknetLegacyEthBridge, FieldElement, FieldElement), anyhow::Error> {
     let eth_bridge = StarknetLegacyEthBridge::deploy(core_contract.client().clone()).await;
 
@@ -47,7 +51,7 @@ pub async fn deploy_eth_bridge(
         clients.provider_l2(),
         legacy_eth_bridge_class_hash,
         legacy_eth_bridge_proxy_address,
-        legacy_proxy_class_hash,
+        starkgate_proxy_class_hash,
         &account,
         &arg_config.rollup_priv_key,
     )
@@ -55,14 +59,13 @@ pub async fn deploy_eth_bridge(
 
     log::debug!("L2 Bridge Deployment Successful [✅]");
     log::debug!("[🚀] L2 Bridge Address : {:?}", l2_bridge_address);
-    // save_to_json("ETH_l2_bridge_address",
-    // &JsonValueType::StringType(l2_bridge_address.to_string()))?;
+    save_to_json("ETH_l2_bridge_address", &JsonValueType::StringType(l2_bridge_address.to_string()))?;
 
     let eth_address = deploy_eth_token_on_l2(
         clients.provider_l2(),
         &arg_config.rollup_priv_key,
         eth_proxy_address,
-        eth_erc20_class_hash,
+        erc20_legacy_class_hash,
         &account,
         l2_bridge_address,
     )
@@ -108,30 +111,69 @@ pub async fn deploy_eth_token_on_l2(
     account: &RpcAccount<'_>,
     eth_legacy_bridge_address: FieldElement,
 ) -> FieldElement {
-    let deploy_txn = invoke_contract(
+    let deploy_tx = account
+        .invoke_contract(
+            account.address(),
+            "deploy_contract",
+            vec![eth_erc20_class_hash, FieldElement::ZERO, FieldElement::ZERO, FieldElement::ZERO],
+            None,
+        )
+        .send()
+        .await
+        .expect("Error deploying the contract proxy.");
+    wait_for_transaction(rpc_provider_l2, deploy_tx.transaction_hash, "deploy_eth_token_on_l2 : deploy").await.unwrap();
+    let contract_address = get_contract_address_from_deploy_tx(account.provider(), &deploy_tx).await.unwrap();
+
+    log::debug!("contract address (eth erc20) : {:?}", contract_address);
+
+    let add_implementation_txn = invoke_contract(
         rpc_provider_l2,
         eth_proxy_address,
-        "upgrade_to",
+        "add_implementation",
         vec![
-            eth_erc20_class_hash,
+            contract_address,
             FieldElement::ZERO,
-            FieldElement::from(9u64),
-            FieldElement::from_byte_slice_be("ether".as_bytes()).unwrap(),
+            FieldElement::from(4u64),
+            FieldElement::from_byte_slice_be("Ether".as_bytes()).unwrap(),
             FieldElement::from_byte_slice_be("ETH".as_bytes()).unwrap(),
             FieldElement::from_str("18").unwrap(),
-            FieldElement::from_str("10000000000000000000").unwrap(),
-            FieldElement::from_str("0").unwrap(),
-            account.address(),
             eth_legacy_bridge_address,
-            account.address(),
-            FieldElement::from_str("0").unwrap(),
-            FieldElement::ONE,
+            FieldElement::ZERO,
         ],
         private_key,
         &convert_to_hex(&account.address().to_string()),
     )
     .await;
 
-    wait_for_transaction(rpc_provider_l2, deploy_txn.transaction_hash).await.unwrap();
+    wait_for_transaction(
+        rpc_provider_l2,
+        add_implementation_txn.transaction_hash,
+        "deploy_eth_token_on_l2 : add_implementation",
+    )
+    .await
+    .unwrap();
+
+    let upgrade_to_txn = invoke_contract(
+        rpc_provider_l2,
+        eth_proxy_address,
+        "upgrade_to",
+        vec![
+            contract_address,
+            FieldElement::ZERO,
+            FieldElement::from(4u64),
+            FieldElement::from_byte_slice_be("Ether".as_bytes()).unwrap(),
+            FieldElement::from_byte_slice_be("ETH".as_bytes()).unwrap(),
+            FieldElement::from_str("18").unwrap(),
+            eth_legacy_bridge_address,
+            FieldElement::ZERO,
+        ],
+        private_key,
+        &convert_to_hex(&account.address().to_string()),
+    )
+    .await;
+
+    wait_for_transaction(rpc_provider_l2, upgrade_to_txn.transaction_hash, "deploy_eth_token_on_l2 : upgrade_to")
+        .await
+        .unwrap();
     eth_proxy_address
 }

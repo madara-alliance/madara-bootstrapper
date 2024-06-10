@@ -132,17 +132,13 @@ pub async fn get_contract_address_from_deploy_tx(
 ) -> Result<FieldElement, ProviderError> {
     let deploy_tx_hash = tx.transaction_hash;
 
-    wait_for_transaction(rpc, deploy_tx_hash).await.unwrap();
+    wait_for_transaction(rpc, deploy_tx_hash, "get_contract_address_from_deploy_tx").await.unwrap();
 
     let deploy_tx_receipt = get_transaction_receipt(rpc, deploy_tx_hash).await?;
-
-    log::debug!("Deploy Transaction Receipt : {:?}", deploy_tx_receipt);
 
     let contract_address = assert_matches!(
         deploy_tx_receipt,
         MaybePendingTransactionReceipt::Receipt(TransactionReceipt::Invoke(receipt)) => {
-            let events = receipt.events.clone();
-            log::debug!("Receipt Events : {:?}", events);
             receipt.events.iter().find(|e| e.keys[0] == get_selector_from_name("ContractDeployed").unwrap()).unwrap().data[0]
         }
     );

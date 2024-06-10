@@ -25,7 +25,7 @@ pub fn build_single_owner_account<'a>(
     );
 
     let signer = LocalWallet::from(SigningKey::from_secret_scalar(FieldElement::from_hex_be(private_key).unwrap()));
-    let account_address = FieldElement::from_hex_be(&account_address).expect("Invalid Contract Address");
+    let account_address = FieldElement::from_hex_be(account_address).expect("Invalid Contract Address");
     let execution_encoding = if is_legacy {
         starknet_accounts::ExecutionEncoding::Legacy
     } else {
@@ -67,9 +67,9 @@ pub fn generate_config_hash(
     fee_token_address: FieldElement,
 ) -> StarkHash {
     pedersen_hash_array(&[
-        StarkFelt { 0: config_hash_version.to_bytes_be() },
-        StarkFelt { 0: chain_id.to_bytes_be() },
-        StarkFelt { 0: fee_token_address.to_bytes_be() },
+        StarkFelt(config_hash_version.to_bytes_be()),
+        StarkFelt(chain_id.to_bytes_be()),
+        StarkFelt(fee_token_address.to_bytes_be()),
     ])
 }
 

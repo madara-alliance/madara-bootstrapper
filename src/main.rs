@@ -1,18 +1,22 @@
 pub mod bridge;
 pub mod contract_clients;
+pub mod non_bridge;
 #[cfg(test)]
 mod tests;
 pub mod utils;
+
 use clap::Parser;
 use dotenv::dotenv;
 
+use crate::bridge::deploy_erc20_bridge::deploy_erc20_bridge;
 // use crate::bridge::deploy_erc20_bridge::deploy_erc20_bridge;
 use crate::bridge::deploy_eth_bridge::deploy_eth_bridge;
 use crate::contract_clients::config::Config;
 use crate::contract_clients::init_state::init_and_deploy_eth_and_account;
 use crate::contract_clients::starknet_sovereign::StarknetSovereignContract;
 use crate::contract_clients::utils::get_bridge_init_configs;
-use crate::utils::{save_to_json, JsonValueType};
+use crate::non_bridge::deployer::deploy_non_bridge_contracts;
+use crate::utils::{convert_to_hex, save_to_json, JsonValueType};
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -21,7 +25,7 @@ pub struct CliArgs {
     eth_rpc: String,
     #[clap(long, env, default_value = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80")]
     eth_priv_key: String,
-    #[clap(long, env, default_value = "https://f997-2405-201-4059-e00f-8443-d21f-2c93-4733.ngrok-free.app")]
+    #[clap(long, env, default_value = "https://bf8f-2405-201-4059-e00f-3986-3c9f-2139-bf11.ngrok-free.app")]
     rollup_seq_url: String,
     #[clap(long, env, default_value = "0xabcd")]
     rollup_priv_key: String,
@@ -68,9 +72,11 @@ pub async fn deploy_bridges(config: &CliArgs) {
         account_address,
         eth_proxy_address,
         eth_bridge_proxy_address,
-        _token_bridge_proxy_address,
+        token_bridge_proxy_address,
         proxy_class_hash,
         legacy_proxy_class_hash,
+        starkgate_proxy_class_hash,
+        erc20_legacy_class_hash,
     ) = init_and_deploy_eth_and_account(&clients, config).await;
     log::debug!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> [ETH BRIDGE] ⏳");
     deploy_eth_bridge(
@@ -84,11 +90,27 @@ pub async fn deploy_bridges(config: &CliArgs) {
         account_address,
         proxy_class_hash,
         legacy_proxy_class_hash,
+        starkgate_proxy_class_hash,
+        erc20_legacy_class_hash,
     )
     .await
     .expect("Error in deploying ETH bridge");
     log::debug!("ETH BRIDGE DEPLOYED [✅]");
-    // log::debug!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>[ERC20 BRIDGE] ⏳");
-    // deploy_erc20_bridge(&clients, config, &core_contract_client, "").await.expect("Error in
-    // deploying ERC20 bridge"); log::debug!("ERC20 BRIDGE DEPLOYED [✅]");
+    log::debug!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>[ERC20 BRIDGE] ⏳");
+    deploy_erc20_bridge(
+        &clients,
+        config,
+        &core_contract_client,
+        &convert_to_hex(&account_address.to_string()),
+        token_bridge_proxy_address,
+    )
+    .await
+    .expect(
+        "Error in
+    deploying ERC20 bridge",
+    );
+    log::debug!("ERC20 BRIDGE DEPLOYED [✅]");
+    log::debug!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>[NON BRIDGE CONTRACTS] ⏳");
+    deploy_non_bridge_contracts(&clients, config, account_address).await;
+    log::debug!("NON BRIDGE CONTRACTS DEPLOYED [✅]");
 }

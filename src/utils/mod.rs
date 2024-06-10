@@ -36,7 +36,7 @@ pub async fn invoke_contract(
         .await
         .expect("Error in invoking the contract !!");
 
-    wait_for_transaction(rpc_provider, txn_res.transaction_hash).await.unwrap();
+    wait_for_transaction(rpc_provider, txn_res.transaction_hash, "invoking_contract").await.unwrap();
 
     txn_res
 }
@@ -52,17 +52,21 @@ pub fn pad_bytes(address: Address) -> Vec<u8> {
 pub async fn wait_for_transaction(
     provider_l2: &JsonRpcClient<HttpTransport>,
     transaction_hash: FieldElement,
+    tag: &str,
 ) -> Result<(), anyhow::Error> {
     let transaction_receipt = get_transaction_receipt(provider_l2, transaction_hash).await;
 
     let transaction_status = transaction_receipt.ok().unwrap();
 
     match transaction_status {
-        Receipt(..) => Ok(()),
+        Receipt(transaction_receipt) => {
+            log::debug!("txn : {:?} : {:?}", tag, transaction_receipt);
+            Ok(())
+        }
         PendingReceipt(..) => {
             log::trace!("⏳ waiting for transaction : {:?}", transaction_hash);
             sleep(Duration::from_secs(2)).await;
-            Box::pin(wait_for_transaction(provider_l2, transaction_hash)).await
+            Box::pin(wait_for_transaction(provider_l2, transaction_hash, "")).await
         }
     }
 }
@@ -108,6 +112,5 @@ pub fn save_to_json(key: &str, value: &JsonValueType) -> Result<(), io::Error> {
 pub fn convert_to_hex(address: &str) -> String {
     let big_uint = address.parse::<BigUint>().map_err(|_| "Invalid number");
     let hex = big_uint.expect("error converting decimal string ---> hex string").to_str_radix(16);
-    let hash = "0x".to_string() + &hex;
-    hash
+    "0x".to_string() + &hex
 }

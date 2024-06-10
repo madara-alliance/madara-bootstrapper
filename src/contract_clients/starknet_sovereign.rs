@@ -66,7 +66,7 @@ impl StarknetSovereignContract {
         program_hash: FieldElement,
         config_hash: StarkHash,
     ) {
-        let program_hash = StarkFelt { 0: program_hash.to_bytes_be() };
+        let program_hash = StarkFelt(program_hash.to_bytes_be());
 
         let init_data = CoreContractInitData {
             program_hash: convert_felt_to_u256(program_hash), // zero program hash would be deemed invalid

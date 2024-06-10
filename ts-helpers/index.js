@@ -20,48 +20,48 @@
 //   console.log("Script Executed Successfully : )")
 // );
 
-import {RpcProvider, stark, hash} from "starknet";
-import {writeFileSync} from "node:fs";
+import { RpcProvider, stark, hash } from "starknet";
+import { writeFileSync } from "node:fs";
 
 const main = async () => {
+  const sepoliaProvider = new RpcProvider({
+    nodeUrl:
+      "https://starknet-sepolia.infura.io/v3/6cb41f0e9a564ef18240ff6bf1a7427f",
+  });
 
-    const sepoliaProvider = new RpcProvider({
-        nodeUrl:
-            'https://starknet-sepolia.infura.io/v3/6cb41f0e9a564ef18240ff6bf1a7427f',
-    });
+  const class_fetch = await sepoliaProvider.getClassByHash(
+    "0x07b3e05f48f0c69e4a65ce5e076a66271a527aff2c34ce1083ec6e1526997a69",
+  );
 
-    const class_fetch = await sepoliaProvider.getClassByHash("0x5c478ee27f2112411f86f207605b2e2c58cdb647bac0df27f660ef2252359c6");
+  // console.log("type of class_fetch : ", class_fetch);
 
-    // console.log("type of class_fetch : ", class_fetch);
+  const program = class_fetch.program;
 
-    const program = class_fetch.program;
+  const decompress_program = stark.decompressProgram(program);
+  console.log(decompress_program);
 
-    const decompress_program = stark.decompressProgram(program);
-    // console.log(decompress_program);
+  // console.log("entrypoints : ", class_fetch.entry_points_by_type);
 
-    // console.log("entrypoints : ", class_fetch.entry_points_by_type);
+  const abi_object = {
+    abi: class_fetch.abi,
+    entry_points_by_type: class_fetch.entry_points_by_type,
+    program: decompress_program,
+  };
 
-    const abi_object = {
-        abi : class_fetch.abi,
-        entry_points_by_type: class_fetch.entry_points_by_type,
-        program: decompress_program
-    }
+  // writeFileSync("./temp.json", abi_object, 'utf8');
 
-    // writeFileSync("./temp.json", abi_object, 'utf8');
+  const parsed = JSON.stringify(
+    abi_object,
+    (key, value) => (typeof value === "bigint" ? value.toString() : value), // return everything else unchanged
+  );
 
-    const parsed = JSON.stringify(abi_object, (key, value) =>
-        typeof value === 'bigint'
-            ? value.toString()
-            : value // return everything else unchanged
-    )
+  console.log(parsed);
 
-    console.log(parsed)
+  const class_hash = hash.computeLegacyContractClassHash(abi_object);
+  const class_hash_parsed = hash.computeLegacyContractClassHash(parsed);
 
-    const class_hash = hash.computeLegacyContractClassHash(abi_object);
-    const class_hash_parsed = hash.computeLegacyContractClassHash(parsed);
+  console.log("class hash : ", class_hash);
+  console.log("class hash parsed : ", class_hash_parsed);
+};
 
-    console.log("class hash : ", class_hash);
-    console.log("class hash parsed : ", class_hash_parsed);
-}
-
-main()
+main();
