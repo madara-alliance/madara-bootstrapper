@@ -7,9 +7,9 @@ pub mod utils;
 
 use clap::Parser;
 use dotenv::dotenv;
+use inline_colorization::*;
 use starknet_accounts::Account;
 use starknet_ff::FieldElement;
-use inline_colorization::*;
 
 use crate::contract_clients::config::Config;
 use crate::contract_clients::eth_bridge::StarknetLegacyEthBridge;
@@ -22,8 +22,8 @@ use crate::setup_scripts::braavos::BraavosSetup;
 use crate::setup_scripts::erc20_bridge::Erc20Bridge;
 use crate::setup_scripts::eth_bridge::EthBridge;
 use crate::setup_scripts::udc::UdcSetup;
-use crate::utils::{save_to_json, JsonValueType};
 use crate::utils::banner::BANNER;
+use crate::utils::{save_to_json, JsonValueType};
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]

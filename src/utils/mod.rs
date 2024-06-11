@@ -18,8 +18,8 @@ use tokio::time::sleep;
 use crate::contract_clients::utils::RpcAccount;
 use crate::helpers::account_actions::{get_transaction_receipt, AccountActions};
 
-pub mod constants;
 pub mod banner;
+pub mod constants;
 
 pub async fn invoke_contract<'a>(
     contract: FieldElement,
