@@ -32,12 +32,6 @@ pub fn build_single_owner_account<'a>(
     account_address: &str,
     is_legacy: bool,
 ) -> RpcAccount<'a> {
-    log::trace!(
-        ">>>> build_single_owner_account : priv key : {:?} | account address : {:?}",
-        private_key,
-        &account_address
-    );
-
     let signer = LocalWallet::from(SigningKey::from_secret_scalar(FieldElement::from_hex_be(private_key).unwrap()));
     let account_address = FieldElement::from_hex_be(account_address).expect("Invalid Contract Address");
     let execution_encoding = if is_legacy {
@@ -214,7 +208,7 @@ pub(crate) async fn deploy_account_using_priv_key(
     let signer = Arc::new(LocalWallet::from_signing_key(SigningKey::from_secret_scalar(
         FieldElement::from_hex_be(&priv_key).unwrap(),
     )));
-    log::trace!(">>>>> signer : {:?}", signer);
+    log::trace!("signer : {:?}", signer);
     let mut oz_account_factory =
         OpenZeppelinAccountFactory::new(oz_account_class_hash, chain_id, signer, provider).await.unwrap();
     oz_account_factory.set_block_id(BlockId::Tag(BlockTag::Pending));
@@ -254,12 +248,12 @@ pub(crate) async fn deploy_proxy_contract(
         .await
         .unwrap();
 
-    log::trace!(">>>>> txn hash (proxy deployment) : {:?}", txn.transaction_hash);
+    log::trace!("txn hash (proxy deployment) : {:?}", txn.transaction_hash);
 
-    let deployed_address_event = get_contract_address_from_deploy_tx(account.provider(), &txn).await.unwrap();
-    log::trace!(">>>>> [IMP] >>>>> : {:?}", deployed_address_event);
+    let deployed_address = get_contract_address_from_deploy_tx(account.provider(), &txn).await.unwrap();
+    log::trace!("[IMP] Event : {:?}", deployed_address);
 
-    deployed_address_event
+    deployed_address
 }
 
 pub(crate) async fn init_governance_proxy(account: &'_ RpcAccount<'_>, contract_address: FieldElement, tag: &str) {
