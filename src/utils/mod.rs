@@ -6,6 +6,7 @@ use ethers::addressbook::Address;
 use ethers::types::U256;
 use num_bigint::BigUint;
 use serde_json::{Map, Value};
+use starknet_accounts::ConnectedAccount;
 use starknet_api::hash::StarkFelt;
 use starknet_core::types::InvokeTransactionResult;
 use starknet_core::types::MaybePendingTransactionReceipt::{PendingReceipt, Receipt};
@@ -15,28 +16,23 @@ use starknet_providers::JsonRpcClient;
 use tokio::time::sleep;
 
 use crate::bridge::helpers::account_actions::{get_transaction_receipt, AccountActions};
-use crate::contract_clients::utils::build_single_owner_account;
+use crate::contract_clients::utils::RpcAccount;
 
 pub mod constants;
-pub mod mapper;
 
-pub async fn invoke_contract(
-    rpc_provider: &JsonRpcClient<HttpTransport>,
+pub async fn invoke_contract<'a>(
     contract: FieldElement,
     method: &str,
     calldata: Vec<FieldElement>,
-    priv_key: &str,
-    address: &str,
+    account: &RpcAccount<'a>,
 ) -> InvokeTransactionResult {
-    let account = build_single_owner_account(rpc_provider, priv_key, address, false);
-
     let txn_res = account
         .invoke_contract(contract, method, calldata, None)
         .send()
         .await
         .expect("Error in invoking the contract !!");
 
-    wait_for_transaction(rpc_provider, txn_res.transaction_hash, "invoking_contract").await.unwrap();
+    wait_for_transaction(account.provider(), txn_res.transaction_hash, "invoking_contract").await.unwrap();
 
     txn_res
 }
@@ -60,7 +56,7 @@ pub async fn wait_for_transaction(
 
     match transaction_status {
         Receipt(transaction_receipt) => {
-            log::debug!("txn : {:?} : {:?}", tag, transaction_receipt);
+            log::trace!("txn : {:?} : {:?}", tag, transaction_receipt);
             Ok(())
         }
         PendingReceipt(..) => {

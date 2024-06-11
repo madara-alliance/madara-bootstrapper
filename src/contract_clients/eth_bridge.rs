@@ -16,7 +16,7 @@ use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
 
 use crate::bridge::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::contract_clients::utils::{field_element_to_u256, RpcAccount};
-use crate::utils::{convert_to_hex, invoke_contract, wait_for_transaction};
+use crate::utils::{invoke_contract, wait_for_transaction};
 
 #[async_trait]
 pub trait BridgeDeployable {
@@ -53,7 +53,6 @@ impl StarknetLegacyEthBridge {
         legacy_eth_bridge_proxy_address: FieldElement,
         _proxy_class_hash: FieldElement,
         account: &RpcAccount<'_>,
-        deployer_priv_key: &str,
     ) -> FieldElement {
         let deploy_tx = account
             .invoke_contract(
@@ -76,14 +75,11 @@ impl StarknetLegacyEthBridge {
 
         log::debug!("contract address (eth bridge) : {:?}", contract_address);
 
-        log::debug!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> [ETH BRIDGE add implementation | upgrade_to]");
         let add_implementation_txn = invoke_contract(
-            rpc_provider_l2,
             legacy_eth_bridge_proxy_address,
             "add_implementation",
             vec![contract_address, FieldElement::ZERO, FieldElement::ONE, account.address(), FieldElement::ZERO],
-            deployer_priv_key,
-            &convert_to_hex(&account.address().to_string()),
+            account,
         )
         .await;
 
@@ -96,12 +92,10 @@ impl StarknetLegacyEthBridge {
         .unwrap();
 
         let upgrade_to_txn = invoke_contract(
-            rpc_provider_l2,
             legacy_eth_bridge_proxy_address,
             "upgrade_to",
             vec![contract_address, FieldElement::ZERO, FieldElement::ONE, account.address(), FieldElement::ZERO],
-            deployer_priv_key,
-            &convert_to_hex(&account.address().to_string()),
+            account,
         )
         .await;
 
@@ -146,60 +140,35 @@ impl StarknetLegacyEthBridge {
         rpc_provider: &JsonRpcClient<HttpTransport>,
         l2_bridge_address: FieldElement,
         erc20_address: FieldElement,
-        priv_key: &str,
         l2_deployer_address: &str,
+        account: &RpcAccount<'_>,
     ) {
         let tx = invoke_contract(
-            rpc_provider,
             l2_bridge_address,
             "initialize",
             vec![FieldElement::from_dec_str("1").unwrap(), FieldElement::from_hex_be(l2_deployer_address).unwrap()],
-            priv_key,
-            l2_deployer_address,
+            account,
         )
         .await;
 
         log::debug!("setup_l2_bridge : l2 bridge initialized //");
         wait_for_transaction(rpc_provider, tx.transaction_hash, "setup_l2_bridge : initialize").await.unwrap();
 
-        let tx = invoke_contract(
-            rpc_provider,
-            l2_bridge_address,
-            "set_l2_token",
-            vec![erc20_address],
-            priv_key,
-            l2_deployer_address,
-        )
-        .await;
+        let tx = invoke_contract(l2_bridge_address, "set_l2_token", vec![erc20_address], account).await;
 
         log::debug!("setup_l2_bridge : l2 token set //");
         wait_for_transaction(rpc_provider, tx.transaction_hash, "setup_l2_bridge : set_l2_token").await.unwrap();
 
         let tx = invoke_contract(
-            rpc_provider,
             l2_bridge_address,
             "set_l1_bridge",
             vec![FieldElement::from_byte_slice_be(self.eth_bridge.address().as_bytes()).unwrap()],
-            priv_key,
-            l2_deployer_address,
+            account,
         )
         .await;
 
         log::debug!("setup_l2_bridge : l1 bridge set //");
         wait_for_transaction(rpc_provider, tx.transaction_hash, "setup_l2_bridge : set_l1_bridge").await.unwrap();
-
-        // Not needed as we are following a bootstrap node approach
-        // let tx = invoke_contract(
-        //     rpc_provider,
-        //     erc20_address,
-        //     "set_role_temp",
-        //     vec![l2_bridge_address],
-        //     priv_key,
-        //     l2_deployer_address,
-        // )
-        // .await;
-        // log::debug!("setup_l2_bridge : l2 bridge minter role granted for eth token //");
-        // wait_for_transaction(rpc_provider, tx.transaction_hash).await.unwrap();
     }
 
     pub async fn set_max_total_balance(&self, amount: U256) {

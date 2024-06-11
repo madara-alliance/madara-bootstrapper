@@ -9,8 +9,6 @@ use constants::{
 use rstest::rstest;
 
 use crate::contract_clients::config::Config;
-use crate::contract_clients::starknet_sovereign::StarknetSovereignContract;
-use crate::contract_clients::utils::get_bridge_init_configs;
 use crate::tests::erc20_bridge::erc20_bridge_test_helper;
 use crate::tests::eth_bridge::eth_bridge_test_helper;
 use crate::{deploy_bridges, CliArgs};
@@ -41,12 +39,9 @@ async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
         out.legacy_eth_bridge_class_hash,
         out.eth_bridge_proxy_address,
         out.eth_proxy_address,
-        out.erc_20_class_hash,
         out.account_address,
-        out.proxy_class_hash,
-        out.legacy_proxy_class_hash,
         out.starkgate_proxy_class_hash,
-        out.erc20_legacy_class_hash
+        out.erc20_legacy_class_hash,
     )
     .await;
 
@@ -66,7 +61,7 @@ async fn deposit_and_withdraw_erc20_bridge() -> Result<(), anyhow::Error> {
         &get_config(),
         out.l2_erc20_token_address,
         out.starknet_token_bridge,
-        out.l2_bridge_address,
+        out.erc20_l2_bridge_address,
     )
     .await;
 

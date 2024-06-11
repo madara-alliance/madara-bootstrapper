@@ -3,13 +3,10 @@ use std::time::Duration;
 
 use ethers::addressbook::Address;
 use ethers::prelude::U256;
-use starknet_core::types::DataAvailabilityMode::L2;
 use starknet_ff::FieldElement;
 use tokio::time::sleep;
 
-use crate::bridge::deploy_erc20_bridge::deploy_erc20_bridge;
 use crate::contract_clients::config::Config;
-use crate::contract_clients::starknet_sovereign::StarknetSovereignContract;
 use crate::contract_clients::token_bridge::StarknetTokenBridge;
 use crate::contract_clients::utils::{build_single_owner_account, read_erc20_balance};
 use crate::tests::constants::L2_DEPLOYER_ADDRESS;
@@ -28,6 +25,9 @@ pub async fn erc20_bridge_test_helper(
     log::debug!("Approval done [✅]");
     log::debug!("Waiting for message to be consumed on l2 [⏳]");
     sleep(Duration::from_secs(arg_config.cross_chain_wait_time)).await;
+
+    let account =
+        build_single_owner_account(clients.provider_l2(), &arg_config.rollup_priv_key, L2_DEPLOYER_ADDRESS, false);
 
     let balance_before = read_erc20_balance(
         clients.provider_l2(),
@@ -62,7 +62,6 @@ pub async fn erc20_bridge_test_helper(
 
     log::debug!("Initiated token withdraw on L2 [⏳]");
     invoke_contract(
-        clients.provider_l2(),
         l2_bridge_address,
         "initiate_token_withdraw",
         vec![
@@ -71,8 +70,7 @@ pub async fn erc20_bridge_test_helper(
             FieldElement::from_dec_str("5").unwrap(),
             FieldElement::ZERO,
         ],
-        &arg_config.rollup_priv_key,
-        L2_DEPLOYER_ADDRESS,
+        &account,
     )
     .await;
 

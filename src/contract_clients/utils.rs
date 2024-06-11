@@ -18,7 +18,7 @@ pub fn build_single_owner_account<'a>(
     account_address: &str,
     is_legacy: bool,
 ) -> RpcAccount<'a> {
-    log::debug!(
+    log::trace!(
         ">>>> build_single_owner_account : priv key : {:?} | account address : {:?}",
         private_key,
         &account_address

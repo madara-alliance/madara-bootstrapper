@@ -58,11 +58,7 @@ impl AccountActions for SingleOwnerAccount<&JsonRpcClient<HttpTransport>, LocalW
         let max_fee = FieldElement::from_hex_be(MAX_FEE_OVERRIDE).unwrap();
 
         match nonce {
-            Some(nonce) => {
-                let res = self.execute(calls).max_fee(max_fee).nonce(nonce.into());
-                log::debug!(">>>>> res : {:?}", res);
-                res
-            }
+            Some(nonce) => self.execute(calls).max_fee(max_fee).nonce(nonce.into()),
             None => self.execute(calls).max_fee(max_fee),
         }
     }

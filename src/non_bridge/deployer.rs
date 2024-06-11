@@ -6,7 +6,7 @@ use tokio::time::sleep;
 
 use crate::bridge::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::contract_clients::config::Config;
-use crate::contract_clients::init_state::{declare_contract_middleware, DeclarationInput};
+use crate::contract_clients::init_state::{declare_contract_util_func, DeclarationInput};
 use crate::contract_clients::utils::build_single_owner_account;
 use crate::utils::constants::{
     ARGENT_ACCOUNT_CASM_PATH, ARGENT_ACCOUNT_SIERRA_PATH, BRAAVOS_ACCOUNT_CASM_PATH, BRAAVOS_ACCOUNT_SIERRA_PATH,
@@ -16,7 +16,7 @@ use crate::utils::{convert_to_hex, save_to_json, wait_for_transaction, JsonValue
 use crate::CliArgs;
 
 pub async fn deploy_non_bridge_contracts(clients: &Config, arg_config: &CliArgs, account_address: FieldElement) {
-    let udc_class_hash = declare_contract_middleware(DeclarationInput::LegacyDeclarationInputs(
+    let udc_class_hash = declare_contract_util_func(DeclarationInput::LegacyDeclarationInputs(
         String::from(UDC_PATH),
         arg_config.rollup_seq_url.clone(),
     ))
@@ -53,7 +53,7 @@ pub async fn deploy_non_bridge_contracts(clients: &Config, arg_config: &CliArgs,
     save_to_json("udc_address", &JsonValueType::StringType(udc_address.to_string())).unwrap();
     log::debug!("udc_address : {:?}", udc_address);
 
-    let argent_class_hash = declare_contract_middleware(DeclarationInput::DeclarationInputs(
+    let argent_class_hash = declare_contract_util_func(DeclarationInput::DeclarationInputs(
         String::from(ARGENT_ACCOUNT_SIERRA_PATH),
         String::from(ARGENT_ACCOUNT_CASM_PATH),
         user_account.clone(),
@@ -63,7 +63,7 @@ pub async fn deploy_non_bridge_contracts(clients: &Config, arg_config: &CliArgs,
     save_to_json("argent_class_hash", &JsonValueType::StringType(argent_class_hash.to_string())).unwrap();
     sleep(Duration::from_secs(10)).await;
 
-    let braavos_class_hash = declare_contract_middleware(DeclarationInput::DeclarationInputs(
+    let braavos_class_hash = declare_contract_util_func(DeclarationInput::DeclarationInputs(
         String::from(BRAAVOS_ACCOUNT_SIERRA_PATH),
         String::from(BRAAVOS_ACCOUNT_CASM_PATH),
         user_account.clone(),

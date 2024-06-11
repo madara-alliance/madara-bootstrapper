@@ -15,3 +15,4 @@ pub const ARGENT_ACCOUNT_SIERRA_PATH: &str = "src/contracts/ArgentAccount.sierra
 pub const ARGENT_ACCOUNT_CASM_PATH: &str = "src/contracts/ArgentAccount.casm.json";
 pub const BRAAVOS_ACCOUNT_SIERRA_PATH: &str = "src/contracts/BraavosAccount.sierra.json";
 pub const BRAAVOS_ACCOUNT_CASM_PATH: &str = "src/contracts/BraavosAccount.casm.json";
+pub const ERC20_L2_CLASS_HASH: &str = "0x5ffbcfeb50d200a0677c48a129a11245a3fc519d1d98d76882d1c9a1b19c6ed";

@@ -9,11 +9,12 @@ use tokio::time::sleep;
 use crate::bridge::deploy_eth_bridge::deploy_eth_bridge;
 use crate::contract_clients::config::Config;
 use crate::contract_clients::starknet_sovereign::StarknetSovereignContract;
-use crate::contract_clients::utils::read_erc20_balance;
+use crate::contract_clients::utils::{build_single_owner_account, read_erc20_balance};
 use crate::tests::constants::L2_DEPLOYER_ADDRESS;
 use crate::utils::invoke_contract;
 use crate::CliArgs;
 
+#[allow(clippy::too_many_arguments)]
 pub async fn eth_bridge_test_helper(
     clients: &Config,
     arg_config: &CliArgs,
@@ -21,10 +22,7 @@ pub async fn eth_bridge_test_helper(
     legacy_eth_bridge_class_hash: FieldElement,
     eth_bridge_proxy_address: FieldElement,
     eth_proxy_address: FieldElement,
-    erc_20_class_hash: FieldElement,
     account_address: FieldElement,
-    proxy_class_hash: FieldElement,
-    legacy_proxy_class_hash: FieldElement,
     starkgate_proxy_class_hash: FieldElement,
     erc20_legacy_class_hash: FieldElement,
 ) -> Result<(), anyhow::Error> {
@@ -35,10 +33,7 @@ pub async fn eth_bridge_test_helper(
         legacy_eth_bridge_class_hash,
         eth_bridge_proxy_address,
         eth_proxy_address,
-        erc_20_class_hash,
         account_address,
-        proxy_class_hash,
-        legacy_proxy_class_hash,
         starkgate_proxy_class_hash,
         erc20_legacy_class_hash,
     )
@@ -71,13 +66,14 @@ pub async fn eth_bridge_test_helper(
 
     sleep(Duration::from_secs((arg_config.l1_wait_time).parse()?)).await;
 
+    let account =
+        build_single_owner_account(clients.provider_l2(), &arg_config.rollup_priv_key, L2_DEPLOYER_ADDRESS, false);
+
     invoke_contract(
-        clients.provider_l2(),
         l2_bridge_address,
         "initiate_withdraw",
         vec![l1_receipient, FieldElement::from_dec_str("5").unwrap(), FieldElement::ZERO],
-        &arg_config.rollup_priv_key,
-        L2_DEPLOYER_ADDRESS,
+        &account,
     )
     .await;
     log::debug!("ETH withdrawal initiated on l2 [💰]");

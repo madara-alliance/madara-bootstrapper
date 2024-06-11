@@ -1,5 +1,7 @@
 ## Transactions from genesis
 
+These are the steps used by starknet to setup the network on sepolia testnet.
+
 Block 0
 // DISABLE FEE
 

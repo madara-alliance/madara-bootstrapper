@@ -4,7 +4,7 @@ Madara Bootstarp is a tool that helps to deploy
 the **Token Bridge** & **Eth Bridge** contract
 between a madara/katana appchain and
 another L2 or L1 network. It will also declare wallet
-contracts from **OpenZappeline**, **Argent** and
+contracts from **OpenZappelin**, **Argent** and
 **Braavos**. You can find the full list of contracts
 in [Info](#info-ℹ)
 
@@ -129,12 +129,3 @@ in our context.
   used for declaring a temp account for declaring V1
   contract that will be used to deploy the user account
   with provided private key in env.
-
-### To generate the madara subxt artifacts 🔨
-
-**NOT NEEDED AS OF NOW**
-
-```shell
-subxt metadata --url http://127.0.0.1:9944 > src/artifacts/madara.artifact.scale
-subxt codegen --url http://127.0.0.1:9944 | rustfmt --edition=2018 --emit=stdout > src/artifacts/madara_metadata.rs
-```
