@@ -84,7 +84,7 @@ impl<'a> EthBridge<'a> {
             self.arg_config.rollup_seq_url.clone(),
         ))
         .await;
-        log::debug!("Legacy ETH Bridge class hash declared !!!");
+        log::debug!("Legacy ETH Bridge class hash declared");
         save_to_json(
             "legacy_eth_bridge_class_hash",
             &JsonValueType::StringType(legacy_eth_bridge_class_hash.to_string()),

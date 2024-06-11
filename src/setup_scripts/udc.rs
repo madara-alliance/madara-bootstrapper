@@ -32,7 +32,7 @@ impl<'a> UdcSetup<'a> {
             self.arg_config.rollup_seq_url.clone(),
         ))
         .await;
-        log::debug!("UDC Class Hash Declared !!!");
+        log::debug!("UDC Class Hash Declared.");
         save_to_json("udc_class_hash", &JsonValueType::StringType(udc_class_hash.to_string())).unwrap();
         sleep(Duration::from_secs(10)).await;
 

@@ -131,7 +131,7 @@ pub async fn declare_contract_util_func(input: DeclarationInput<'_>) -> FieldEle
                 .declare(Arc::new(sierra.clone()), class_hash)
                 .send()
                 .await
-                .expect("Error in declaring the contract using Cairo 1 declaration using the provided account !!!");
+                .expect("Error in declaring the contract using Cairo 1 declaration using the provided account");
             sierra.class_hash()
         }
         LegacyDeclarationInputs(artifact_path, url) => {

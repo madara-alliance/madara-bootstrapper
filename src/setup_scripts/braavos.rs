@@ -27,7 +27,7 @@ impl<'a> BraavosSetup<'a> {
             self.account.clone(),
         ))
         .await;
-        log::debug!("Braavos Hash Declared !!!");
+        log::debug!("Braavos Hash Declared.");
         save_to_json("braavos_class_hash", &JsonValueType::StringType(braavos_class_hash.to_string())).unwrap();
         sleep(Duration::from_secs(10)).await;
 

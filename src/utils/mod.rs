@@ -31,7 +31,7 @@ pub async fn invoke_contract<'a>(
         .invoke_contract(contract, method, calldata, None)
         .send()
         .await
-        .expect("Error in invoking the contract !!");
+        .expect("Error in invoking the contract");
 
     wait_for_transaction(account.provider(), txn_res.transaction_hash, "invoking_contract").await.unwrap();
 
