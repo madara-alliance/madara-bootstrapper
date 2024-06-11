@@ -4,7 +4,6 @@ use std::time::Duration;
 use starknet_ff::FieldElement;
 use tokio::time::sleep;
 
-use crate::contract_clients::config::Config;
 use crate::contract_clients::init_state::{
     declare_contract_util_func, deploy_proxy_contract, init_governance_proxy, DeclarationInput,
 };
@@ -24,7 +23,7 @@ pub struct EthBridgeInitOutput {
 
 pub async fn eth_bridge_init_func(
     arg_config: &CliArgs,
-    user_account: RpcAccount,
+    user_account: RpcAccount<'_>,
     account_address: FieldElement,
 ) -> EthBridgeInitOutput {
     let legacy_proxy_class_hash = declare_contract_util_func(DeclarationInput::LegacyDeclarationInputs(

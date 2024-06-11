@@ -11,7 +11,7 @@ use crate::utils::constants::{OZ_ACCOUNT_CASM_PATH, OZ_ACCOUNT_PATH, OZ_ACCOUNT_
 use crate::utils::{convert_to_hex, save_to_json, JsonValueType};
 use crate::CliArgs;
 
-pub async fn account_init_func(clients: &Config, arg_config: &CliArgs) -> RpcAccount {
+pub async fn account_init_func<'a>(clients: &'a Config, arg_config: &'a CliArgs) -> RpcAccount<'a> {
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     // Making temp account for declaration of OZ account Cairo 1 contract
     let oz_account_class_hash = declare_contract_util_func(DeclarationInput::LegacyDeclarationInputs(

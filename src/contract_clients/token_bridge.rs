@@ -5,7 +5,6 @@ use async_trait::async_trait;
 use ethers::addressbook::Address;
 use ethers::prelude::U256;
 use ethers::types::Bytes;
-use scale_info::Field;
 use starkgate_manager_client::clients::starkgate_manager::StarkgateManagerContractClient;
 use starkgate_manager_client::deploy_starkgate_manager_behind_unsafe_proxy;
 use starkgate_manager_client::interfaces::manager::StarkgateManagerTrait;
@@ -29,7 +28,7 @@ use crate::bridge::helpers::account_actions::{get_contract_address_from_deploy_t
 use crate::contract_clients::eth_bridge::BridgeDeployable;
 use crate::contract_clients::init_state::{declare_contract_util_func, DeclarationInput};
 use crate::contract_clients::utils::{build_single_owner_account, field_element_to_u256, RpcAccount};
-use crate::utils::constants::{ERC20_L2_CLASS_HASH, TOKEN_BRIDGE_CASM_PATH, TOKEN_BRIDGE_SIERRA_PATH};
+use crate::utils::constants::{TOKEN_BRIDGE_CASM_PATH, TOKEN_BRIDGE_SIERRA_PATH};
 use crate::utils::{invoke_contract, pad_bytes, save_to_json, wait_for_transaction, JsonValueType};
 
 pub struct StarknetTokenBridge {

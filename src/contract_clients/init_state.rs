@@ -1,6 +1,4 @@
-use std::str::FromStr;
 use std::sync::Arc;
-use std::time::Duration;
 
 use blockifier::execution::contract_class::ContractClassV0Inner;
 use indexmap::IndexMap;
@@ -18,17 +16,10 @@ use starknet_ff::FieldElement;
 use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::{JsonRpcClient, Provider};
 use starknet_signers::{LocalWallet, SigningKey};
-use tokio::time::sleep;
 
 use crate::bridge::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
-use crate::contract_clients::config::Config;
-use crate::contract_clients::utils::{build_single_owner_account, RpcAccount};
-use crate::utils::constants::{
-    ERC20_CASM_PATH, ERC20_LEGACY_PATH, ERC20_SIERRA_PATH, LEGACY_BRIDGE_PATH, OZ_ACCOUNT_CASM_PATH, OZ_ACCOUNT_PATH,
-    OZ_ACCOUNT_SIERRA_PATH, PROXY_LEGACY_PATH, STARKGATE_PROXY_PATH,
-};
-use crate::utils::{convert_to_hex, invoke_contract, save_to_json, wait_for_transaction, JsonValueType};
-use crate::CliArgs;
+use crate::contract_clients::utils::RpcAccount;
+use crate::utils::{invoke_contract, save_to_json, wait_for_transaction, JsonValueType};
 
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 pub struct CustomDeclareV0Transaction {

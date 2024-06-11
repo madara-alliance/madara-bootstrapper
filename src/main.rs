@@ -88,7 +88,7 @@ pub async fn deploy_bridges(config: &CliArgs) -> DeployBridgeOutput {
     log::debug!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> [L2 State and Initialisation] ⏳");
     let account = account_init_func(&clients, config).await;
     let eth_bridge_setup_outputs = eth_bridge_init_func(config, account.clone(), account.address()).await;
-    let erc20_bridge_setup_outputs = erc20_bridge_init_func(account).await;
+    let erc20_bridge_setup_outputs = erc20_bridge_init_func(account.clone()).await;
     log::debug!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> [ETH BRIDGE] ⏳");
     deploy_eth_bridge(
         &clients,
@@ -97,7 +97,7 @@ pub async fn deploy_bridges(config: &CliArgs) -> DeployBridgeOutput {
         eth_bridge_setup_outputs.legacy_eth_bridge_class_hash,
         eth_bridge_setup_outputs.eth_bridge_proxy_address,
         eth_bridge_setup_outputs.eth_proxy_address,
-        account.address().clone(),
+        account.address(),
         eth_bridge_setup_outputs.starkgate_proxy_class_hash,
         eth_bridge_setup_outputs.erc20_legacy_class_hash,
     )
@@ -119,7 +119,7 @@ pub async fn deploy_bridges(config: &CliArgs) -> DeployBridgeOutput {
     );
     log::debug!("ERC20 BRIDGE DEPLOYED [✅]");
     log::debug!(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>[NON BRIDGE CONTRACTS] ⏳");
-    deploy_non_bridge_contracts(&clients, config, account.address().clone()).await;
+    deploy_non_bridge_contracts(&clients, config, account.address()).await;
     log::debug!("NON BRIDGE CONTRACTS DEPLOYED [✅]");
 
     DeployBridgeOutput {
@@ -127,7 +127,7 @@ pub async fn deploy_bridges(config: &CliArgs) -> DeployBridgeOutput {
         starknet_token_bridge,
         erc20_class_hash: erc20_bridge_setup_outputs.erc20_cairo_one_class_hash,
         legacy_eth_bridge_class_hash: eth_bridge_setup_outputs.legacy_eth_bridge_class_hash,
-        account_address: account.address().clone(),
+        account_address: account.address(),
         eth_proxy_address: eth_bridge_setup_outputs.eth_proxy_address,
         eth_bridge_proxy_address: eth_bridge_setup_outputs.eth_bridge_proxy_address,
         legacy_proxy_class_hash: eth_bridge_setup_outputs.legacy_proxy_class_hash,
