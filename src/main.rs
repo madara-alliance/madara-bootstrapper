@@ -9,6 +9,7 @@ use clap::Parser;
 use dotenv::dotenv;
 use starknet_accounts::Account;
 use starknet_ff::FieldElement;
+use inline_colorization::*;
 
 use crate::contract_clients::config::Config;
 use crate::contract_clients::eth_bridge::StarknetLegacyEthBridge;
@@ -22,6 +23,7 @@ use crate::setup_scripts::erc20_bridge::Erc20Bridge;
 use crate::setup_scripts::eth_bridge::EthBridge;
 use crate::setup_scripts::udc::UdcSetup;
 use crate::utils::{save_to_json, JsonValueType};
+use crate::utils::banner::BANNER;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -79,6 +81,7 @@ pub struct DeployBridgeOutput {
 }
 
 pub async fn bootstrap(config: &CliArgs) -> DeployBridgeOutput {
+    println!("{color_red}{}{color_reset}", BANNER);
     let clients = Config::init(config).await;
     let core_contract_client = StarknetSovereignContract::deploy(&clients).await;
     log::info!("📦 Core address : {:?}", core_contract_client.address());

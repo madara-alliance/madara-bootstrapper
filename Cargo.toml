@@ -74,3 +74,4 @@ subxt = "0.35.3"
 subxt-lightclient = { version = "0.35.3", optional = true, default-features = false }
 subxt-macro = { version = "0.35.3" }
 subxt-metadata = { version = "0.35.3", features = ["std"] }
+inline_colorization = "0.1.6"
