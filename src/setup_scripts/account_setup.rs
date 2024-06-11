@@ -3,10 +3,10 @@ use std::time::Duration;
 use tokio::time::sleep;
 
 use crate::contract_clients::config::Config;
-use crate::contract_clients::init_state::{
-    declare_contract_util_func, deploy_account_using_priv_key, DeclarationInput, TEMP_ACCOUNT_PRIV_KEY,
+use crate::contract_clients::utils::{
+    build_single_owner_account, declare_contract_util_func, deploy_account_using_priv_key, DeclarationInput,
+    RpcAccount, TEMP_ACCOUNT_PRIV_KEY,
 };
-use crate::contract_clients::utils::{build_single_owner_account, RpcAccount};
 use crate::utils::constants::{OZ_ACCOUNT_CASM_PATH, OZ_ACCOUNT_PATH, OZ_ACCOUNT_SIERRA_PATH};
 use crate::utils::{convert_to_hex, save_to_json, JsonValueType};
 use crate::CliArgs;
@@ -19,11 +19,11 @@ pub async fn account_init_func<'a>(clients: &'a Config, arg_config: &'a CliArgs)
         arg_config.rollup_seq_url.clone(),
     ))
     .await;
-    log::debug!("OZ Account Class Hash Declared !!!");
+    log::debug!("OZ Account Class Hash Declared");
     save_to_json("oz_account_class_hash", &JsonValueType::StringType(oz_account_class_hash.to_string())).unwrap();
     sleep(Duration::from_secs(10)).await;
 
-    log::debug!(">>>> Waiting for block to be mined [/]");
+    log::debug!("Waiting for block to be mined [/]");
     sleep(Duration::from_secs(10)).await;
 
     let account_address_temp =

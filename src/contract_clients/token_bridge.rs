@@ -24,10 +24,11 @@ use starknet_token_bridge_client::interfaces::token_bridge::StarknetTokenBridgeT
 use tokio::time::sleep;
 use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
 
-use crate::bridge::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::contract_clients::eth_bridge::BridgeDeployable;
-use crate::contract_clients::init_state::{declare_contract_util_func, DeclarationInput};
-use crate::contract_clients::utils::{build_single_owner_account, field_element_to_u256, RpcAccount};
+use crate::contract_clients::utils::{
+    build_single_owner_account, declare_contract_util_func, field_element_to_u256, DeclarationInput, RpcAccount,
+};
+use crate::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::utils::constants::{TOKEN_BRIDGE_CASM_PATH, TOKEN_BRIDGE_SIERRA_PATH};
 use crate::utils::{invoke_contract, pad_bytes, save_to_json, wait_for_transaction, JsonValueType};
 
@@ -101,7 +102,7 @@ impl StarknetTokenBridge {
         save_to_json("L2_token_bridge_class_hash", &JsonValueType::StringType(token_bridge_class_hash.to_string()))
             .unwrap();
 
-        log::info!("token_bridge_class_hash : {:?}", token_bridge_class_hash);
+        log::debug!("token_bridge_class_hash : {:?}", token_bridge_class_hash);
 
         let deploy_contract_implementation_token_bridge = account
             .invoke_contract(

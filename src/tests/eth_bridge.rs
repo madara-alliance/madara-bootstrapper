@@ -6,40 +6,20 @@ use ethers::prelude::U256;
 use starknet_ff::FieldElement;
 use tokio::time::sleep;
 
-use crate::bridge::deploy_eth_bridge::deploy_eth_bridge;
 use crate::contract_clients::config::Config;
-use crate::contract_clients::starknet_sovereign::StarknetSovereignContract;
+use crate::contract_clients::eth_bridge::StarknetLegacyEthBridge;
 use crate::contract_clients::utils::{build_single_owner_account, read_erc20_balance};
 use crate::tests::constants::L2_DEPLOYER_ADDRESS;
 use crate::utils::invoke_contract;
 use crate::CliArgs;
 
-#[allow(clippy::too_many_arguments)]
 pub async fn eth_bridge_test_helper(
     clients: &Config,
     arg_config: &CliArgs,
-    core_contract: &StarknetSovereignContract,
-    legacy_eth_bridge_class_hash: FieldElement,
-    eth_bridge_proxy_address: FieldElement,
-    eth_proxy_address: FieldElement,
-    account_address: FieldElement,
-    starkgate_proxy_class_hash: FieldElement,
-    erc20_legacy_class_hash: FieldElement,
+    l2_eth_address: FieldElement,
+    l2_bridge_address: FieldElement,
+    eth_bridge: StarknetLegacyEthBridge,
 ) -> Result<(), anyhow::Error> {
-    let (eth_bridge, l2_bridge_address, l2_eth_address) = deploy_eth_bridge(
-        clients,
-        arg_config,
-        core_contract,
-        legacy_eth_bridge_class_hash,
-        eth_bridge_proxy_address,
-        eth_proxy_address,
-        account_address,
-        starkgate_proxy_class_hash,
-        erc20_legacy_class_hash,
-    )
-    .await
-    .expect("Error in deploying eth bridge [❌]");
-
     let balance_before = read_erc20_balance(
         clients.provider_l2(),
         l2_eth_address,

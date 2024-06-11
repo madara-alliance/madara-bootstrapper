@@ -11,7 +11,7 @@ use rstest::rstest;
 use crate::contract_clients::config::Config;
 use crate::tests::erc20_bridge::erc20_bridge_test_helper;
 use crate::tests::eth_bridge::eth_bridge_test_helper;
-use crate::{deploy_bridges, CliArgs};
+use crate::{bootstrap, CliArgs};
 
 #[rstest]
 #[tokio::test]
@@ -19,7 +19,7 @@ use crate::{deploy_bridges, CliArgs};
 async fn deploy_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
 
-    deploy_bridges(&get_config()).await;
+    bootstrap(&get_config()).await;
 
     Ok(())
 }
@@ -30,18 +30,14 @@ async fn deploy_bridge() -> Result<(), anyhow::Error> {
 async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
     let clients = Config::init(&get_config()).await;
-    let out = deploy_bridges(&get_config()).await;
+    let out = bootstrap(&get_config()).await;
 
     let _ = eth_bridge_test_helper(
         &clients,
         &get_config(),
-        &out.starknet_sovereign_contract,
-        out.legacy_eth_bridge_class_hash,
-        out.eth_bridge_proxy_address,
         out.eth_proxy_address,
-        out.account_address,
-        out.starkgate_proxy_class_hash,
-        out.erc20_legacy_class_hash,
+        out.eth_bridge_proxy_address,
+        out.eth_bridge,
     )
     .await;
 
@@ -54,7 +50,7 @@ async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
 async fn deposit_and_withdraw_erc20_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
     let clients = Config::init(&get_config()).await;
-    let out = deploy_bridges(&get_config()).await;
+    let out = bootstrap(&get_config()).await;
 
     let _ = erc20_bridge_test_helper(
         &clients,

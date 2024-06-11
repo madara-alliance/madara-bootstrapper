@@ -16,6 +16,7 @@ services:
         SN_OS_CONFIG_HASH_VERSION: ${SN_OS_CONFIG_HASH_VERSION}
         SN_OS_PROGRAM_HASH: ${SN_OS_PROGRAM_HASH}
         CROSS_CHAIN_WAIT_TIME: ${CROSS_CHAIN_WAIT_TIME}
+        LOG_LEVEL: ${LOG_LEVEL}
     volumes:
       - type: bind
         source: ./data

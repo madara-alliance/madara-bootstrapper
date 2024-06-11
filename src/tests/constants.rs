@@ -10,4 +10,3 @@ pub const SN_OS_PROGRAM_HASH: &str = "0x41fc2a467ef8649580631912517edcab7674173f
 pub const SN_OS_CONFIG_HASH_VERSION: &str = "StarknetOsConfig1";
 pub const APP_CHAIN_ID: &str = "MADARA";
 pub const L2_DEPLOYER_ADDRESS: &str = "0x4fe5eea46caa0a1f344fafce82b39d66b552f00d3cd12e89073ef4b4ab37860";
-pub const ERC20_L2_CLASS_HASH: &str = "0x5ffbcfeb50d200a0677c48a129a11245a3fc519d1d98d76882d1c9a1b19c6ed";

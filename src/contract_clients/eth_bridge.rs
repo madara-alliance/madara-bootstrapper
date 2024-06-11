@@ -14,8 +14,8 @@ use starknet_providers::JsonRpcClient;
 use starknet_proxy_client::proxy_support::ProxySupportTrait;
 use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
 
-use crate::bridge::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::contract_clients::utils::{field_element_to_u256, RpcAccount};
+use crate::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::utils::{invoke_contract, wait_for_transaction};
 
 #[async_trait]
@@ -51,7 +51,6 @@ impl StarknetLegacyEthBridge {
         rpc_provider_l2: &JsonRpcClient<HttpTransport>,
         legacy_eth_bridge_class_hash: FieldElement,
         legacy_eth_bridge_proxy_address: FieldElement,
-        _proxy_class_hash: FieldElement,
         account: &RpcAccount<'_>,
     ) -> FieldElement {
         let deploy_tx = account

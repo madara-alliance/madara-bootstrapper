@@ -1,11 +1,8 @@
 # Madara Bootstrap 👾
 
-Madara Bootstarp is a tool that helps to deploy
-the **Token Bridge** & **Eth Bridge** contract
-between a madara/katana appchain and
-another L2 or L1 network. It will also declare wallet
-contracts from **OpenZappelin**, **Argent** and
-**Braavos**. You can find the full list of contracts
+Madara Bootstarp is a tool that helps to deploy the **Token Bridge** & **Eth Bridge** contract
+between a madara/katana appchain and another L2 or L1 network. It will also declare wallet
+contracts from **OpenZappelin**, **Argent** and **Braavos**. You can find the full list of contracts
 in [Info](#info-ℹ)
 
 ## Index 📇
@@ -36,12 +33,9 @@ There are three test in the repository :
 
 ### IMP 🚨
 
-- You need to comment/remove the #[ignore]
-  tags in [src/tests/mod.rs](src/tests/mod.rs) file
-- Only one test can be run at one time as all
-  the tests are e2e tests.
-- You also would need to restart
-  both the chains after running each test.
+- You need to comment/remove the #[ignore] tags in [src/tests/mod.rs](src/tests/mod.rs) file
+- Only one test can be run at one time as all the tests are e2e tests.
+- You also would need to restart both the chains after running each test.
 
 ```shell
 # 1. Run madara instance with eth as settlement layer :
@@ -57,26 +51,24 @@ RUST_LOG=debug cargo test -- --nocapture
 
 ### Local 💻
 
-You can provide the env variables as arguments also
-,or you can also provide them in .env file.
+You can provide the env variables as arguments also, or you can also provide them in .env file.
 
 Refer [.env.example](.env.example) file for setup
 
 ```shell
 cp .env.example .env
 cargo build --release
-RUST_LOG=debug cargo run -- --help
+RUST_LOG=info cargo run -- --help
 
 # If you have provided env vars in .env
-RUST_LOG=debug cargo run
+RUST_LOG=info cargo run
 ```
 
 **IMP 🚨** : It will store all the addresses in [data/addresses.json](data/addresses.json)
 
 ### Docker 🐳
 
-1. You need to set up the .env file first. Fill all
-   the variables in .env file
+1. You need to set up the .env file first. Fill all the variables in .env file
 
    ```shell
    cp .env.example .env
@@ -118,14 +110,9 @@ RUST_LOG=debug cargo run
 Here are some contract descriptions on why they are used
 in our context.
 
-- `ERC20 (starkgate)` : This ERC20 contracts works without
-  a proxy and is used by erc20 token bridge in
+- `ERC20 (starkgate)` : This ERC20 contracts works without a proxy and is used by erc20 token bridge in
   order to deploy the token on L2.
-- `ERC20 (legacy : starknet)` : This contract is used for
-  deploying the implementation of ETH token on L2.
-- `ERC20 token bridge (starkgate)` : Contract for Token
-  bridge.
-- `OpenZeppelinAccount (legacy : starknet)` : Contract
-  used for declaring a temp account for declaring V1
-  contract that will be used to deploy the user account
-  with provided private key in env.
+- `ERC20 (legacy : starknet)` : This contract is used for deploying the implementation of ETH token on L2.
+- `ERC20 token bridge (starkgate)` : Contract for Token bridge.
+- `OpenZeppelinAccount (legacy : starknet)` : Contract used for declaring a temp account for declaring V1
+  contract that will be used to deploy the user account with provided private key in env.

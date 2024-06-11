@@ -15,8 +15,8 @@ use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::JsonRpcClient;
 use tokio::time::sleep;
 
-use crate::bridge::helpers::account_actions::{get_transaction_receipt, AccountActions};
 use crate::contract_clients::utils::RpcAccount;
+use crate::helpers::account_actions::{get_transaction_receipt, AccountActions};
 
 pub mod constants;
 
