@@ -26,7 +26,7 @@ use crate::utils::{invoke_contract, save_to_json, wait_for_transaction, JsonValu
 use crate::CliArgs;
 
 pub type RpcAccount<'a> = SingleOwnerAccount<&'a JsonRpcClient<HttpTransport>, LocalWallet>;
-pub fn build_single_owner_account<'a>(
+pub async fn build_single_owner_account<'a>(
     rpc: &'a JsonRpcClient<HttpTransport>,
     private_key: &str,
     account_address: &str,
@@ -39,13 +39,9 @@ pub fn build_single_owner_account<'a>(
     } else {
         starknet_accounts::ExecutionEncoding::New
     };
-    SingleOwnerAccount::new(
-        rpc,
-        signer,
-        account_address,
-        FieldElement::from_hex_be("0x4d4144415241").unwrap(),
-        execution_encoding,
-    )
+
+    let chain_id = rpc.chain_id().await.unwrap();
+    SingleOwnerAccount::new(rpc, signer, account_address, chain_id, execution_encoding)
 }
 
 pub async fn read_erc20_balance(
@@ -122,7 +118,7 @@ pub(crate) enum DeclarationInput<'a> {
 }
 
 #[allow(private_interfaces)]
-pub async fn declare_contract_util_func(input: DeclarationInput<'_>) -> FieldElement {
+pub async fn declare_contract(input: DeclarationInput<'_>) -> FieldElement {
     match input {
         DeclarationInputs(sierra_path, casm_path, account) => {
             let (class_hash, sierra) = account.declare_contract_params_sierra(&sierra_path, &casm_path);

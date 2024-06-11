@@ -16,7 +16,7 @@ use crate::contract_clients::eth_bridge::StarknetLegacyEthBridge;
 use crate::contract_clients::starknet_sovereign::StarknetSovereignContract;
 use crate::contract_clients::token_bridge::StarknetTokenBridge;
 use crate::contract_clients::utils::get_bridge_init_configs;
-use crate::setup_scripts::account_setup::account_init_func;
+use crate::setup_scripts::account_setup::account_init;
 use crate::setup_scripts::argent::ArgentSetup;
 use crate::setup_scripts::braavos::BraavosSetup;
 use crate::setup_scripts::erc20_bridge::Erc20Bridge;
@@ -90,7 +90,7 @@ pub async fn bootstrap(config: &CliArgs) -> DeployBridgeOutput {
     core_contract_client.initialize_core_contract(0u64.into(), 0u64.into(), program_hash, config_hash).await;
     log::info!("✅ Core setup init for L1 successful.");
     log::info!("⏳ L2 State and Initialisation Started");
-    let account = account_init_func(&clients, config).await;
+    let account = account_init(&clients, config).await;
     log::info!("🔐 Account with given  private key deployed on L2. [Account Address : {:?}]", account.address());
     log::info!("⏳ Starting ETH bridge deployment");
     let eth_bridge = EthBridge::new(account.clone(), account.address(), config, &clients, &core_contract_client);

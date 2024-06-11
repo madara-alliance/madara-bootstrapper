@@ -4,17 +4,17 @@ use tokio::time::sleep;
 
 use crate::contract_clients::config::Config;
 use crate::contract_clients::utils::{
-    build_single_owner_account, declare_contract_util_func, deploy_account_using_priv_key, DeclarationInput,
-    RpcAccount, TEMP_ACCOUNT_PRIV_KEY,
+    build_single_owner_account, declare_contract, deploy_account_using_priv_key, DeclarationInput, RpcAccount,
+    TEMP_ACCOUNT_PRIV_KEY,
 };
 use crate::utils::constants::{OZ_ACCOUNT_CASM_PATH, OZ_ACCOUNT_PATH, OZ_ACCOUNT_SIERRA_PATH};
 use crate::utils::{convert_to_hex, save_to_json, JsonValueType};
 use crate::CliArgs;
 
-pub async fn account_init_func<'a>(clients: &'a Config, arg_config: &'a CliArgs) -> RpcAccount<'a> {
+pub async fn account_init<'a>(clients: &'a Config, arg_config: &'a CliArgs) -> RpcAccount<'a> {
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     // Making temp account for declaration of OZ account Cairo 1 contract
-    let oz_account_class_hash = declare_contract_util_func(DeclarationInput::LegacyDeclarationInputs(
+    let oz_account_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
         String::from(OZ_ACCOUNT_PATH),
         arg_config.rollup_seq_url.clone(),
     ))
@@ -36,8 +36,9 @@ pub async fn account_init_func<'a>(clients: &'a Config, arg_config: &'a CliArgs)
         TEMP_ACCOUNT_PRIV_KEY,
         &convert_to_hex(&account_address_temp.to_string()),
         false,
-    );
-    let oz_account_caio_1_class_hash = declare_contract_util_func(DeclarationInput::DeclarationInputs(
+    )
+    .await;
+    let oz_account_caio_1_class_hash = declare_contract(DeclarationInput::DeclarationInputs(
         String::from(OZ_ACCOUNT_SIERRA_PATH),
         String::from(OZ_ACCOUNT_CASM_PATH),
         user_account_temp.clone(),
@@ -57,13 +58,12 @@ pub async fn account_init_func<'a>(clients: &'a Config, arg_config: &'a CliArgs)
     )
     .await;
     save_to_json("account_address", &JsonValueType::StringType(account_address.to_string())).unwrap();
-    let user_account = build_single_owner_account(
+    build_single_owner_account(
         clients.provider_l2(),
         &arg_config.rollup_priv_key,
         &convert_to_hex(&account_address.to_string()),
         false,
-    );
+    )
+    .await
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-    user_account
 }

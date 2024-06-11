@@ -13,9 +13,7 @@ use crate::contract_clients::config::Config;
 use crate::contract_clients::eth_bridge::BridgeDeployable;
 use crate::contract_clients::starknet_sovereign::StarknetSovereignContract;
 use crate::contract_clients::token_bridge::StarknetTokenBridge;
-use crate::contract_clients::utils::{
-    build_single_owner_account, declare_contract_util_func, DeclarationInput, RpcAccount,
-};
+use crate::contract_clients::utils::{build_single_owner_account, declare_contract, DeclarationInput, RpcAccount};
 use crate::utils::constants::{ERC20_CASM_PATH, ERC20_SIERRA_PATH};
 use crate::utils::{convert_to_hex, save_to_json, JsonValueType};
 use crate::CliArgs;
@@ -47,7 +45,7 @@ impl<'a> Erc20Bridge<'a> {
     }
 
     pub async fn setup(&self) -> Erc20BridgeSetupOutput {
-        let erc20_cairo_one_class_hash = declare_contract_util_func(DeclarationInput::DeclarationInputs(
+        let erc20_cairo_one_class_hash = declare_contract(DeclarationInput::DeclarationInputs(
             String::from(ERC20_SIERRA_PATH),
             String::from(ERC20_CASM_PATH),
             self.account.clone(),
@@ -87,7 +85,8 @@ impl<'a> Erc20Bridge<'a> {
             &self.arg_config.rollup_priv_key,
             &convert_to_hex(&self.account_address.to_string()),
             false,
-        );
+        )
+        .await;
 
         token_bridge.initialize(self.core_contract.address()).await;
         token_bridge

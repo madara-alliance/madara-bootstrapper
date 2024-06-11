@@ -11,8 +11,8 @@ use crate::contract_clients::config::Config;
 use crate::contract_clients::eth_bridge::{BridgeDeployable, StarknetLegacyEthBridge};
 use crate::contract_clients::starknet_sovereign::StarknetSovereignContract;
 use crate::contract_clients::utils::{
-    build_single_owner_account, declare_contract_util_func, deploy_proxy_contract, init_governance_proxy,
-    DeclarationInput, RpcAccount,
+    build_single_owner_account, declare_contract, deploy_proxy_contract, init_governance_proxy, DeclarationInput,
+    RpcAccount,
 };
 use crate::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::utils::constants::{ERC20_LEGACY_PATH, LEGACY_BRIDGE_PATH, PROXY_LEGACY_PATH, STARKGATE_PROXY_PATH};
@@ -49,7 +49,7 @@ impl<'a> EthBridge<'a> {
     }
 
     pub async fn setup(&self) -> EthBridgeSetupOutput {
-        let legacy_proxy_class_hash = declare_contract_util_func(DeclarationInput::LegacyDeclarationInputs(
+        let legacy_proxy_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(PROXY_LEGACY_PATH),
             self.arg_config.rollup_seq_url.clone(),
         ))
@@ -59,7 +59,7 @@ impl<'a> EthBridge<'a> {
             .unwrap();
         sleep(Duration::from_secs(10)).await;
 
-        let starkgate_proxy_class_hash = declare_contract_util_func(DeclarationInput::LegacyDeclarationInputs(
+        let starkgate_proxy_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(STARKGATE_PROXY_PATH),
             self.arg_config.rollup_seq_url.clone(),
         ))
@@ -69,7 +69,7 @@ impl<'a> EthBridge<'a> {
             .unwrap();
         sleep(Duration::from_secs(10)).await;
 
-        let erc20_legacy_class_hash = declare_contract_util_func(DeclarationInput::LegacyDeclarationInputs(
+        let erc20_legacy_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(ERC20_LEGACY_PATH),
             self.arg_config.rollup_seq_url.clone(),
         ))
@@ -79,7 +79,7 @@ impl<'a> EthBridge<'a> {
             .unwrap();
         sleep(Duration::from_secs(10)).await;
 
-        let legacy_eth_bridge_class_hash = declare_contract_util_func(DeclarationInput::LegacyDeclarationInputs(
+        let legacy_eth_bridge_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(LEGACY_BRIDGE_PATH),
             self.arg_config.rollup_seq_url.clone(),
         ))
@@ -138,7 +138,7 @@ impl<'a> EthBridge<'a> {
             &self.arg_config.rollup_priv_key,
             &convert_to_hex(&self.account_address.to_string()),
             false,
-        );
+        ).await;
 
         let l2_bridge_address = StarknetLegacyEthBridge::deploy_l2_contracts(
             self.clients.provider_l2(),

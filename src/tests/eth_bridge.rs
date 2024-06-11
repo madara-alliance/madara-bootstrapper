@@ -47,7 +47,8 @@ pub async fn eth_bridge_test_helper(
     sleep(Duration::from_secs((arg_config.l1_wait_time).parse()?)).await;
 
     let account =
-        build_single_owner_account(clients.provider_l2(), &arg_config.rollup_priv_key, L2_DEPLOYER_ADDRESS, false);
+        build_single_owner_account(clients.provider_l2(), &arg_config.rollup_priv_key, L2_DEPLOYER_ADDRESS, false)
+            .await;
 
     invoke_contract(
         l2_bridge_address,

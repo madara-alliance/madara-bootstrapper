@@ -26,7 +26,7 @@ use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
 
 use crate::contract_clients::eth_bridge::BridgeDeployable;
 use crate::contract_clients::utils::{
-    build_single_owner_account, declare_contract_util_func, field_element_to_u256, DeclarationInput, RpcAccount,
+    build_single_owner_account, declare_contract, field_element_to_u256, DeclarationInput, RpcAccount,
 };
 use crate::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::utils::constants::{TOKEN_BRIDGE_CASM_PATH, TOKEN_BRIDGE_SIERRA_PATH};
@@ -90,9 +90,9 @@ impl StarknetTokenBridge {
         priv_key: &str,
         l2_deployer_address: &str,
     ) -> FieldElement {
-        let account = build_single_owner_account(rpc_provider_l2, priv_key, l2_deployer_address, false);
+        let account = build_single_owner_account(rpc_provider_l2, priv_key, l2_deployer_address, false).await;
 
-        let token_bridge_class_hash = declare_contract_util_func(DeclarationInput::DeclarationInputs(
+        let token_bridge_class_hash = declare_contract(DeclarationInput::DeclarationInputs(
             String::from(TOKEN_BRIDGE_SIERRA_PATH),
             String::from(TOKEN_BRIDGE_CASM_PATH),
             account.clone(),

@@ -4,7 +4,7 @@ use starknet_accounts::ConnectedAccount;
 use starknet_ff::FieldElement;
 use tokio::time::sleep;
 
-use crate::contract_clients::utils::{declare_contract_util_func, DeclarationInput, RpcAccount};
+use crate::contract_clients::utils::{declare_contract, DeclarationInput, RpcAccount};
 use crate::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::utils::constants::UDC_PATH;
 use crate::utils::{save_to_json, wait_for_transaction, JsonValueType};
@@ -27,7 +27,7 @@ impl<'a> UdcSetup<'a> {
     }
 
     pub async fn setup(&self) -> UdcSetupOutput {
-        let udc_class_hash = declare_contract_util_func(DeclarationInput::LegacyDeclarationInputs(
+        let udc_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(UDC_PATH),
             self.arg_config.rollup_seq_url.clone(),
         ))

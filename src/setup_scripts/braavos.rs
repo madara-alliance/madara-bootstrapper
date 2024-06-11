@@ -3,7 +3,7 @@ use std::time::Duration;
 use starknet_ff::FieldElement;
 use tokio::time::sleep;
 
-use crate::contract_clients::utils::{declare_contract_util_func, DeclarationInput, RpcAccount};
+use crate::contract_clients::utils::{declare_contract, DeclarationInput, RpcAccount};
 use crate::utils::constants::{BRAAVOS_ACCOUNT_CASM_PATH, BRAAVOS_ACCOUNT_SIERRA_PATH};
 use crate::utils::{save_to_json, JsonValueType};
 
@@ -21,7 +21,7 @@ impl<'a> BraavosSetup<'a> {
     }
 
     pub async fn setup(&self) -> BraavosSetupOutput {
-        let braavos_class_hash = declare_contract_util_func(DeclarationInput::DeclarationInputs(
+        let braavos_class_hash = declare_contract(DeclarationInput::DeclarationInputs(
             String::from(BRAAVOS_ACCOUNT_SIERRA_PATH),
             String::from(BRAAVOS_ACCOUNT_CASM_PATH),
             self.account.clone(),

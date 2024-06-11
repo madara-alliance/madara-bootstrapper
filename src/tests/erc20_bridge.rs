@@ -27,7 +27,8 @@ pub async fn erc20_bridge_test_helper(
     sleep(Duration::from_secs(arg_config.cross_chain_wait_time)).await;
 
     let account =
-        build_single_owner_account(clients.provider_l2(), &arg_config.rollup_priv_key, L2_DEPLOYER_ADDRESS, false);
+        build_single_owner_account(clients.provider_l2(), &arg_config.rollup_priv_key, L2_DEPLOYER_ADDRESS, false)
+            .await;
 
     let balance_before = read_erc20_balance(
         clients.provider_l2(),
