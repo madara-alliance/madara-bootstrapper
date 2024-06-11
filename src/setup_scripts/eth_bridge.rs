@@ -138,7 +138,8 @@ impl<'a> EthBridge<'a> {
             &self.arg_config.rollup_priv_key,
             &convert_to_hex(&self.account_address.to_string()),
             false,
-        ).await;
+        )
+        .await;
 
         let l2_bridge_address = StarknetLegacyEthBridge::deploy_l2_contracts(
             self.clients.provider_l2(),

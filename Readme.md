@@ -81,6 +81,7 @@ RUST_LOG=info cargo run
    ```
 
 3. Run the image
+
    ```shell
    # If both the networks are running locally
    docker compose -f docker-compose-local.yml up

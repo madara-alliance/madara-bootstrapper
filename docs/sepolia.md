@@ -17,7 +17,7 @@ Block 0
    1. Address - 0x04c5772d1914fe6ce891b64eb35bf3522aeae1315647314aac58b01137607f3f
    2. Class hash - 0x00d0e183745e9dae3e4e78a8ffedcce0903fc4900beace4e0abf192d4c202da3
 6. Call init_governance on ETH token
-   1. Code link - https://github.com/starknet-io/starkgate-contracts/blob/82e651f5f642508577b6310f47d0d457f5f9a9bb/src/starkware/starknet/std_contracts/upgradability_proxy/governance.cairo#L49
+   1. Code link - <https://github.com/starknet-io/starkgate-contracts/blob/82e651f5f642508577b6310f47d0d457f5f9a9bb/src/starkware/starknet/std_contracts/upgradability_proxy/governance.cairo#L49>
    2. Makes the caller a governor
 7. Call init_governance on ETH bridge
    1. Same as above
