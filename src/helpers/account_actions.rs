@@ -3,9 +3,13 @@ use std::future::Future;
 use assert_matches::assert_matches;
 use async_trait::async_trait;
 use starknet_accounts::{Account, Call, Execution, SingleOwnerAccount};
+use starknet_api::core::{calculate_contract_address, ClassHash, ContractAddress};
+use starknet_api::transaction::{Calldata, ContractAddressSalt};
 use starknet_core::types::contract::legacy::LegacyContractClass;
 use starknet_core::types::contract::{CompiledClass, SierraClass};
-use starknet_core::types::{InvokeTransactionResult, MaybePendingTransactionReceipt, TransactionReceipt};
+use starknet_core::types::{
+    FlattenedSierraClass, InvokeTransactionResult, MaybePendingTransactionReceipt, TransactionReceipt,
+};
 use starknet_core::utils::get_selector_from_name;
 use starknet_ff::FieldElement;
 use starknet_providers::jsonrpc::HttpTransport;
@@ -33,7 +37,11 @@ pub trait AccountActions {
         nonce: Option<u64>,
     ) -> TransactionExecution;
 
-    fn declare_contract_params_sierra(&self, path_to_sierra: &str, path_to_casm: &str) -> (FieldElement, SierraClass);
+    fn declare_contract_params_sierra(
+        &self,
+        path_to_sierra: &str,
+        path_to_casm: &str,
+    ) -> (FieldElement, FlattenedSierraClass);
     fn declare_contract_params_legacy(&self, path_to_compiled_contract: &str) -> LegacyContractClass;
 }
 
@@ -55,17 +63,24 @@ impl AccountActions for SingleOwnerAccount<&JsonRpcClient<HttpTransport>, LocalW
         }
     }
 
-    fn declare_contract_params_sierra(&self, path_to_sierra: &str, path_to_casm: &str) -> (FieldElement, SierraClass) {
+    fn declare_contract_params_sierra(
+        &self,
+        path_to_sierra: &str,
+        path_to_casm: &str,
+    ) -> (FieldElement, FlattenedSierraClass) {
         let sierra: SierraClass = serde_json::from_reader(
             std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + path_to_sierra).unwrap(),
         )
         .unwrap();
+
+        let flattened_class = sierra.flatten().unwrap();
+
         let casm: CompiledClass = serde_json::from_reader(
             std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + path_to_casm).unwrap(),
         )
         .unwrap();
 
-        (casm.class_hash().unwrap(), sierra)
+        (casm.class_hash().unwrap(), flattened_class)
     }
 
     fn declare_contract_params_legacy(&self, path_to_compiled_contract: &str) -> LegacyContractClass {
@@ -113,13 +128,26 @@ pub async fn get_contract_address_from_deploy_tx(
 ) -> Result<FieldElement, ProviderError> {
     let deploy_tx_hash = tx.transaction_hash;
 
-    wait_for_transaction(rpc, deploy_tx_hash).await.unwrap();
+    wait_for_transaction(rpc, deploy_tx_hash, "get_contract_address_from_deploy_tx").await.unwrap();
 
     let deploy_tx_receipt = get_transaction_receipt(rpc, deploy_tx_hash).await?;
 
     let contract_address = assert_matches!(
         deploy_tx_receipt,
-        MaybePendingTransactionReceipt::Receipt(TransactionReceipt::Invoke(receipt)) => receipt.events.iter().find(|e| e.keys[0] == get_selector_from_name("ContractDeployed").unwrap()).unwrap().data[0]
+        MaybePendingTransactionReceipt::Receipt(TransactionReceipt::Invoke(receipt)) => {
+            receipt.events.iter().find(|e| e.keys[0] == get_selector_from_name("ContractDeployed").unwrap()).unwrap().data[0]
+        }
     );
     Ok(contract_address)
+}
+
+pub async fn calculate_deployed_address(
+    salt: ContractAddressSalt,
+    class_hash: ClassHash,
+    calldata: &Calldata,
+    deployer_address: ContractAddress,
+) -> FieldElement {
+    let address = calculate_contract_address(salt, class_hash, calldata, deployer_address).unwrap();
+    let bytes = address.0.0.0;
+    FieldElement::from_bytes_be(&bytes).unwrap()
 }

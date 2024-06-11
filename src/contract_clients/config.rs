@@ -21,9 +21,13 @@ impl Config {
 
     /// To deploy the instance of ethereum and starknet and returning the struct.
     pub async fn init(config: &CliArgs) -> Self {
-        let client_instance =
-            EthereumClient::attach(Option::from(config.eth_rpc.clone()), Option::from(config.eth_priv_key.clone()))
-                .unwrap();
+        let client_instance = EthereumClient::attach(
+            Option::from(config.eth_rpc.clone()),
+            Option::from(config.eth_priv_key.clone()),
+            Option::from(config.eth_chain_id),
+        )
+        .unwrap();
+
         let provider_l2 = JsonRpcClient::new(HttpTransport::new(
             Url::parse(&config.rollup_seq_url).expect("Failed to declare provider for app chain"),
         ));

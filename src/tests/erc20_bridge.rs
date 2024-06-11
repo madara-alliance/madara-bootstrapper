@@ -6,31 +6,34 @@ use ethers::prelude::U256;
 use starknet_ff::FieldElement;
 use tokio::time::sleep;
 
-use crate::bridge::deploy_erc20_bridge::deploy_erc20_bridge;
 use crate::contract_clients::config::Config;
-use crate::contract_clients::starknet_sovereign::StarknetSovereignContract;
-use crate::contract_clients::utils::read_erc20_balance;
+use crate::contract_clients::token_bridge::StarknetTokenBridge;
+use crate::contract_clients::utils::{build_single_owner_account, read_erc20_balance};
+use crate::tests::constants::L2_DEPLOYER_ADDRESS;
 use crate::utils::invoke_contract;
 use crate::CliArgs;
 
 pub async fn erc20_bridge_test_helper(
     clients: &Config,
     arg_config: &CliArgs,
-    core_contract: &StarknetSovereignContract,
+    l2_erc20_token_address: FieldElement,
+    token_bridge: StarknetTokenBridge,
+    l2_bridge_address: FieldElement,
 ) -> Result<(), anyhow::Error> {
-    let (token_bridge, l2_bridge_address, l2_erc20_token_address) =
-        deploy_erc20_bridge(clients, arg_config, core_contract).await.expect("Error in deploying erc20 bridge [❌]");
-
     token_bridge.approve(token_bridge.bridge_address(), 100000000.into()).await;
     sleep(Duration::from_secs(arg_config.l1_wait_time.parse().unwrap())).await;
     log::debug!("Approval done [✅]");
     log::debug!("Waiting for message to be consumed on l2 [⏳]");
     sleep(Duration::from_secs(arg_config.cross_chain_wait_time)).await;
 
+    let account =
+        build_single_owner_account(clients.provider_l2(), &arg_config.rollup_priv_key, L2_DEPLOYER_ADDRESS, false)
+            .await;
+
     let balance_before = read_erc20_balance(
         clients.provider_l2(),
         l2_erc20_token_address,
-        FieldElement::from_str(&arg_config.l2_deployer_address).unwrap(),
+        FieldElement::from_str(L2_DEPLOYER_ADDRESS).unwrap(),
     )
     .await;
 
@@ -38,7 +41,7 @@ pub async fn erc20_bridge_test_helper(
         .deposit(
             token_bridge.address(),
             10.into(),
-            U256::from_str(&arg_config.l2_deployer_address).unwrap(),
+            U256::from_str(L2_DEPLOYER_ADDRESS).unwrap(),
             U256::from_dec_str("100000000000000").unwrap(),
         )
         .await;
@@ -50,7 +53,7 @@ pub async fn erc20_bridge_test_helper(
     let balance_after = read_erc20_balance(
         clients.provider_l2(),
         l2_erc20_token_address,
-        FieldElement::from_str(&arg_config.l2_deployer_address).unwrap(),
+        FieldElement::from_str(L2_DEPLOYER_ADDRESS).unwrap(),
     )
     .await;
 
@@ -60,7 +63,6 @@ pub async fn erc20_bridge_test_helper(
 
     log::debug!("Initiated token withdraw on L2 [⏳]");
     invoke_contract(
-        clients.provider_l2(),
         l2_bridge_address,
         "initiate_token_withdraw",
         vec![
@@ -69,8 +71,7 @@ pub async fn erc20_bridge_test_helper(
             FieldElement::from_dec_str("5").unwrap(),
             FieldElement::ZERO,
         ],
-        &arg_config.rollup_priv_key,
-        &arg_config.l2_deployer_address,
+        &account,
     )
     .await;
 

@@ -6,6 +6,7 @@ use ethers::addressbook::Address;
 use ethers::types::U256;
 use num_bigint::BigUint;
 use serde_json::{Map, Value};
+use starknet_accounts::ConnectedAccount;
 use starknet_api::hash::StarkFelt;
 use starknet_core::types::InvokeTransactionResult;
 use starknet_core::types::MaybePendingTransactionReceipt::{PendingReceipt, Receipt};
@@ -14,28 +15,22 @@ use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::JsonRpcClient;
 use tokio::time::sleep;
 
-use crate::bridge::helpers::account_actions::{get_transaction_receipt, AccountActions};
-use crate::contract_clients::utils::build_single_owner_account;
+use crate::contract_clients::utils::RpcAccount;
+use crate::helpers::account_actions::{get_transaction_receipt, AccountActions};
 
+pub mod banner;
 pub mod constants;
 
-pub async fn invoke_contract(
-    rpc_provider: &JsonRpcClient<HttpTransport>,
+pub async fn invoke_contract<'a>(
     contract: FieldElement,
     method: &str,
     calldata: Vec<FieldElement>,
-    priv_key: &str,
-    address: &str,
+    account: &RpcAccount<'a>,
 ) -> InvokeTransactionResult {
-    let account = build_single_owner_account(rpc_provider, priv_key, address, false);
+    let txn_res =
+        account.invoke_contract(contract, method, calldata, None).send().await.expect("Error in invoking the contract");
 
-    let txn_res = account
-        .invoke_contract(contract, method, calldata, None)
-        .send()
-        .await
-        .expect("Error in invoking the contract !!");
-
-    wait_for_transaction(rpc_provider, txn_res.transaction_hash).await.unwrap();
+    wait_for_transaction(account.provider(), txn_res.transaction_hash, "invoking_contract").await.unwrap();
 
     txn_res
 }
@@ -51,17 +46,21 @@ pub fn pad_bytes(address: Address) -> Vec<u8> {
 pub async fn wait_for_transaction(
     provider_l2: &JsonRpcClient<HttpTransport>,
     transaction_hash: FieldElement,
+    tag: &str,
 ) -> Result<(), anyhow::Error> {
     let transaction_receipt = get_transaction_receipt(provider_l2, transaction_hash).await;
 
     let transaction_status = transaction_receipt.ok().unwrap();
 
     match transaction_status {
-        Receipt(..) => Ok(()),
+        Receipt(transaction_receipt) => {
+            log::trace!("txn : {:?} : {:?}", tag, transaction_receipt);
+            Ok(())
+        }
         PendingReceipt(..) => {
             log::trace!("⏳ waiting for transaction : {:?}", transaction_hash);
             sleep(Duration::from_secs(2)).await;
-            Box::pin(wait_for_transaction(provider_l2, transaction_hash)).await
+            Box::pin(wait_for_transaction(provider_l2, transaction_hash, "")).await
         }
     }
 }
@@ -104,7 +103,8 @@ pub fn save_to_json(key: &str, value: &JsonValueType) -> Result<(), io::Error> {
     Ok(())
 }
 
-fn convert_to_hex(address: &str) -> String {
+pub fn convert_to_hex(address: &str) -> String {
     let big_uint = address.parse::<BigUint>().map_err(|_| "Invalid number");
-    big_uint.expect("error converting decimal string ---> hex string").to_str_radix(16)
+    let hex = big_uint.expect("error converting decimal string ---> hex string").to_str_radix(16);
+    "0x".to_string() + &hex
 }
