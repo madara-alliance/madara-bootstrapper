@@ -115,7 +115,7 @@ pub async fn bootstrap(config: &CliArgs) -> DeployBridgeOutput {
     log::info!("*️⃣ Argent setup completed. [Argent account class hash : {:?}]", argent_setup_outputs.argent_class_hash);
     log::info!("✅ Argent Account declaration complete.");
     log::info!("⏳ Starting Braavos Account declaration");
-    let braavos = BraavosSetup::new(account.clone());
+    let braavos = BraavosSetup::new(account.clone(), config);
     let braavos_setup_outputs = braavos.setup().await;
     log::info!(
         "*️⃣ Braavos setup completed. [Braavos account class hash : {:?}]",
