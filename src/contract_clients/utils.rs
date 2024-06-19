@@ -90,7 +90,7 @@ pub fn get_bridge_init_configs(config: &CliArgs) -> (FieldElement, StarkHash) {
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 pub struct CustomDeclareV0Transaction {
     pub declare_transaction: DeclareTransactionV0V1,
-    pub program_vec: Vec<u8>,
+    pub program_bytes: Vec<u8>,
     pub entrypoints: IndexMap<EntryPointType, Vec<EntryPoint>>,
     pub abi_length: usize,
 }
@@ -161,7 +161,7 @@ pub async fn declare_contract(input: DeclarationInput<'_>) -> FieldElement {
 
             let params: CustomDeclareV0Transaction = CustomDeclareV0Transaction {
                 declare_transaction: declare_txn,
-                program_vec: encoded_p,
+                program_bytes: encoded_p,
                 entrypoints: entry_points_by_type,
                 abi_length,
             };
