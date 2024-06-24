@@ -87,7 +87,26 @@ pub async fn bootstrap(config: &CliArgs) -> DeployBridgeOutput {
     log::info!("📦 Core address : {:?}", core_contract_client.address());
     save_to_json("l1_core_contract_address", &JsonValueType::EthAddress(core_contract_client.address())).unwrap();
     let (program_hash, config_hash) = get_bridge_init_configs(config);
-    core_contract_client.initialize_core_contract(0u64.into(), 0u64.into(), program_hash, config_hash).await;
+    core_contract_client
+        .add_implementation_core_contract(
+            0u64.into(),
+            0u64.into(),
+            program_hash,
+            config_hash,
+            core_contract_client.implementation_address(),
+            false,
+        )
+        .await;
+    core_contract_client
+        .upgrade_to_core_contract(
+            0u64.into(),
+            0u64.into(),
+            program_hash,
+            config_hash,
+            core_contract_client.implementation_address(),
+            false,
+        )
+        .await;
     log::info!("✅ Core setup init for L1 successful.");
     log::info!("⏳ L2 State and Initialisation Started");
     let account = account_init(&clients, config).await;

@@ -32,7 +32,7 @@ impl<'a> UdcSetup<'a> {
             self.arg_config.rollup_seq_url.clone(),
         ))
         .await;
-        log::debug!("UDC Class Hash Declared.");
+        log::debug!("📣 UDC Class Hash Declared.");
         save_to_json("udc_class_hash", &JsonValueType::StringType(udc_class_hash.to_string())).unwrap();
         sleep(Duration::from_secs(10)).await;
 
@@ -56,7 +56,7 @@ impl<'a> UdcSetup<'a> {
         .unwrap();
         let udc_address = get_contract_address_from_deploy_tx(self.account.provider(), &txn).await.unwrap();
         save_to_json("udc_address", &JsonValueType::StringType(udc_address.to_string())).unwrap();
-        log::debug!("udc_address : {:?}", udc_address);
+        log::debug!("📣 udc_address : {:?}", udc_address);
 
         UdcSetupOutput { udc_class_hash, udc_address }
     }

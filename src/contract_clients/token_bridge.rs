@@ -6,10 +6,10 @@ use ethers::addressbook::Address;
 use ethers::prelude::U256;
 use ethers::types::Bytes;
 use starkgate_manager_client::clients::starkgate_manager::StarkgateManagerContractClient;
-use starkgate_manager_client::deploy_starkgate_manager_behind_unsafe_proxy;
+use starkgate_manager_client::deploy_starkgate_manager_behind_safe_proxy;
 use starkgate_manager_client::interfaces::manager::StarkgateManagerTrait;
 use starkgate_registry_client::clients::starkgate_registry::StarkgateRegistryContractClient;
-use starkgate_registry_client::deploy_starkgate_registry_behind_unsafe_proxy;
+use starkgate_registry_client::deploy_starkgate_registry_behind_safe_proxy;
 use starknet_accounts::{Account, ConnectedAccount};
 use starknet_erc20_client::clients::erc20::ERC20ContractClient;
 use starknet_erc20_client::deploy_dai_erc20_behind_unsafe_proxy;
@@ -19,7 +19,7 @@ use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::JsonRpcClient;
 use starknet_proxy_client::proxy_support::ProxySupportTrait;
 use starknet_token_bridge_client::clients::token_bridge::StarknetTokenBridgeContractClient;
-use starknet_token_bridge_client::deploy_starknet_token_bridge_behind_unsafe_proxy;
+use starknet_token_bridge_client::deploy_starknet_token_bridge_behind_safe_proxy;
 use starknet_token_bridge_client::interfaces::token_bridge::StarknetTokenBridgeTrait;
 use tokio::time::sleep;
 use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
@@ -42,13 +42,13 @@ pub struct StarknetTokenBridge {
 #[async_trait]
 impl BridgeDeployable for StarknetTokenBridge {
     async fn deploy(client: Arc<LocalWalletSignerMiddleware>) -> Self {
-        let manager = deploy_starkgate_manager_behind_unsafe_proxy(client.clone())
+        let manager = deploy_starkgate_manager_behind_safe_proxy(client.clone())
             .await
             .expect("Failed to deploy starkgate manager contract");
-        let registry = deploy_starkgate_registry_behind_unsafe_proxy(client.clone())
+        let registry = deploy_starkgate_registry_behind_safe_proxy(client.clone())
             .await
             .expect("Failed to deploy starkgate registry");
-        let token_bridge = deploy_starknet_token_bridge_behind_unsafe_proxy(client.clone())
+        let token_bridge = deploy_starknet_token_bridge_behind_safe_proxy(client.clone())
             .await
             .expect("Failed to deploy starknet contract");
         let erc20 =
@@ -102,7 +102,7 @@ impl StarknetTokenBridge {
         save_to_json("L2_token_bridge_class_hash", &JsonValueType::StringType(token_bridge_class_hash.to_string()))
             .unwrap();
 
-        log::debug!("token_bridge_class_hash : {:?}", token_bridge_class_hash);
+        log::debug!("🌗 token_bridge_class_hash : {:?}", token_bridge_class_hash);
 
         let deploy_contract_implementation_token_bridge = account
             .invoke_contract(
@@ -132,12 +132,13 @@ impl StarknetTokenBridge {
             get_contract_address_from_deploy_tx(account.provider(), &deploy_contract_implementation_token_bridge)
                 .await
                 .unwrap();
-        log::debug!("contract address (token bridge) : {:?}", address_token_bridge_impl);
+        log::debug!("🌗 contract address (token bridge) : {:?}", address_token_bridge_impl);
 
         address_token_bridge_impl
     }
 
     /// Initialize Starknet Token Bridge.
+    /// IMP : only need to be called when using unsafe proxy
     pub async fn initialize(&self, messaging_contract: Address) {
         let empty_bytes = [0u8; 32];
 
@@ -164,6 +165,76 @@ impl StarknetTokenBridge {
             .initialize(Bytes::from(bridge_calldata))
             .await
             .expect("Failed to initialize starknet token bridge");
+    }
+
+    /// Add Implementation Starknet Token Bridge
+    pub async fn add_implementation_token_bridge(&self, messaging_contract: Address) {
+        let empty_bytes = [0u8; 32];
+
+        let mut manager_calldata = Vec::new();
+        manager_calldata.extend(empty_bytes);
+        manager_calldata.extend(pad_bytes(self.registry_address()));
+        manager_calldata.extend(pad_bytes(self.bridge_address()));
+
+        let mut registry_calldata = Vec::new();
+        registry_calldata.extend(empty_bytes);
+        registry_calldata.extend(pad_bytes(self.manager_address()));
+
+        let mut bridge_calldata = Vec::new();
+        bridge_calldata.extend(empty_bytes);
+        bridge_calldata.extend(pad_bytes(self.manager_address()));
+        bridge_calldata.extend(pad_bytes(messaging_contract));
+
+        self.manager
+            .add_implementation(Bytes::from(manager_calldata.clone()), self.manager.implementation_address(), false)
+            .await
+            .expect("Failed to initialize starkgate manager");
+        log::debug!("🎡 add_implementation_token_bridge : manager bytes : {:?}", Bytes::from(manager_calldata));
+        self.registry
+            .add_implementation(Bytes::from(registry_calldata.clone()), self.registry.implementation_address(), false)
+            .await
+            .expect("Failed to initialize starkgate registry");
+        log::debug!("🎡 add_implementation_token_bridge : registry bytes : {:?}", Bytes::from(registry_calldata));
+        self.token_bridge
+            .add_implementation(Bytes::from(bridge_calldata.clone()), self.token_bridge.implementation_address(), false)
+            .await
+            .expect("Failed to initialize eth bridge");
+        log::debug!("🎡 add_implementation_token_bridge : token_bridge bytes : {:?}", Bytes::from(bridge_calldata));
+    }
+
+    /// Upgrade To Starknet Token Bridge
+    pub async fn upgrade_to_token_bridge(&self, messaging_contract: Address) {
+        let empty_bytes = [0u8; 32];
+
+        let mut manager_calldata = Vec::new();
+        manager_calldata.extend(empty_bytes);
+        manager_calldata.extend(pad_bytes(self.registry_address()));
+        manager_calldata.extend(pad_bytes(self.bridge_address()));
+
+        let mut registry_calldata = Vec::new();
+        registry_calldata.extend(empty_bytes);
+        registry_calldata.extend(pad_bytes(self.manager_address()));
+
+        let mut bridge_calldata = Vec::new();
+        bridge_calldata.extend(empty_bytes);
+        bridge_calldata.extend(pad_bytes(self.manager_address()));
+        bridge_calldata.extend(pad_bytes(messaging_contract));
+
+        self.manager
+            .upgrade_to(Bytes::from(manager_calldata.clone()), self.manager.implementation_address(), false)
+            .await
+            .expect("Failed to initialize starkgate manager");
+        log::debug!("🎡 upgrade_to_token_bridge : manager bytes : {:?}", Bytes::from(manager_calldata));
+        self.registry
+            .upgrade_to(Bytes::from(registry_calldata.clone()), self.registry.implementation_address(), false)
+            .await
+            .expect("Failed to initialize starkgate registry");
+        log::debug!("🎡 upgrade_to_token_bridge : registry bytes : {:?}", Bytes::from(registry_calldata));
+        self.token_bridge
+            .upgrade_to(Bytes::from(bridge_calldata.clone()), self.token_bridge.implementation_address(), false)
+            .await
+            .expect("Failed to initialize eth bridge");
+        log::debug!("🎡 upgrade_to_token_bridge : token_bridge bytes : {:?}", Bytes::from(bridge_calldata));
     }
 
     /// Sets up the Token bridge with the specified data
@@ -197,7 +268,7 @@ impl StarknetTokenBridge {
         )
         .await
         .unwrap();
-        log::debug!("setup_l2_bridge : register_app_role_admin //");
+        log::debug!("🌗 setup_l2_bridge : register_app_role_admin //");
 
         let tx = invoke_contract(
             l2_bridge,
@@ -214,7 +285,7 @@ impl StarknetTokenBridge {
         )
         .await
         .unwrap();
-        log::debug!("setup_l2_bridge : register_app_governor //");
+        log::debug!("🌗 setup_l2_bridge : register_app_governor //");
 
         let tx = invoke_contract(
             l2_bridge,
@@ -231,7 +302,7 @@ impl StarknetTokenBridge {
         )
         .await
         .unwrap();
-        log::debug!("setup_l2_bridge : set_l2_token_governance //");
+        log::debug!("🌗 setup_l2_bridge : set_l2_token_governance //");
 
         let tx = invoke_contract(
             l2_bridge,
@@ -250,7 +321,7 @@ impl StarknetTokenBridge {
         )
         .await
         .unwrap();
-        log::debug!("setup_l2_bridge : set_erc20_class_hash //");
+        log::debug!("🌗 setup_l2_bridge : set_erc20_class_hash //");
 
         let tx = invoke_contract(
             l2_bridge,
@@ -262,7 +333,7 @@ impl StarknetTokenBridge {
         wait_for_transaction(rpc_provider_l2, tx.transaction_hash, "setup_l2_bridge : token bridge : set_l1_bridge")
             .await
             .unwrap();
-        log::debug!("setup_l2_bridge : set_l1_bridge //");
+        log::debug!("🌗 setup_l2_bridge : set_l1_bridge //");
     }
 
     pub async fn register_app_role_admin(&self, address: Address) {

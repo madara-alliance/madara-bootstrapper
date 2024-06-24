@@ -51,7 +51,7 @@ impl<'a> Erc20Bridge<'a> {
             self.account.clone(),
         ))
         .await;
-        log::debug!("ERC20 Class Hash declared : {:?}", erc20_cairo_one_class_hash);
+        log::debug!("🌗 ERC20 Class Hash declared : {:?}", erc20_cairo_one_class_hash);
         save_to_json("erc20_cairo_one_class_hash", &JsonValueType::StringType(erc20_cairo_one_class_hash.to_string()))
             .unwrap();
         sleep(Duration::from_secs(10)).await;
@@ -88,7 +88,8 @@ impl<'a> Erc20Bridge<'a> {
         )
         .await;
 
-        token_bridge.initialize(self.core_contract.address()).await;
+        token_bridge.add_implementation_token_bridge(self.core_contract.address()).await;
+        token_bridge.upgrade_to_token_bridge(self.core_contract.address()).await;
         token_bridge
             .setup_l2_bridge(
                 self.clients.provider_l2(),
