@@ -60,6 +60,7 @@ impl StarknetSovereignContract {
     }
 
     /// Add implementation Starknet core contract with the specified data.
+    #[allow(clippy::too_many_arguments)]
     pub async fn add_implementation_core_contract(
         &self,
         block_number: StarkFelt,
@@ -67,21 +68,16 @@ impl StarknetSovereignContract {
         program_hash: FieldElement,
         config_hash: StarkHash,
         implementation_address: Address,
+        verifier_address: Address,
         finalized: bool,
     ) {
         let program_hash = StarkFelt(program_hash.to_bytes_be());
 
-        let init_data = Self::get_init_data_core_contract(block_number, state_root, program_hash, config_hash);
+        let init_data =
+            Self::get_init_data_core_contract(block_number, state_root, program_hash, config_hash, verifier_address);
+        let final_bytes = Self::get_calldata_bytes(init_data.clone());
 
-        let mut zero_address_bytes = Address::zero().encode();
-        let bytes: Vec<u8> = <CoreContractInitData as Into<Vec<u8>>>::into(init_data.clone());
-        for x in bytes {
-            zero_address_bytes.push(x);
-        }
-
-        let final_bytes = zero_address_bytes;
-
-        log::debug!("ℹ️  add_implementation : data : {:?} : {:?}", init_data, Bytes::from(final_bytes.clone()));
+        log::debug!("ℹ️  add_implementation : data : {:?} : {:?}", init_data, final_bytes.clone());
 
         // https://sepolia.etherscan.io/tx/0x9ac02beb912e5c6226828110380d727a6fd7e4748cbded2198cdf62ea78dab62
         // let bytes_etherscan =
@@ -90,7 +86,7 @@ impl StarknetSovereignContract {
         // ).unwrap();
 
         self.core_contract_client
-            .add_implementation(Bytes::from(final_bytes), implementation_address, finalized)
+            .add_implementation(final_bytes, implementation_address, finalized)
             .await
             .expect("Failed to call add implementation");
 
@@ -98,6 +94,7 @@ impl StarknetSovereignContract {
     }
 
     /// Add implementation Starknet core contract with the specified data.
+    #[allow(clippy::too_many_arguments)]
     pub async fn upgrade_to_core_contract(
         &self,
         block_number: StarkFelt,
@@ -105,21 +102,16 @@ impl StarknetSovereignContract {
         program_hash: FieldElement,
         config_hash: StarkHash,
         implementation_address: Address,
+        verifier_address: Address,
         finalized: bool,
     ) {
         let program_hash = StarkFelt(program_hash.to_bytes_be());
 
-        let init_data = Self::get_init_data_core_contract(block_number, state_root, program_hash, config_hash);
+        let init_data =
+            Self::get_init_data_core_contract(block_number, state_root, program_hash, config_hash, verifier_address);
+        let final_bytes = Self::get_calldata_bytes(init_data.clone());
 
-        let mut zero_address_bytes = Address::zero().encode();
-        let bytes: Vec<u8> = <CoreContractInitData as Into<Vec<u8>>>::into(init_data.clone());
-        for x in bytes {
-            zero_address_bytes.push(x);
-        }
-
-        let final_bytes = zero_address_bytes;
-
-        log::debug!("ℹ️  upgrade_to : data : {:?} : {:?}", init_data, Bytes::from(final_bytes.clone()));
+        log::debug!("ℹ️  upgrade_to : data : {:?} : {:?}", init_data, final_bytes.clone());
 
         // https://sepolia.etherscan.io/tx/0x9ac02beb912e5c6226828110380d727a6fd7e4748cbded2198cdf62ea78dab62
         // let bytes_etherscan =
@@ -128,7 +120,7 @@ impl StarknetSovereignContract {
         // ).unwrap();
 
         self.core_contract_client
-            .upgrade_to(Bytes::from(final_bytes), implementation_address, finalized)
+            .upgrade_to(final_bytes, implementation_address, finalized)
             .await
             .expect("Failed to call upgrade to");
 
@@ -160,10 +152,12 @@ impl StarknetSovereignContract {
         state_root: StarkFelt,
         program_hash: FieldElement,
         config_hash: StarkHash,
+        verifer_address: Address,
     ) {
         let program_hash = StarkFelt(program_hash.to_bytes_be());
 
-        let init_data = Self::get_init_data_core_contract(block_number, state_root, program_hash, config_hash);
+        let init_data =
+            Self::get_init_data_core_contract(block_number, state_root, program_hash, config_hash, verifer_address);
 
         self.initialize_with(init_data).await;
     }
@@ -173,10 +167,11 @@ impl StarknetSovereignContract {
         state_root: StarkFelt,
         program_hash: StarkFelt,
         config_hash: StarkHash,
+        verifier_address: Address,
     ) -> CoreContractInitData {
         CoreContractInitData {
             program_hash: convert_felt_to_u256(program_hash), // zero program hash would be deemed invalid
-            verifier_address: Address::zero(),
+            verifier_address,
             config_hash: convert_felt_to_u256(config_hash),
             // TODO :
             // Figure out the exact params for production env
@@ -188,5 +183,15 @@ impl StarknetSovereignContract {
                 block_hash: U256::zero(),
             },
         }
+    }
+
+    fn get_calldata_bytes(calldata: CoreContractInitData) -> Bytes {
+        let mut bytes_final = Address::zero().encode();
+        let bytes: Vec<u8> = <CoreContractInitData as Into<Vec<u8>>>::into(calldata.clone());
+        for x in bytes {
+            bytes_final.push(x);
+        }
+
+        Bytes::from(bytes_final)
     }
 }

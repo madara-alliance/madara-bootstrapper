@@ -143,6 +143,10 @@ impl StarknetLegacyEthBridge {
         padded_messaging_bytes.extend_from_slice(messaging_bytes);
 
         let mut calldata = Vec::new();
+        // `empty_bytes` act as an empty params for the calldata we are passing in bytes.
+        // Here in this case of ETH Bridge it represents the EIC contract address, Token Address (ETH)
+        // EIC = 0x0000000000000000000000000000000000000000
+        // ETH Address to be passed in bridge = 0x0000000000000000000000000000000000000000
         calldata.extend(empty_bytes);
         calldata.extend(empty_bytes);
         calldata.extend(padded_messaging_bytes);
@@ -166,6 +170,10 @@ impl StarknetLegacyEthBridge {
         padded_messaging_bytes.extend_from_slice(messaging_bytes);
 
         let mut calldata = Vec::new();
+        // `empty_bytes` act as an empty params for the calldata we are passing in bytes.
+        // Here in this case of ETH Bridge it represents the EIC contract address, Token Address (ETH)
+        // EIC = 0x0000000000000000000000000000000000000000
+        // ETH Address to be passed in bridge = 0x0000000000000000000000000000000000000000
         calldata.extend(empty_bytes);
         calldata.extend(empty_bytes);
         calldata.extend(padded_messaging_bytes);

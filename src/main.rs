@@ -5,8 +5,11 @@ mod setup_scripts;
 pub mod tests;
 pub mod utils;
 
+use std::str::FromStr;
+
 use clap::Parser;
 use dotenv::dotenv;
+use ethers::abi::Address;
 use inline_colorization::*;
 use starknet_accounts::Account;
 use starknet_ff::FieldElement;
@@ -52,6 +55,15 @@ pub struct CliArgs {
     fee_token_address: String,
     #[clap(long, env, default_value_t = 80)]
     cross_chain_wait_time: u64,
+    // Default test address value taken from anvil
+    #[clap(long, env, default_value = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8")]
+    l1_multisig_address: String,
+    // Default test address value taken from starknet-devnet
+    #[clap(long, env, default_value = "0x556455b8ac8bc00e0ad061d7df5458fa3c372304877663fa21d492a8d5e9435")]
+    l2_multisig_address: String,
+    // Given as zero address by default
+    #[clap(long, env, default_value = "0x0000000000000000000000000000000000000000")]
+    verifier_address: String,
 }
 
 #[tokio::main]
@@ -94,6 +106,7 @@ pub async fn bootstrap(config: &CliArgs) -> DeployBridgeOutput {
             program_hash,
             config_hash,
             core_contract_client.implementation_address(),
+            Address::from_str(&config.verifier_address.clone()).unwrap(),
             false,
         )
         .await;
@@ -104,6 +117,7 @@ pub async fn bootstrap(config: &CliArgs) -> DeployBridgeOutput {
             program_hash,
             config_hash,
             core_contract_client.implementation_address(),
+            Address::from_str(&config.verifier_address.clone()).unwrap(),
             false,
         )
         .await;
