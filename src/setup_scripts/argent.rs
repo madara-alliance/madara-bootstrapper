@@ -27,7 +27,7 @@ impl<'a> ArgentSetup<'a> {
             self.account.clone(),
         ))
         .await;
-        log::debug!("Argent Hash Declared");
+        log::debug!("📣 Argent Hash Declared");
         save_to_json("argent_class_hash", &JsonValueType::StringType(argent_class_hash.to_string())).unwrap();
         sleep(Duration::from_secs(10)).await;
 

@@ -1,19 +1,13 @@
 use std::sync::Arc;
 
-use blockifier::execution::contract_class::ContractClassV0Inner;
 use ethers::types::U256;
 use hex::encode;
-use indexmap::IndexMap;
-use parity_scale_codec::Encode;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use starknet_accounts::{Account, AccountFactory, ConnectedAccount, OpenZeppelinAccountFactory, SingleOwnerAccount};
-use starknet_api::core::{ClassHash, ContractAddress, Nonce, PatriciaKey};
-use starknet_api::deprecated_contract_class::{EntryPoint, EntryPointType};
 use starknet_api::hash::{pedersen_hash_array, StarkFelt, StarkHash};
-use starknet_api::transaction::{DeclareTransactionV0V1, Fee, TransactionHash, TransactionSignature};
 use starknet_core::types::contract::legacy::LegacyContractClass;
-use starknet_core::types::{BlockId, BlockTag, FunctionCall};
+use starknet_core::types::{BlockId, BlockTag, CompressedLegacyContractClass, DeclareTransactionResult, FunctionCall};
 use starknet_core::utils::get_selector_from_name;
 use starknet_ff::FieldElement;
 use starknet_providers::jsonrpc::HttpTransport;
@@ -87,12 +81,20 @@ pub fn get_bridge_init_configs(config: &CliArgs) -> (FieldElement, StarkHash) {
     (program_hash, config_hash)
 }
 
-#[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
-pub struct CustomDeclareV0Transaction {
-    pub declare_transaction: DeclareTransactionV0V1,
-    pub program_vec: Vec<u8>,
-    pub entrypoints: IndexMap<EntryPointType, Vec<EntryPoint>>,
-    pub abi_length: usize,
+/// Broadcasted declare contract transaction v0.
+#[derive(Debug, Eq, PartialEq, Serialize)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct BroadcastedDeclareTransactionV0 {
+    /// The address of the account contract sending the declaration transaction
+    pub sender_address: FieldElement,
+    /// The maximal fee that can be charged for including the transaction
+    pub max_fee: FieldElement,
+    /// Signature
+    pub signature: Vec<FieldElement>,
+    /// The class to be declared
+    pub contract_class: Arc<CompressedLegacyContractClass>,
+    /// If set to `true`, uses a query-only transaction version that's invalid for execution
+    pub is_query: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
@@ -100,12 +102,6 @@ pub struct RpcResult<T> {
     jsonrpc: String,
     result: T,
     id: u64,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct DeclareV0Result {
-    pub txn_hash: TransactionHash,
-    pub class_hash: ClassHash,
 }
 
 pub const TEMP_ACCOUNT_PRIV_KEY: &str = "0xbeef";
@@ -131,44 +127,25 @@ pub async fn declare_contract(input: DeclarationInput<'_>) -> FieldElement {
             sierra.class_hash()
         }
         LegacyDeclarationInputs(artifact_path, url) => {
-            let contract_artifact: ContractClassV0Inner = serde_json::from_reader(
+            let contract_abi_artifact_temp: LegacyContractClass = serde_json::from_reader(
                 std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + &artifact_path).unwrap(),
             )
             .unwrap();
 
-            let contract_abi_artifact: LegacyContractClass = serde_json::from_reader(
-                std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + &artifact_path).unwrap(),
-            )
-            .unwrap();
+            let contract_abi_artifact =
+                contract_abi_artifact_temp.clone().compress().expect("Error : Failed to compress the contract class");
 
-            let empty_vector_stark_hash: Vec<StarkHash> = Vec::new();
-            let empty_array: [u8; 32] = [0; 32];
-
-            let class_info = contract_artifact.clone();
-
-            let program = class_info.program;
-            let encoded_p = program.encode();
-            let entry_points_by_type = class_info.entry_points_by_type;
-
-            let declare_txn: DeclareTransactionV0V1 = DeclareTransactionV0V1 {
-                max_fee: Fee(0),
-                signature: TransactionSignature(empty_vector_stark_hash),
-                nonce: Nonce(StarkFelt(empty_array)),
-                class_hash: ClassHash(StarkHash { 0: contract_abi_artifact.class_hash().unwrap().to_bytes_be() }),
-                sender_address: ContractAddress(PatriciaKey(StarkHash { 0: FieldElement::ONE.to_bytes_be() })),
-            };
-            let abi_length = contract_abi_artifact.abi.len();
-
-            let params: CustomDeclareV0Transaction = CustomDeclareV0Transaction {
-                declare_transaction: declare_txn,
-                program_vec: encoded_p,
-                entrypoints: entry_points_by_type,
-                abi_length,
+            let params: BroadcastedDeclareTransactionV0 = BroadcastedDeclareTransactionV0 {
+                sender_address: FieldElement::from_hex_be("0x1").unwrap(),
+                max_fee: FieldElement::from(482250u128),
+                signature: Vec::new(),
+                contract_class: Arc::new(contract_abi_artifact),
+                is_query: false,
             };
 
             let json_body = &json!({
                 "jsonrpc": "2.0",
-                "method": "madara_declareV0",
+                "method": "madara_addDeclareTransactionV0",
                 "params": [params],
                 "id": 4
             });
@@ -179,10 +156,9 @@ pub async fn declare_contract(input: DeclarationInput<'_>) -> FieldElement {
             match raw_txn_rpc {
                 Ok(val) => {
                     log::debug!(
-                        "Txn Sent Successfully : {:?}",
-                        val.json::<RpcResult<DeclareV0Result>>().await.unwrap()
+                        "🚧 Txn Sent Successfully : {:?}",
+                        val.json::<RpcResult<DeclareTransactionResult>>().await.unwrap()
                     );
-                    log::debug!("Declare Success : {:?}", contract_abi_artifact.class_hash().unwrap());
                 }
                 Err(err) => {
                     log::debug!("Error : Error sending the transaction using RPC");
@@ -190,7 +166,7 @@ pub async fn declare_contract(input: DeclarationInput<'_>) -> FieldElement {
                 }
             }
 
-            contract_abi_artifact.class_hash().unwrap()
+            contract_abi_artifact_temp.class_hash().unwrap()
         }
     }
 }

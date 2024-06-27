@@ -5,8 +5,11 @@ mod setup_scripts;
 pub mod tests;
 pub mod utils;
 
+use std::str::FromStr;
+
 use clap::Parser;
 use dotenv::dotenv;
+use ethers::abi::Address;
 use inline_colorization::*;
 use starknet_accounts::Account;
 use starknet_ff::FieldElement;
@@ -52,6 +55,15 @@ pub struct CliArgs {
     fee_token_address: String,
     #[clap(long, env, default_value_t = 80)]
     cross_chain_wait_time: u64,
+    // Default test address value taken from anvil
+    #[clap(long, env, default_value = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8")]
+    l1_multisig_address: String,
+    // Default test address value taken from starknet-devnet
+    #[clap(long, env, default_value = "0x556455b8ac8bc00e0ad061d7df5458fa3c372304877663fa21d492a8d5e9435")]
+    l2_multisig_address: String,
+    // Given as zero address by default
+    #[clap(long, env, default_value = "0x0000000000000000000000000000000000000000")]
+    verifier_address: String,
 }
 
 #[tokio::main]
@@ -87,7 +99,28 @@ pub async fn bootstrap(config: &CliArgs) -> DeployBridgeOutput {
     log::info!("📦 Core address : {:?}", core_contract_client.address());
     save_to_json("l1_core_contract_address", &JsonValueType::EthAddress(core_contract_client.address())).unwrap();
     let (program_hash, config_hash) = get_bridge_init_configs(config);
-    core_contract_client.initialize_core_contract(0u64.into(), 0u64.into(), program_hash, config_hash).await;
+    core_contract_client
+        .add_implementation_core_contract(
+            0u64.into(),
+            0u64.into(),
+            program_hash,
+            config_hash,
+            core_contract_client.implementation_address(),
+            Address::from_str(&config.verifier_address.clone()).unwrap(),
+            false,
+        )
+        .await;
+    core_contract_client
+        .upgrade_to_core_contract(
+            0u64.into(),
+            0u64.into(),
+            program_hash,
+            config_hash,
+            core_contract_client.implementation_address(),
+            Address::from_str(&config.verifier_address.clone()).unwrap(),
+            false,
+        )
+        .await;
     log::info!("✅ Core setup init for L1 successful.");
     log::info!("⏳ L2 State and Initialisation Started");
     let account = account_init(&clients, config).await;
@@ -115,7 +148,7 @@ pub async fn bootstrap(config: &CliArgs) -> DeployBridgeOutput {
     log::info!("*️⃣ Argent setup completed. [Argent account class hash : {:?}]", argent_setup_outputs.argent_class_hash);
     log::info!("✅ Argent Account declaration complete.");
     log::info!("⏳ Starting Braavos Account declaration");
-    let braavos = BraavosSetup::new(account.clone());
+    let braavos = BraavosSetup::new(account.clone(), config);
     let braavos_setup_outputs = braavos.setup().await;
     log::info!(
         "*️⃣ Braavos setup completed. [Braavos account class hash : {:?}]",

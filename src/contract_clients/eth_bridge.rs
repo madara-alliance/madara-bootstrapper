@@ -6,7 +6,7 @@ use ethers::providers::Middleware;
 use ethers::types::{Bytes, U256};
 use starknet_accounts::{Account, ConnectedAccount};
 use starknet_eth_bridge_client::clients::eth_bridge::StarknetEthBridgeContractClient;
-use starknet_eth_bridge_client::deploy_starknet_eth_bridge_behind_unsafe_proxy;
+use starknet_eth_bridge_client::deploy_starknet_eth_bridge_behind_safe_proxy;
 use starknet_eth_bridge_client::interfaces::eth_bridge::StarknetEthBridgeTrait;
 use starknet_ff::FieldElement;
 use starknet_providers::jsonrpc::HttpTransport;
@@ -30,7 +30,7 @@ pub struct StarknetLegacyEthBridge {
 #[async_trait]
 impl BridgeDeployable for StarknetLegacyEthBridge {
     async fn deploy(client: Arc<LocalWalletSignerMiddleware>) -> Self {
-        let eth_bridge = deploy_starknet_eth_bridge_behind_unsafe_proxy(client.clone())
+        let eth_bridge = deploy_starknet_eth_bridge_behind_safe_proxy(client.clone())
             .await
             .expect("Failed to deploy starknet contract");
 
@@ -41,6 +41,10 @@ impl BridgeDeployable for StarknetLegacyEthBridge {
 impl StarknetLegacyEthBridge {
     pub fn address(&self) -> Address {
         self.eth_bridge.address()
+    }
+
+    pub fn implementation_address(&self) -> Address {
+        self.eth_bridge.implementation_address()
     }
 
     pub fn client(&self) -> Arc<LocalWalletSignerMiddleware> {
@@ -72,7 +76,7 @@ impl StarknetLegacyEthBridge {
         .unwrap();
         let contract_address = get_contract_address_from_deploy_tx(account.provider(), &deploy_tx).await.unwrap();
 
-        log::debug!("contract address (eth bridge) : {:?}", contract_address);
+        log::debug!("🎡 contract address (eth bridge) : {:?}", contract_address);
 
         let add_implementation_txn = invoke_contract(
             legacy_eth_bridge_proxy_address,
@@ -110,6 +114,7 @@ impl StarknetLegacyEthBridge {
     }
 
     /// Initialize Starknet Legacy Eth Bridge
+    /// IMP : only need to be called when using unsafe proxy
     pub async fn initialize(&self, messaging_contract: Address) {
         let empty_bytes = [0u8; 32];
 
@@ -125,6 +130,60 @@ impl StarknetLegacyEthBridge {
         calldata.extend(padded_messaging_bytes);
 
         self.eth_bridge.initialize(Bytes::from(calldata)).await.expect("Failed to initialize eth bridge");
+    }
+
+    /// Add Implementation Starknet Legacy Eth Bridge
+    pub async fn add_implementation_eth_bridge(&self, messaging_contract: Address) {
+        let empty_bytes = [0u8; 32];
+
+        let messaging_bytes = messaging_contract.as_bytes();
+
+        let mut padded_messaging_bytes = Vec::with_capacity(32);
+        padded_messaging_bytes.extend(vec![0u8; 32 - messaging_bytes.len()]);
+        padded_messaging_bytes.extend_from_slice(messaging_bytes);
+
+        let mut calldata = Vec::new();
+        // `empty_bytes` act as an empty params for the calldata we are passing in bytes.
+        // Here in this case of ETH Bridge it represents the EIC contract address, Token Address (ETH)
+        // EIC = 0x0000000000000000000000000000000000000000
+        // ETH Address to be passed in bridge = 0x0000000000000000000000000000000000000000
+        calldata.extend(empty_bytes);
+        calldata.extend(empty_bytes);
+        calldata.extend(padded_messaging_bytes);
+
+        log::debug!("🎡 add_implementation_eth_bridge : bytes : {:?}", Bytes::from(calldata.clone()));
+
+        self.eth_bridge
+            .add_implementation(Bytes::from(calldata), self.implementation_address(), false)
+            .await
+            .expect("Failed to initialize eth bridge");
+    }
+
+    /// Upgrade To Starknet Legacy Eth Bridge
+    pub async fn upgrade_to_eth_bridge(&self, messaging_contract: Address) {
+        let empty_bytes = [0u8; 32];
+
+        let messaging_bytes = messaging_contract.as_bytes();
+
+        let mut padded_messaging_bytes = Vec::with_capacity(32);
+        padded_messaging_bytes.extend(vec![0u8; 32 - messaging_bytes.len()]);
+        padded_messaging_bytes.extend_from_slice(messaging_bytes);
+
+        let mut calldata = Vec::new();
+        // `empty_bytes` act as an empty params for the calldata we are passing in bytes.
+        // Here in this case of ETH Bridge it represents the EIC contract address, Token Address (ETH)
+        // EIC = 0x0000000000000000000000000000000000000000
+        // ETH Address to be passed in bridge = 0x0000000000000000000000000000000000000000
+        calldata.extend(empty_bytes);
+        calldata.extend(empty_bytes);
+        calldata.extend(padded_messaging_bytes);
+
+        log::debug!("🎡 upgrade_to_eth_bridge : bytes : {:?}", Bytes::from(calldata.clone()));
+
+        self.eth_bridge
+            .upgrade_to(Bytes::from(calldata), self.implementation_address(), false)
+            .await
+            .expect("Failed to initialize eth bridge");
     }
 
     /// Sets up the Eth bridge with the specified data
@@ -150,12 +209,12 @@ impl StarknetLegacyEthBridge {
         )
         .await;
 
-        log::debug!("setup_l2_bridge : l2 bridge initialized //");
+        log::debug!("🎡 setup_l2_bridge : l2 bridge initialized //");
         wait_for_transaction(rpc_provider, tx.transaction_hash, "setup_l2_bridge : initialize").await.unwrap();
 
         let tx = invoke_contract(l2_bridge_address, "set_l2_token", vec![erc20_address], account).await;
 
-        log::debug!("setup_l2_bridge : l2 token set //");
+        log::debug!("🎡 setup_l2_bridge : l2 token set //");
         wait_for_transaction(rpc_provider, tx.transaction_hash, "setup_l2_bridge : set_l2_token").await.unwrap();
 
         let tx = invoke_contract(
@@ -166,7 +225,7 @@ impl StarknetLegacyEthBridge {
         )
         .await;
 
-        log::debug!("setup_l2_bridge : l1 bridge set //");
+        log::debug!("🎡 setup_l2_bridge : l1 bridge set //");
         wait_for_transaction(rpc_provider, tx.transaction_hash, "setup_l2_bridge : set_l1_bridge").await.unwrap();
     }
 

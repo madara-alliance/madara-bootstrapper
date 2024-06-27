@@ -54,7 +54,7 @@ impl<'a> EthBridge<'a> {
             self.arg_config.rollup_seq_url.clone(),
         ))
         .await;
-        log::debug!("Legacy proxy class hash declared.");
+        log::debug!("🎡 Legacy proxy class hash declared.");
         save_to_json("legacy_proxy_class_hash", &JsonValueType::StringType(legacy_proxy_class_hash.to_string()))
             .unwrap();
         sleep(Duration::from_secs(10)).await;
@@ -64,7 +64,7 @@ impl<'a> EthBridge<'a> {
             self.arg_config.rollup_seq_url.clone(),
         ))
         .await;
-        log::debug!("Starkgate proxy class hash declared.");
+        log::debug!("🎡 Starkgate proxy class hash declared.");
         save_to_json("starkgate_proxy_class_hash", &JsonValueType::StringType(starkgate_proxy_class_hash.to_string()))
             .unwrap();
         sleep(Duration::from_secs(10)).await;
@@ -74,7 +74,7 @@ impl<'a> EthBridge<'a> {
             self.arg_config.rollup_seq_url.clone(),
         ))
         .await;
-        log::debug!("ERC20 legacy class hash declared.");
+        log::debug!("🎡 ERC20 legacy class hash declared.");
         save_to_json("erc20_legacy_class_hash", &JsonValueType::StringType(erc20_legacy_class_hash.to_string()))
             .unwrap();
         sleep(Duration::from_secs(10)).await;
@@ -84,7 +84,7 @@ impl<'a> EthBridge<'a> {
             self.arg_config.rollup_seq_url.clone(),
         ))
         .await;
-        log::debug!("Legacy ETH Bridge class hash declared");
+        log::debug!("🎡 Legacy ETH Bridge class hash declared");
         save_to_json(
             "legacy_eth_bridge_class_hash",
             &JsonValueType::StringType(legacy_eth_bridge_class_hash.to_string()),
@@ -164,7 +164,8 @@ impl<'a> EthBridge<'a> {
         log::info!("✴️ L2 ETH token deployment successful.");
         // save_to_json("l2_eth_address", &JsonValueType::StringType(eth_address.to_string()))?;
 
-        eth_bridge.initialize(self.core_contract.address()).await;
+        eth_bridge.add_implementation_eth_bridge(self.core_contract.address()).await;
+        eth_bridge.upgrade_to_eth_bridge(self.core_contract.address()).await;
         log::info!("✴️ ETH Bridge initialization on L1 completed");
 
         sleep(Duration::from_secs(self.arg_config.l1_wait_time.parse().unwrap())).await;
