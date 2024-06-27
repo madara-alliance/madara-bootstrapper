@@ -16,7 +16,7 @@ use starknet_ff::FieldElement;
 
 use crate::contract_clients::config::Config;
 use crate::contract_clients::eth_bridge::StarknetLegacyEthBridge;
-use crate::contract_clients::starknet_sovereign::StarknetSovereignContract;
+use crate::contract_clients::starknet_validity::StarknetValidityContract;
 use crate::contract_clients::token_bridge::StarknetTokenBridge;
 use crate::contract_clients::utils::get_bridge_init_configs;
 use crate::setup_scripts::account_setup::account_init;
@@ -56,14 +56,19 @@ pub struct CliArgs {
     #[clap(long, env, default_value_t = 80)]
     cross_chain_wait_time: u64,
     // Default test address value taken from anvil
+    // IMP : Not to be used in prod environment
     #[clap(long, env, default_value = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8")]
     l1_multisig_address: String,
     // Default test address value taken from starknet-devnet
+    // IMP : Not to be used in prod environment
     #[clap(long, env, default_value = "0x556455b8ac8bc00e0ad061d7df5458fa3c372304877663fa21d492a8d5e9435")]
     l2_multisig_address: String,
-    // Given as zero address by default
-    #[clap(long, env, default_value = "0x0000000000000000000000000000000000000000")]
+    // Given as 0xabcd by default
+    #[clap(long, env, default_value = "0x000000000000000000000000000000000000abcd")]
     verifier_address: String,
+    // Given as 0xabcd by default
+    #[clap(long, env, default_value = "0x000000000000000000000000000000000000abcd")]
+    operator_address: String,
 }
 
 #[tokio::main]
@@ -77,7 +82,7 @@ pub async fn main() {
 }
 
 pub struct DeployBridgeOutput {
-    pub starknet_sovereign_contract: StarknetSovereignContract,
+    pub starknet_contract: StarknetValidityContract,
     pub starknet_token_bridge: StarknetTokenBridge,
     pub erc20_class_hash: FieldElement,
     pub legacy_eth_bridge_class_hash: FieldElement,
@@ -95,7 +100,7 @@ pub struct DeployBridgeOutput {
 pub async fn bootstrap(config: &CliArgs) -> DeployBridgeOutput {
     println!("{color_red}{}{color_reset}", BANNER);
     let clients = Config::init(config).await;
-    let core_contract_client = StarknetSovereignContract::deploy(&clients).await;
+    let core_contract_client = StarknetValidityContract::deploy(&clients).await;
     log::info!("📦 Core address : {:?}", core_contract_client.address());
     save_to_json("l1_core_contract_address", &JsonValueType::EthAddress(core_contract_client.address())).unwrap();
     let (program_hash, config_hash) = get_bridge_init_configs(config);
@@ -120,6 +125,15 @@ pub async fn bootstrap(config: &CliArgs) -> DeployBridgeOutput {
             Address::from_str(&config.verifier_address.clone()).unwrap(),
             false,
         )
+        .await;
+    core_contract_client
+        .register_operator_core_contract(Address::from_str(&config.operator_address.clone()).unwrap())
+        .await;
+    core_contract_client
+        .nominate_governor_core_contract(Address::from_str(&config.l1_multisig_address.clone()).unwrap())
+        .await;
+    core_contract_client
+        .nominate_governor_core_contract_proxy(Address::from_str(&config.l1_multisig_address.clone()).unwrap())
         .await;
     log::info!("✅ Core setup init for L1 successful.");
     log::info!("⏳ L2 State and Initialisation Started");
@@ -157,7 +171,7 @@ pub async fn bootstrap(config: &CliArgs) -> DeployBridgeOutput {
     log::info!("✅ Braavos Account declaration complete.");
 
     DeployBridgeOutput {
-        starknet_sovereign_contract: core_contract_client,
+        starknet_contract: core_contract_client,
         starknet_token_bridge: erc20_bridge_setup_outputs.starknet_token_bridge,
         erc20_class_hash: erc20_bridge_setup_outputs.erc20_cairo_one_class_hash,
         legacy_eth_bridge_class_hash: eth_bridge_setup_outputs.legacy_eth_bridge_class_hash,

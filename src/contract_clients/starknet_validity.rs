@@ -3,8 +3,8 @@ use std::sync::Arc;
 use ethers::abi::AbiEncode;
 use ethers::types::{Address, Bytes, I256, U256};
 use starknet_api::hash::{StarkFelt, StarkHash};
-use starknet_core_contract_client::clients::StarknetSovereignContractClient;
-use starknet_core_contract_client::deploy_starknet_sovereign_behind_safe_proxy;
+use starknet_core_contract_client::clients::StarknetValidityContractClient;
+use starknet_core_contract_client::deploy_starknet_validity_behind_safe_proxy;
 use starknet_core_contract_client::interfaces::{OperatorTrait, StarknetGovernanceTrait};
 use starknet_ff::FieldElement;
 use starknet_proxy_client::proxy_support::{
@@ -15,11 +15,11 @@ use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
 use crate::contract_clients::config::Config;
 use crate::utils::convert_felt_to_u256;
 
-pub struct StarknetSovereignContract {
-    core_contract_client: StarknetSovereignContractClient,
+pub struct StarknetValidityContract {
+    core_contract_client: StarknetValidityContractClient,
 }
 
-impl StarknetSovereignContract {
+impl StarknetValidityContract {
     pub fn address(&self) -> Address {
         self.core_contract_client.address()
     }
@@ -37,7 +37,7 @@ impl StarknetSovereignContract {
     }
 
     pub async fn deploy(config: &Config) -> Self {
-        let client = deploy_starknet_sovereign_behind_safe_proxy(config.eth_client().signer().clone())
+        let client = deploy_starknet_validity_behind_safe_proxy(config.eth_client().signer().clone())
             .await
             .expect("Failed to deploy the starknet contact");
 
@@ -128,11 +128,8 @@ impl StarknetSovereignContract {
     }
 
     /// For registering the operator for Starknet Core Contract
-    pub async fn register_operator_core_contract(&self) {
-        self.core_contract_client
-            .register_operator(self.core_contract_client.client().address())
-            .await
-            .expect("Failed to register operator");
+    pub async fn register_operator_core_contract(&self, operator_address: Address) {
+        self.core_contract_client.register_operator(operator_address).await.expect("Failed to register operator");
         log::debug!("ℹ️  register_operator : done");
     }
 
