@@ -83,5 +83,6 @@ fn get_config() -> CliArgs {
         l2_multisig_address: String::from(L2_MULTISIG_ADDRESS),
         verifier_address: String::from(VERIFIER_ADDRESS),
         operator_address: String::from(OPERATOR_ADDRESS),
+        dev: true,
     }
 }

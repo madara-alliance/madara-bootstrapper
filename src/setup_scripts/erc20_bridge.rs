@@ -11,8 +11,8 @@ use starknet_providers::{JsonRpcClient, Provider};
 use tokio::time::sleep;
 
 use crate::contract_clients::config::Config;
+use crate::contract_clients::core_contract::CoreContract;
 use crate::contract_clients::eth_bridge::BridgeDeployable;
-use crate::contract_clients::starknet_validity::StarknetValidityContract;
 use crate::contract_clients::token_bridge::StarknetTokenBridge;
 use crate::contract_clients::utils::{build_single_owner_account, declare_contract, DeclarationInput, RpcAccount};
 use crate::utils::constants::{ERC20_CASM_PATH, ERC20_SIERRA_PATH};
@@ -24,7 +24,7 @@ pub struct Erc20Bridge<'a> {
     account_address: FieldElement,
     arg_config: &'a CliArgs,
     clients: &'a Config,
-    core_contract: &'a StarknetValidityContract,
+    core_contract: &'a dyn CoreContract,
 }
 
 pub struct Erc20BridgeSetupOutput {
@@ -40,7 +40,7 @@ impl<'a> Erc20Bridge<'a> {
         account_address: FieldElement,
         arg_config: &'a CliArgs,
         clients: &'a Config,
-        core_contract: &'a StarknetValidityContract,
+        core_contract: &'a dyn CoreContract,
     ) -> Self {
         Self { account, account_address, arg_config, clients, core_contract }
     }

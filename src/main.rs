@@ -5,23 +5,20 @@ mod setup_scripts;
 pub mod tests;
 pub mod utils;
 
-use std::str::FromStr;
-
 use clap::Parser;
 use dotenv::dotenv;
-use ethers::abi::Address;
 use inline_colorization::*;
 use starknet_accounts::Account;
 use starknet_ff::FieldElement;
 
 use crate::contract_clients::config::Config;
+use crate::contract_clients::core_contract::CoreContract;
 use crate::contract_clients::eth_bridge::StarknetLegacyEthBridge;
-use crate::contract_clients::starknet_validity::StarknetValidityContract;
 use crate::contract_clients::token_bridge::StarknetTokenBridge;
-use crate::contract_clients::utils::get_bridge_init_configs;
 use crate::setup_scripts::account_setup::account_init;
 use crate::setup_scripts::argent::ArgentSetup;
 use crate::setup_scripts::braavos::BraavosSetup;
+use crate::setup_scripts::core_contract::CoreContractStarknetL1;
 use crate::setup_scripts::erc20_bridge::Erc20Bridge;
 use crate::setup_scripts::eth_bridge::EthBridge;
 use crate::setup_scripts::udc::UdcSetup;
@@ -69,6 +66,8 @@ pub struct CliArgs {
     // Given as 0xabcd by default
     #[clap(long, env, default_value = "0x000000000000000000000000000000000000abcd")]
     operator_address: String,
+    #[clap(long, default_value = "false")]
+    dev: bool,
 }
 
 #[tokio::main]
@@ -82,7 +81,7 @@ pub async fn main() {
 }
 
 pub struct DeployBridgeOutput {
-    pub starknet_contract: StarknetValidityContract,
+    pub starknet_contract: Box<dyn CoreContract>,
     pub starknet_token_bridge: StarknetTokenBridge,
     pub erc20_class_hash: FieldElement,
     pub legacy_eth_bridge_class_hash: FieldElement,
@@ -100,51 +99,36 @@ pub struct DeployBridgeOutput {
 pub async fn bootstrap(config: &CliArgs) -> DeployBridgeOutput {
     println!("{color_red}{}{color_reset}", BANNER);
     let clients = Config::init(config).await;
-    let core_contract_client = StarknetValidityContract::deploy(&clients).await;
-    log::info!("📦 Core address : {:?}", core_contract_client.address());
-    save_to_json("l1_core_contract_address", &JsonValueType::EthAddress(core_contract_client.address())).unwrap();
-    let (program_hash, config_hash) = get_bridge_init_configs(config);
-    core_contract_client
-        .add_implementation_core_contract(
-            0u64.into(),
-            0u64.into(),
-            program_hash,
-            config_hash,
-            core_contract_client.implementation_address(),
-            Address::from_str(&config.verifier_address.clone()).unwrap(),
-            false,
-        )
-        .await;
-    core_contract_client
-        .upgrade_to_core_contract(
-            0u64.into(),
-            0u64.into(),
-            program_hash,
-            config_hash,
-            core_contract_client.implementation_address(),
-            Address::from_str(&config.verifier_address.clone()).unwrap(),
-            false,
-        )
-        .await;
-    core_contract_client
-        .register_operator_core_contract(Address::from_str(&config.operator_address.clone()).unwrap())
-        .await;
-    core_contract_client
-        .nominate_governor_core_contract(Address::from_str(&config.l1_multisig_address.clone()).unwrap())
-        .await;
-    core_contract_client
-        .nominate_governor_core_contract_proxy(Address::from_str(&config.l1_multisig_address.clone()).unwrap())
-        .await;
+    let core_contract = CoreContractStarknetL1::new(config, &clients);
+    let core_contract_client = core_contract.setup().await;
+    log::info!("📦 Core address : {:?}", core_contract_client.core_contract_client.address());
+    save_to_json(
+        "l1_core_contract_address",
+        &JsonValueType::EthAddress(core_contract_client.core_contract_client.address()),
+    )
+    .unwrap();
     log::info!("✅ Core setup init for L1 successful.");
     log::info!("⏳ L2 State and Initialisation Started");
     let account = account_init(&clients, config).await;
     log::info!("🔐 Account with given  private key deployed on L2. [Account Address : {:?}]", account.address());
     log::info!("⏳ Starting ETH bridge deployment");
-    let eth_bridge = EthBridge::new(account.clone(), account.address(), config, &clients, &core_contract_client);
+    let eth_bridge = EthBridge::new(
+        account.clone(),
+        account.address(),
+        config,
+        &clients,
+        core_contract_client.core_contract_client.as_ref(),
+    );
     let eth_bridge_setup_outputs = eth_bridge.setup().await;
     log::info!("✅ ETH bridge deployment complete.");
     log::info!("⏳ Starting ERC20 token bridge deployment");
-    let erc20_bridge = Erc20Bridge::new(account.clone(), account.address(), config, &clients, &core_contract_client);
+    let erc20_bridge = Erc20Bridge::new(
+        account.clone(),
+        account.address(),
+        config,
+        &clients,
+        core_contract_client.core_contract_client.as_ref(),
+    );
     let erc20_bridge_setup_outputs = erc20_bridge.setup().await;
     log::info!("✅ ERC20 token bridge deployment complete.");
     log::info!("⏳ Starting UDC (Universal Deployer Contract) deployment");
@@ -171,7 +155,7 @@ pub async fn bootstrap(config: &CliArgs) -> DeployBridgeOutput {
     log::info!("✅ Braavos Account declaration complete.");
 
     DeployBridgeOutput {
-        starknet_contract: core_contract_client,
+        starknet_contract: core_contract_client.core_contract_client,
         starknet_token_bridge: erc20_bridge_setup_outputs.starknet_token_bridge,
         erc20_class_hash: erc20_bridge_setup_outputs.erc20_cairo_one_class_hash,
         legacy_eth_bridge_class_hash: eth_bridge_setup_outputs.legacy_eth_bridge_class_hash,

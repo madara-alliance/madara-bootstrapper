@@ -9,8 +9,8 @@ use starknet_providers::JsonRpcClient;
 use tokio::time::sleep;
 
 use crate::contract_clients::config::Config;
+use crate::contract_clients::core_contract::CoreContract;
 use crate::contract_clients::eth_bridge::{BridgeDeployable, StarknetLegacyEthBridge};
-use crate::contract_clients::starknet_validity::StarknetValidityContract;
 use crate::contract_clients::utils::{
     build_single_owner_account, declare_contract, deploy_proxy_contract, init_governance_proxy, DeclarationInput,
     RpcAccount,
@@ -25,7 +25,7 @@ pub struct EthBridge<'a> {
     account_address: FieldElement,
     arg_config: &'a CliArgs,
     clients: &'a Config,
-    core_contract: &'a StarknetValidityContract,
+    core_contract: &'a dyn CoreContract,
 }
 
 pub struct EthBridgeSetupOutput {
@@ -44,7 +44,7 @@ impl<'a> EthBridge<'a> {
         account_address: FieldElement,
         arg_config: &'a CliArgs,
         clients: &'a Config,
-        core_contract: &'a StarknetValidityContract,
+        core_contract: &'a dyn CoreContract,
     ) -> Self {
         Self { account, account_address, arg_config, clients, core_contract }
     }
