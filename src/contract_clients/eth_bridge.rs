@@ -11,7 +11,7 @@ use starknet_eth_bridge_client::interfaces::eth_bridge::StarknetEthBridgeTrait;
 use starknet_ff::FieldElement;
 use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::JsonRpcClient;
-use starknet_proxy_client::proxy_support::ProxySupportTrait;
+use starknet_proxy_client::interfaces::proxy::ProxySupport3_0_2Trait;
 use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
 
 use crate::contract_clients::utils::{field_element_to_u256, RpcAccount};
@@ -115,22 +115,22 @@ impl StarknetLegacyEthBridge {
 
     /// Initialize Starknet Legacy Eth Bridge
     /// IMP : only need to be called when using unsafe proxy
-    pub async fn initialize(&self, messaging_contract: Address) {
-        let empty_bytes = [0u8; 32];
-
-        let messaging_bytes = messaging_contract.as_bytes();
-
-        let mut padded_messaging_bytes = Vec::with_capacity(32);
-        padded_messaging_bytes.extend(vec![0u8; 32 - messaging_bytes.len()]);
-        padded_messaging_bytes.extend_from_slice(messaging_bytes);
-
-        let mut calldata = Vec::new();
-        calldata.extend(empty_bytes);
-        calldata.extend(empty_bytes);
-        calldata.extend(padded_messaging_bytes);
-
-        self.eth_bridge.initialize(Bytes::from(calldata)).await.expect("Failed to initialize eth bridge");
-    }
+    // pub async fn initialize(&self, messaging_contract: Address) {
+    //     let empty_bytes = [0u8; 32];
+    // 
+    //     let messaging_bytes = messaging_contract.as_bytes();
+    // 
+    //     let mut padded_messaging_bytes = Vec::with_capacity(32);
+    //     padded_messaging_bytes.extend(vec![0u8; 32 - messaging_bytes.len()]);
+    //     padded_messaging_bytes.extend_from_slice(messaging_bytes);
+    // 
+    //     let mut calldata = Vec::new();
+    //     calldata.extend(empty_bytes);
+    //     calldata.extend(empty_bytes);
+    //     calldata.extend(padded_messaging_bytes);
+    // 
+    //     self.eth_bridge.initialize(Bytes::from(calldata)).await.expect("Failed to initialize eth bridge");
+    // }
 
     /// Add Implementation Starknet Legacy Eth Bridge
     pub async fn add_implementation_eth_bridge(&self, messaging_contract: Address) {

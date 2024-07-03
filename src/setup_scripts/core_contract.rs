@@ -3,7 +3,7 @@ use std::str::FromStr;
 use ethers::abi::Address;
 
 use crate::contract_clients::config::Config;
-use crate::contract_clients::core_contract::{CoreContract, CoreContractDeploy, CoreContractStarknetL1Enum};
+use crate::contract_clients::core_contract::{CoreContract, CoreContractDeploy};
 use crate::contract_clients::starknet_sovereign::StarknetSovereignContract;
 use crate::contract_clients::starknet_validity::StarknetValidityContract;
 use crate::contract_clients::utils::get_bridge_init_configs;
@@ -25,9 +25,9 @@ impl<'a> CoreContractStarknetL1<'a> {
     }
 
     pub async fn setup(&self) -> CoreContractStarknetL1Output {
-        let core_contract_client = match self.arg_config.dev {
-            true => CoreContractStarknetL1Enum::Sovereign(StarknetSovereignContract::deploy(self.clients).await),
-            false => CoreContractStarknetL1Enum::Validity(StarknetValidityContract::deploy(self.clients).await),
+        let core_contract_client: Box<dyn CoreContract> = match self.arg_config.dev {
+            true => Box::new(StarknetSovereignContract::deploy(self.clients).await),
+            false => Box::new(StarknetValidityContract::deploy(self.clients).await),
         };
         log::info!("📦 Core address : {:?}", core_contract_client.address());
         save_to_json("l1_core_contract_address", &JsonValueType::EthAddress(core_contract_client.address())).unwrap();
@@ -66,6 +66,6 @@ impl<'a> CoreContractStarknetL1<'a> {
             )
             .await;
 
-        CoreContractStarknetL1Output { core_contract_client: Box::new(core_contract_client) }
+        CoreContractStarknetL1Output { core_contract_client }
     }
 }

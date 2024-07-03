@@ -7,7 +7,7 @@ use starknet_core_contract_client::clients::StarknetValidityContractClient;
 use starknet_core_contract_client::deploy_starknet_validity_behind_safe_proxy;
 use starknet_core_contract_client::interfaces::{OperatorTrait, StarknetGovernanceTrait};
 use starknet_ff::FieldElement;
-use starknet_proxy_client::proxy_support::{CoreContractInitData, ProxyInitializeData, ProxySupportTrait};
+use starknet_proxy_client::interfaces::proxy::{CoreContractInitData, ProxyInitializeData, ProxySupport3_0_2Trait};
 use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
 
 use crate::contract_clients::config::Config;

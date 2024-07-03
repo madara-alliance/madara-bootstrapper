@@ -17,7 +17,7 @@ use starknet_erc20_client::interfaces::erc20::ERC20TokenTrait;
 use starknet_ff::FieldElement;
 use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::JsonRpcClient;
-use starknet_proxy_client::proxy_support::ProxySupportTrait;
+use starknet_proxy_client::interfaces::proxy::ProxySupport5_0_0Trait;
 use starknet_token_bridge_client::clients::token_bridge::StarknetTokenBridgeContractClient;
 use starknet_token_bridge_client::deploy_starknet_token_bridge_behind_safe_proxy;
 use starknet_token_bridge_client::interfaces::token_bridge::StarknetTokenBridgeTrait;
@@ -245,15 +245,22 @@ impl StarknetTokenBridge {
         fee: U256,
         l1_multisig_address: Address,
     ) {
+        // Register roles
         self.token_bridge.register_app_role_admin(governor).await.unwrap();
         self.token_bridge.register_app_governor(governor).await.unwrap();
+        self.token_bridge.register_app_role_admin(governor).await.unwrap();
+        self.token_bridge.register_security_admin(governor).await.unwrap();
+        self.token_bridge.register_security_agent(governor).await.unwrap();
         self.token_bridge.set_l2_token_bridge(field_element_to_u256(l2_bridge)).await.unwrap();
         self.manager.enroll_token_bridge(self.address(), fee).await.unwrap();
 
         // Nominating a new governor with l1_multisig_address
-        self.token_bridge.proxy_nominate_new_governor(l1_multisig_address).await.unwrap();
-        self.manager.proxy_nominate_new_governor(l1_multisig_address).await.unwrap();
-        self.registry.proxy_nominate_new_governor(l1_multisig_address).await.unwrap();
+        self.token_bridge.register_app_governor(l1_multisig_address).await.unwrap();
+        self.manager.register_app_governor(l1_multisig_address).await.unwrap();
+        self.registry.register_app_governor(l1_multisig_address).await.unwrap();
+        self.token_bridge.register_app_role_admin(l1_multisig_address).await.unwrap();
+        self.manager.register_app_role_admin(l1_multisig_address).await.unwrap();
+        self.registry.register_app_role_admin(l1_multisig_address).await.unwrap();
     }
 
     pub async fn setup_l2_bridge(
