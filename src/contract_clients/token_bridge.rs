@@ -6,10 +6,14 @@ use ethers::addressbook::Address;
 use ethers::prelude::U256;
 use ethers::types::Bytes;
 use starkgate_manager_client::clients::starkgate_manager::StarkgateManagerContractClient;
-use starkgate_manager_client::deploy_starkgate_manager_behind_safe_proxy;
 use starkgate_manager_client::interfaces::manager::StarkgateManagerTrait;
+use starkgate_manager_client::{
+    deploy_starkgate_manager_behind_safe_proxy, deploy_starkgate_manager_behind_unsafe_proxy,
+};
 use starkgate_registry_client::clients::starkgate_registry::StarkgateRegistryContractClient;
-use starkgate_registry_client::deploy_starkgate_registry_behind_safe_proxy;
+use starkgate_registry_client::{
+    deploy_starkgate_registry_behind_safe_proxy, deploy_starkgate_registry_behind_unsafe_proxy,
+};
 use starknet_accounts::{Account, ConnectedAccount};
 use starknet_erc20_client::clients::erc20::ERC20ContractClient;
 use starknet_erc20_client::deploy_dai_erc20_behind_unsafe_proxy;
@@ -19,8 +23,10 @@ use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::JsonRpcClient;
 use starknet_proxy_client::interfaces::proxy::ProxySupport5_0_0Trait;
 use starknet_token_bridge_client::clients::token_bridge::StarknetTokenBridgeContractClient;
-use starknet_token_bridge_client::deploy_starknet_token_bridge_behind_safe_proxy;
 use starknet_token_bridge_client::interfaces::token_bridge::StarknetTokenBridgeTrait;
+use starknet_token_bridge_client::{
+    deploy_starknet_token_bridge_behind_safe_proxy, deploy_starknet_token_bridge_behind_unsafe_proxy,
+};
 use tokio::time::sleep;
 use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
 
@@ -41,16 +47,32 @@ pub struct StarknetTokenBridge {
 
 #[async_trait]
 impl BridgeDeployable for StarknetTokenBridge {
-    async fn deploy(client: Arc<LocalWalletSignerMiddleware>) -> Self {
-        let manager = deploy_starkgate_manager_behind_safe_proxy(client.clone())
-            .await
-            .expect("Failed to deploy starkgate manager contract");
-        let registry = deploy_starkgate_registry_behind_safe_proxy(client.clone())
-            .await
-            .expect("Failed to deploy starkgate registry");
-        let token_bridge = deploy_starknet_token_bridge_behind_safe_proxy(client.clone())
-            .await
-            .expect("Failed to deploy starknet contract");
+    async fn deploy(client: Arc<LocalWalletSignerMiddleware>, is_dev: bool) -> Self {
+        let manager = match is_dev {
+            false => deploy_starkgate_manager_behind_safe_proxy(client.clone())
+                .await
+                .expect("Failed to deploy starkgate manager contract"),
+            true => deploy_starkgate_manager_behind_unsafe_proxy(client.clone())
+                .await
+                .expect("Failed to deploy starkgate manager contract"),
+        };
+        let registry = match is_dev {
+            false => deploy_starkgate_registry_behind_safe_proxy(client.clone())
+                .await
+                .expect("Failed to deploy starkgate registry"),
+            true => deploy_starkgate_registry_behind_unsafe_proxy(client.clone())
+                .await
+                .expect("Failed to deploy starkgate registry"),
+        };
+        let token_bridge = match is_dev {
+            false => deploy_starknet_token_bridge_behind_safe_proxy(client.clone())
+                .await
+                .expect("Failed to deploy starknet contract"),
+            true => deploy_starknet_token_bridge_behind_unsafe_proxy(client.clone())
+                .await
+                .expect("Failed to deploy starknet contract"),
+        };
+
         let erc20 =
             deploy_dai_erc20_behind_unsafe_proxy(client.clone()).await.expect("Failed to deploy dai erc20 contract");
 
@@ -139,7 +161,7 @@ impl StarknetTokenBridge {
 
     /// Initialize Starknet Token Bridge.
     /// IMP : only need to be called when using unsafe proxy
-    pub async fn initialize(&self, messaging_contract: Address) {
+    pub async fn initialize(&self, messaging_contract: Address, governor: Address) {
         let empty_bytes = [0u8; 32];
 
         let mut manager_calldata = Vec::new();
@@ -165,6 +187,10 @@ impl StarknetTokenBridge {
             .initialize(Bytes::from(bridge_calldata))
             .await
             .expect("Failed to initialize starknet token bridge");
+
+        // registering app governor temporarily
+        self.token_bridge.register_app_role_admin(governor).await.unwrap();
+        self.token_bridge.register_app_governor(governor).await.unwrap();
     }
 
     /// Add Implementation Starknet Token Bridge
@@ -238,21 +264,12 @@ impl StarknetTokenBridge {
     }
 
     /// Sets up the Token bridge with the specified data
-    pub async fn setup_l1_bridge(
-        &self,
-        governor: Address,
-        l2_bridge: FieldElement,
-        fee: U256,
-        l1_multisig_address: Address,
-    ) {
+    pub async fn setup_permissions_with_bridge_l1(&self, governor: Address, l1_multisig_address: Address) {
         // Register roles
-        self.token_bridge.register_app_role_admin(governor).await.unwrap();
         self.token_bridge.register_app_governor(governor).await.unwrap();
         self.token_bridge.register_app_role_admin(governor).await.unwrap();
         self.token_bridge.register_security_admin(governor).await.unwrap();
         self.token_bridge.register_security_agent(governor).await.unwrap();
-        self.token_bridge.set_l2_token_bridge(field_element_to_u256(l2_bridge)).await.unwrap();
-        self.manager.enroll_token_bridge(self.address(), fee).await.unwrap();
 
         // Nominating a new governor with l1_multisig_address
         self.token_bridge.register_app_governor(l1_multisig_address).await.unwrap();
@@ -261,6 +278,12 @@ impl StarknetTokenBridge {
         self.token_bridge.register_app_role_admin(l1_multisig_address).await.unwrap();
         self.manager.register_app_role_admin(l1_multisig_address).await.unwrap();
         self.registry.register_app_role_admin(l1_multisig_address).await.unwrap();
+    }
+
+    /// Deploys a test ERC20 token from L1 to L2
+    pub async fn setup_l1_bridge(&self, fee: U256, l2_bridge: FieldElement) {
+        self.token_bridge.set_l2_token_bridge(field_element_to_u256(l2_bridge)).await.unwrap();
+        self.manager.enroll_token_bridge(self.address(), fee).await.unwrap();
     }
 
     pub async fn setup_l2_bridge(

@@ -5,7 +5,7 @@ mod setup_scripts;
 pub mod tests;
 pub mod utils;
 
-use clap::Parser;
+use clap::{ArgAction, Parser};
 use dotenv::dotenv;
 use inline_colorization::*;
 use starknet_accounts::Account;
@@ -66,7 +66,7 @@ pub struct CliArgs {
     // Given as 0xabcd by default
     #[clap(long, env, default_value = "0x000000000000000000000000000000000000abcd")]
     operator_address: String,
-    #[clap(long, default_value = "false")]
+    #[clap(long, env, action=ArgAction::SetTrue)]
     dev: bool,
 }
 

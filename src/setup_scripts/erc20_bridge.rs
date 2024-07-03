@@ -57,7 +57,7 @@ impl<'a> Erc20Bridge<'a> {
             .unwrap();
         sleep(Duration::from_secs(10)).await;
 
-        let token_bridge = StarknetTokenBridge::deploy(self.core_contract.client().clone()).await;
+        let token_bridge = StarknetTokenBridge::deploy(self.core_contract.client().clone(), self.arg_config.dev).await;
 
         log::info!(
             "❇️ ERC20 Token Bridge L1 deployment completed [ERC20 Token Bridge Address (L1) : {:?}]",
@@ -89,8 +89,21 @@ impl<'a> Erc20Bridge<'a> {
         )
         .await;
 
-        token_bridge.add_implementation_token_bridge(self.core_contract.address()).await;
-        token_bridge.upgrade_to_token_bridge(self.core_contract.address()).await;
+        if self.arg_config.dev {
+            token_bridge
+                .initialize(self.core_contract.address(), H160::from_str(&self.arg_config.l1_deployer_address).unwrap())
+                .await;
+        } else {
+            token_bridge.add_implementation_token_bridge(self.core_contract.address()).await;
+            token_bridge.upgrade_to_token_bridge(self.core_contract.address()).await;
+            token_bridge
+                .setup_permissions_with_bridge_l1(
+                    H160::from_str(&self.arg_config.l1_deployer_address).unwrap(),
+                    Address::from_str(&self.arg_config.l1_multisig_address.to_string()).unwrap(),
+                )
+                .await;
+        }
+
         token_bridge
             .setup_l2_bridge(
                 self.clients.provider_l2(),
@@ -100,14 +113,7 @@ impl<'a> Erc20Bridge<'a> {
                 erc20_cairo_one_class_hash,
             )
             .await;
-        token_bridge
-            .setup_l1_bridge(
-                H160::from_str(&self.arg_config.l1_deployer_address).unwrap(),
-                l2_bridge_address,
-                U256::from_dec_str("100000000000000").unwrap(),
-                Address::from_str(&self.arg_config.l1_multisig_address.to_string()).unwrap(),
-            )
-            .await;
+        token_bridge.setup_l1_bridge(U256::from_dec_str("100000000000000").unwrap(), l2_bridge_address).await;
         log::info!("❇️ Temp test token deployed on L1.");
         log::info!(
             "❇️ Waiting for temp test token to be deployed on L2 [⏳....] Approx. time : {:?} secs.",

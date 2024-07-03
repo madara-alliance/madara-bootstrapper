@@ -4,7 +4,7 @@ use async_trait::async_trait;
 use ethers::types::Address;
 use starknet_api::hash::{StarkFelt, StarkHash};
 use starknet_core_contract_client::clients::StarknetSovereignContractClient;
-use starknet_core_contract_client::deploy_starknet_sovereign_behind_safe_proxy;
+use starknet_core_contract_client::deploy_starknet_sovereign_behind_unsafe_proxy;
 use starknet_core_contract_client::interfaces::{OperatorTrait, StarknetGovernanceTrait};
 use starknet_ff::FieldElement;
 use starknet_proxy_client::interfaces::proxy::{CoreContractInitData, ProxyInitializeData, ProxySupport3_0_2Trait};
@@ -22,7 +22,7 @@ pub struct StarknetSovereignContract {
 
 impl CoreContractDeploy<StarknetSovereignContract> for StarknetSovereignContract {
     async fn deploy(config: &Config) -> Self {
-        let client = deploy_starknet_sovereign_behind_safe_proxy(config.eth_client().signer().clone())
+        let client = deploy_starknet_sovereign_behind_unsafe_proxy(config.eth_client().signer().clone())
             .await
             .expect("Failed to deploy the starknet contact");
 

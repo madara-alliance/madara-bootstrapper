@@ -6,8 +6,10 @@ use ethers::providers::Middleware;
 use ethers::types::{Bytes, U256};
 use starknet_accounts::{Account, ConnectedAccount};
 use starknet_eth_bridge_client::clients::eth_bridge::StarknetEthBridgeContractClient;
-use starknet_eth_bridge_client::deploy_starknet_eth_bridge_behind_safe_proxy;
 use starknet_eth_bridge_client::interfaces::eth_bridge::StarknetEthBridgeTrait;
+use starknet_eth_bridge_client::{
+    deploy_starknet_eth_bridge_behind_safe_proxy, deploy_starknet_eth_bridge_behind_unsafe_proxy,
+};
 use starknet_ff::FieldElement;
 use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::JsonRpcClient;
@@ -20,7 +22,7 @@ use crate::utils::{invoke_contract, wait_for_transaction};
 
 #[async_trait]
 pub trait BridgeDeployable {
-    async fn deploy(client: Arc<LocalWalletSignerMiddleware>) -> Self;
+    async fn deploy(client: Arc<LocalWalletSignerMiddleware>, is_dev: bool) -> Self;
 }
 
 pub struct StarknetLegacyEthBridge {
@@ -29,10 +31,15 @@ pub struct StarknetLegacyEthBridge {
 
 #[async_trait]
 impl BridgeDeployable for StarknetLegacyEthBridge {
-    async fn deploy(client: Arc<LocalWalletSignerMiddleware>) -> Self {
-        let eth_bridge = deploy_starknet_eth_bridge_behind_safe_proxy(client.clone())
-            .await
-            .expect("Failed to deploy starknet contract");
+    async fn deploy(client: Arc<LocalWalletSignerMiddleware>, is_dev: bool) -> Self {
+        let eth_bridge = match is_dev {
+            true => deploy_starknet_eth_bridge_behind_unsafe_proxy(client.clone())
+                .await
+                .expect("Failed to deploy starknet contract"),
+            false => deploy_starknet_eth_bridge_behind_safe_proxy(client.clone())
+                .await
+                .expect("Failed to deploy starknet contract"),
+        };
 
         Self { eth_bridge }
     }
@@ -193,13 +200,16 @@ impl StarknetLegacyEthBridge {
         max_deposit: &str,
         l2_bridge: FieldElement,
         l1_multisig_address: Address,
+        is_dev: bool,
     ) {
         self.eth_bridge.set_max_total_balance(U256::from_dec_str(max_total_balance).unwrap()).await.unwrap();
         self.eth_bridge.set_max_deposit(U256::from_dec_str(max_deposit).unwrap()).await.unwrap();
         self.eth_bridge.set_l2_token_bridge(field_element_to_u256(l2_bridge)).await.unwrap();
 
-        // Nominating a new governor as l1 multi sig address
-        self.eth_bridge.proxy_nominate_new_governor(l1_multisig_address).await.unwrap();
+        if !is_dev {
+            // Nominating a new governor as l1 multi sig address
+            self.eth_bridge.proxy_nominate_new_governor(l1_multisig_address).await.unwrap();
+        }
     }
 
     pub async fn setup_l2_bridge(

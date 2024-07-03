@@ -129,7 +129,8 @@ impl<'a> EthBridge<'a> {
         .await;
         sleep(Duration::from_secs(10)).await;
 
-        let eth_bridge = StarknetLegacyEthBridge::deploy(self.core_contract.client().clone()).await;
+        let eth_bridge =
+            StarknetLegacyEthBridge::deploy(self.core_contract.client().clone(), self.arg_config.dev).await;
 
         log::info!("✴️ ETH Bridge L1 deployment completed [Eth Bridge Address (L1) : {:?}]", eth_bridge.address());
         save_to_json("ETH_l1_bridge_address", &JsonValueType::EthAddress(eth_bridge.address())).unwrap();
@@ -164,9 +165,12 @@ impl<'a> EthBridge<'a> {
 
         log::info!("✴️ L2 ETH token deployment successful.");
         // save_to_json("l2_eth_address", &JsonValueType::StringType(eth_address.to_string()))?;
-
-        eth_bridge.add_implementation_eth_bridge(self.core_contract.address()).await;
-        eth_bridge.upgrade_to_eth_bridge(self.core_contract.address()).await;
+        if self.arg_config.dev {
+            eth_bridge.initialize(self.core_contract.address()).await;
+        } else {
+            eth_bridge.add_implementation_eth_bridge(self.core_contract.address()).await;
+            eth_bridge.upgrade_to_eth_bridge(self.core_contract.address()).await;
+        }
         log::info!("✴️ ETH Bridge initialization on L1 completed");
 
         sleep(Duration::from_secs(self.arg_config.l1_wait_time.parse().unwrap())).await;
@@ -188,6 +192,7 @@ impl<'a> EthBridge<'a> {
                 "10000000000000000000000000000000000000000",
                 l2_bridge_address,
                 Address::from_str(&self.arg_config.l1_multisig_address.to_string()).unwrap(),
+                self.arg_config.dev,
             )
             .await;
         log::info!("✴️ ETH Bridge setup on L1 completed");
