@@ -21,7 +21,6 @@ services:
         L2_MULTISIG_ADDRESS: ${L2_MULTISIG_ADDRESS}
         VERIFIER_ADDRESS: ${VERIFIER_ADDRESS}
         OPERATOR_ADDRESS: ${OPERATOR_ADDRESS}
-        DEV: ${DEV}
     volumes:
       - type: bind
         source: ./data
