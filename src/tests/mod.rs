@@ -9,7 +9,7 @@ use constants::{
 use rstest::rstest;
 
 use crate::contract_clients::config::Config;
-use crate::tests::constants::{L1_MULTISIG_ADDRESS, L2_MULTISIG_ADDRESS, VERIFIER_ADDRESS};
+use crate::tests::constants::{L1_MULTISIG_ADDRESS, L2_MULTISIG_ADDRESS, OPERATOR_ADDRESS, VERIFIER_ADDRESS};
 use crate::tests::erc20_bridge::erc20_bridge_test_helper;
 use crate::tests::eth_bridge::eth_bridge_test_helper;
 use crate::{bootstrap, CliArgs};
@@ -47,11 +47,39 @@ async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
 
 #[rstest]
 #[tokio::test]
-// #[ignore]
+#[ignore]
 async fn deposit_and_withdraw_erc20_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
     let clients = Config::init(&get_config()).await;
     let out = bootstrap(&get_config()).await;
+
+    let _ = erc20_bridge_test_helper(
+        &clients,
+        &get_config(),
+        out.l2_erc20_token_address,
+        out.starknet_token_bridge,
+        out.erc20_l2_bridge_address,
+    )
+    .await;
+
+    Ok(())
+}
+
+#[rstest]
+#[tokio::test]
+async fn deposit_tests_both_bridges() -> Result<(), anyhow::Error> {
+    env_logger::init();
+    let clients = Config::init(&get_config()).await;
+    let out = bootstrap(&get_config()).await;
+
+    let _ = eth_bridge_test_helper(
+        &clients,
+        &get_config(),
+        out.eth_proxy_address,
+        out.eth_bridge_proxy_address,
+        out.eth_bridge,
+    )
+    .await;
 
     let _ = erc20_bridge_test_helper(
         &clients,
@@ -82,5 +110,7 @@ fn get_config() -> CliArgs {
         l1_multisig_address: String::from(L1_MULTISIG_ADDRESS),
         l2_multisig_address: String::from(L2_MULTISIG_ADDRESS),
         verifier_address: String::from(VERIFIER_ADDRESS),
+        operator_address: String::from(OPERATOR_ADDRESS),
+        dev: true,
     }
 }

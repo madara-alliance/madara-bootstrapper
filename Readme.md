@@ -1,7 +1,7 @@
-# Madara Bootstrap 👾
+# Madara Bootstrapper 👾
 
-Madara Bootstarp is a tool that helps to deploy the **Token Bridge** & **Eth Bridge** contract
-between a madara/katana appchain and another L2 or L1 network. It will also declare wallet
+Madara Bootstrapper is a tool that helps to deploy the **Token Bridge** & **Eth Bridge** contract
+between a madara/katana Appchain and another L2 or L1 network. It will also declare wallet
 contracts from **OpenZappelin**, **Argent** and **Braavos**. You can find the full list of contracts
 in [Info](#info-ℹ)
 
@@ -62,6 +62,9 @@ RUST_LOG=info cargo run -- --help
 
 # If you have provided env vars in .env
 RUST_LOG=info cargo run
+
+# To run in dev mode (uses unsafe proxy and minimal setup)
+RUST_LOG=info cargo run -- --dev
 ```
 
 **IMP 🚨** : It will store all the addresses in [data/addresses.json](data/addresses.json)

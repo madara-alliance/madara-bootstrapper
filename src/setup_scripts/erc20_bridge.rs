@@ -1,6 +1,7 @@
 use std::str::FromStr;
 use std::time::Duration;
 
+use ethers::abi::Address;
 use ethers::prelude::{H160, U256};
 use starknet_core::types::{BlockId, BlockTag, FunctionCall};
 use starknet_core::utils::get_selector_from_name;
@@ -10,8 +11,8 @@ use starknet_providers::{JsonRpcClient, Provider};
 use tokio::time::sleep;
 
 use crate::contract_clients::config::Config;
+use crate::contract_clients::core_contract::CoreContract;
 use crate::contract_clients::eth_bridge::BridgeDeployable;
-use crate::contract_clients::starknet_sovereign::StarknetSovereignContract;
 use crate::contract_clients::token_bridge::StarknetTokenBridge;
 use crate::contract_clients::utils::{build_single_owner_account, declare_contract, DeclarationInput, RpcAccount};
 use crate::utils::constants::{ERC20_CASM_PATH, ERC20_SIERRA_PATH};
@@ -23,7 +24,7 @@ pub struct Erc20Bridge<'a> {
     account_address: FieldElement,
     arg_config: &'a CliArgs,
     clients: &'a Config,
-    core_contract: &'a StarknetSovereignContract,
+    core_contract: &'a dyn CoreContract,
 }
 
 pub struct Erc20BridgeSetupOutput {
@@ -39,7 +40,7 @@ impl<'a> Erc20Bridge<'a> {
         account_address: FieldElement,
         arg_config: &'a CliArgs,
         clients: &'a Config,
-        core_contract: &'a StarknetSovereignContract,
+        core_contract: &'a dyn CoreContract,
     ) -> Self {
         Self { account, account_address, arg_config, clients, core_contract }
     }
@@ -56,7 +57,7 @@ impl<'a> Erc20Bridge<'a> {
             .unwrap();
         sleep(Duration::from_secs(10)).await;
 
-        let token_bridge = StarknetTokenBridge::deploy(self.core_contract.client().clone()).await;
+        let token_bridge = StarknetTokenBridge::deploy(self.core_contract.client().clone(), self.arg_config.dev).await;
 
         log::info!(
             "❇️ ERC20 Token Bridge L1 deployment completed [ERC20 Token Bridge Address (L1) : {:?}]",
@@ -88,8 +89,21 @@ impl<'a> Erc20Bridge<'a> {
         )
         .await;
 
-        token_bridge.add_implementation_token_bridge(self.core_contract.address()).await;
-        token_bridge.upgrade_to_token_bridge(self.core_contract.address()).await;
+        if self.arg_config.dev {
+            token_bridge
+                .initialize(self.core_contract.address(), H160::from_str(&self.arg_config.l1_deployer_address).unwrap())
+                .await;
+        } else {
+            token_bridge.add_implementation_token_bridge(self.core_contract.address()).await;
+            token_bridge.upgrade_to_token_bridge(self.core_contract.address()).await;
+            token_bridge
+                .setup_permissions_with_bridge_l1(
+                    H160::from_str(&self.arg_config.l1_deployer_address).unwrap(),
+                    Address::from_str(&self.arg_config.l1_multisig_address.to_string()).unwrap(),
+                )
+                .await;
+        }
+
         token_bridge
             .setup_l2_bridge(
                 self.clients.provider_l2(),
@@ -99,13 +113,7 @@ impl<'a> Erc20Bridge<'a> {
                 erc20_cairo_one_class_hash,
             )
             .await;
-        token_bridge
-            .setup_l1_bridge(
-                H160::from_str(&self.arg_config.l1_deployer_address).unwrap(),
-                l2_bridge_address,
-                U256::from_dec_str("100000000000000").unwrap(),
-            )
-            .await;
+        token_bridge.setup_l1_bridge(U256::from_dec_str("100000000000000").unwrap(), l2_bridge_address).await;
         log::info!("❇️ Temp test token deployed on L1.");
         log::info!(
             "❇️ Waiting for temp test token to be deployed on L2 [⏳....] Approx. time : {:?} secs.",
