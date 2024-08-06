@@ -23,6 +23,6 @@ jobs:
     needs: rust_build
 
   test_bridge:
-    name: Run Cargo linters
+    name: Test Bridge
     uses: ./.github/workflows/test-bridge.yml
     needs: rust_build
