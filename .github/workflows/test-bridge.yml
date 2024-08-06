@@ -1,0 +1,40 @@
+---
+name: Task - Build Rust
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches:
+        - "feat/bridge-tests"
+        - "main"
+
+jobs:
+  rust_build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      # selecting a toolchain either by action or manual `rustup` calls should happen
+      # before the plugin, as the cache uses the current rustc version as its cache key
+      - run: rustup show
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Run madara
+        run: |
+          cd bin
+          echo "Running madara...."
+          ./run_madara.sh
+
+      - name: Run anvil
+        run: |
+          anvil
+
+      - name: Run tests
+        run: |
+          echo "Running test...."
+          cargo test --nocapture
