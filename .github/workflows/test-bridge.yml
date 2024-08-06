@@ -4,10 +4,6 @@ name: Task - Test Bridge
 on:
   workflow_dispatch:
   workflow_call:
-  push:
-    branches:
-      - "feat/bridge-tests"
-      - "main"
 
 jobs:
   rust_build:
