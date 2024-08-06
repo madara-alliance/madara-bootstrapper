@@ -120,3 +120,8 @@ in our context.
 - `ERC20 token bridge (starkgate)` : Contract for Token bridge.
 - `OpenZeppelinAccount (legacy : starknet)` : Contract used for declaring a temp account for declaring V1
   contract that will be used to deploy the user account with provided private key in env.
+
+> [!IMPORTANT]
+> For testing in Github CI we are using the madara binary build with
+> `--disable-fee-flag`. The source for madara code :
+> <https://github.com/karnotxyz/madara/tree/madara-ci-build>
