@@ -33,4 +33,4 @@ jobs:
       - name: Run tests
         run: |
           echo "Running test...."
-          cargo test -- --nocapture
+          RUST_LOG=info cargo test -- --nocapture
