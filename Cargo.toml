@@ -13,13 +13,7 @@ serde_json = { version = "1.0.108", default-features = false, features = [
   "std",
 ] }
 serde_with = { version = "2.3.3", default-features = false }
-thiserror-no-std = "2.0.2"
 url = "2.4.1"
-
-# Substrate primitives dependencies
-sp-core = { git = "https://github.com/massalabs/polkadot-sdk", branch = "release-polkadot-v1.3.0-std", default-features = false, features = [
-  "std",
-] }
 
 # Zaun Deps
 ethereum-instance = { git = "https://github.com/keep-starknet-strange/zaun", package = "ethereum-instance", branch = "main" }
@@ -33,14 +27,7 @@ starknet-token-bridge-client = { git = "https://github.com/keep-starknet-strange
 zaun-utils = { git = "https://github.com/keep-starknet-strange/zaun", package = "utils", branch = "main" }
 
 # Starknet Deps
-blockifier = { git = "https://github.com/bidzyyys/blockifier", branch = "feature/scale-codec" }
-cairo-vm = { git = "https://github.com/bidzyyys/cairo-vm", branch = "feature/scale-codec", features = [
-  "std",
-  "cairo-1-hints",
-  "parity-scale-codec",
-] }
 starknet-accounts = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "2d59636911628260fa460179010bbd00e89de06e" }
-starknet-contract = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "2d59636911628260fa460179010bbd00e89de06e" }
 starknet-core = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "2d59636911628260fa460179010bbd00e89de06e" }
 starknet-crypto = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "2d59636911628260fa460179010bbd00e89de06e" }
 starknet-ff = { git = "https://github.com/xJonathanLEI/starknet-rs.git", rev = "2d59636911628260fa460179010bbd00e89de06e" }
@@ -50,7 +37,6 @@ starknet_api = { git = "https://github.com/bidzyyys/starknet-api.git", branch = 
 
 # Third Party
 assert_matches = "1.5.0"
-async-lock = "3.1.0"
 async-trait = "0.1.74"
 clap = { version = "4.4.11", features = ["derive", "env"] }
 dotenv = "0.15.0"
@@ -72,7 +58,4 @@ bytes = "1.6.0"
 flate2 = "1.0.30"
 indexmap = "2.2.6"
 inline_colorization = "0.1.6"
-subxt = "0.35.3"
 subxt-lightclient = { version = "0.35.3", optional = true, default-features = false }
-subxt-macro = { version = "0.35.3" }
-subxt-metadata = { version = "0.35.3", features = ["std"] }
