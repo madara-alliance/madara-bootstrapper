@@ -20,15 +20,15 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
 
+      - name: Run anvil
+        run: |
+          anvil </dev/null &>/dev/null &
+
       - name: Run madara
         run: |
           cd bin
           echo "Running madara...."
           ./run_madara.sh
-
-      - name: Run anvil
-        run: |
-          anvil
 
       - name: Run tests
         run: |
