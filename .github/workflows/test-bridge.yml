@@ -5,6 +5,9 @@ on:
   workflow_dispatch:
   workflow_call:
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
   test_bridge:
     runs-on: macos-latest
@@ -20,6 +23,10 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
 
+      - name: Install tarpauline
+        run: |
+          cargo install cargo-tarpaulin
+
       - name: Run anvil
         run: |
           anvil </dev/null &>/dev/null &
@@ -33,4 +40,10 @@ jobs:
       - name: Run tests
         run: |
           echo "Running test...."
-          RUST_LOG=info cargo test -- --nocapture
+          cargo tarpaulin --out Html
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./tarpaulin-report.html
