@@ -53,7 +53,7 @@ jobs:
       - name: Run tests
         run: |
           echo "Running test...."
-          cargo tarpaulin --out Html
+          cargo tarpaulin --out Xml
           sleep 5 # sleeping for few secs to ensure the coverage file is generated.
 
       - name: Upload coverage reports to Codecov
