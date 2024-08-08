@@ -5,11 +5,16 @@ on:
   workflow_dispatch:
   workflow_call:
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
   test_bridge:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       # selecting a toolchain either by action or manual `rustup` calls should happen
       # before the plugin, as the cache uses the current rustc version as its cache key
@@ -19,6 +24,10 @@ jobs:
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Install tarpauline
+        run: |
+          cargo install cargo-tarpaulin
 
       - name: Run anvil
         run: |
@@ -30,7 +39,24 @@ jobs:
           echo "Running madara...."
           ./run_madara.sh
 
+      - name: Check if secret is accessible
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: |
+          if [ -n "CODECOV_TOKEN" ]; then
+            echo "Secret is accessible"
+          else
+            echo "Secret is not accessible"
+            exit 1
+          fi
+
       - name: Run tests
         run: |
           echo "Running test...."
-          RUST_LOG=info cargo test -- --nocapture
+          cargo tarpaulin --out Html
+          sleep 5 # sleeping for few secs to ensure the coverage file is generated.
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
