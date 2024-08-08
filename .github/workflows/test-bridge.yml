@@ -24,7 +24,7 @@ jobs:
         uses: codecov/codecov-action@v3.1.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: /home/runner/work/madara-orchestrator/madara-orchestrator/tarpaulin-report.html
+          files: /Users/runner/work/madara-bootstrapper/madara-bootstrapper/tarpaulin-report.html
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
