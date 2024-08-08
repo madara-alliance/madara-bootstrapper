@@ -13,6 +13,8 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       # selecting a toolchain either by action or manual `rustup` calls should happen
       # before the plugin, as the cache uses the current rustc version as its cache key
@@ -25,8 +27,6 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: /Users/runner/work/madara-bootstrapper/madara-bootstrapper/tarpaulin-report.html
-          retries: 5
-          retry_delay: 30
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
