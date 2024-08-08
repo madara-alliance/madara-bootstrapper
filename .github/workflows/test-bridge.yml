@@ -20,6 +20,12 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
 
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3.1.0
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: /home/runner/work/madara-orchestrator/madara-orchestrator/tarpaulin-report.html
+
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
 
@@ -55,8 +61,7 @@ jobs:
           sleep 5 # sleeping for few secs to ensure the coverage file is generated.
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4.0.1
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        uses: codecov/codecov-action@v3.1.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          files: /home/runner/work/madara-orchestrator/madara-orchestrator/tarpaulin-report.html
