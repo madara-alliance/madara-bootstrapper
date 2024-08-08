@@ -37,9 +37,16 @@ jobs:
           echo "Running madara...."
           ./run_madara.sh
 
-      - name: Check if token is accessible
+      - name: Check if secret is accessible
+        env:
+          SECRET_TO_CHECK: ${{ secrets.CODECOV_TOKEN }}
         run: |
-          echo "Token : ${{ secrets.CODECOV_TOKEN }} here"
+          if [ -n "$SECRET_TO_CHECK" ]; then
+            echo "Secret is accessible"
+          else
+            echo "Secret is not accessible"
+            exit 1
+          fi
 
       - name: Run tests
         run: |
@@ -49,7 +56,7 @@ jobs:
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
