@@ -35,6 +35,9 @@ jobs:
           echo "Running madara...."
           ./run_madara.sh
 
+      - uses: taiki-e/install-action@cargo-llvm-cov
+      - uses: taiki-e/install-action@nextest
+
       - name: Clean workspace
         run: |
           cargo llvm-cov clean --workspace
