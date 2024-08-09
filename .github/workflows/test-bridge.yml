@@ -25,10 +25,6 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
 
-      - name: Install tarpauline
-        run: |
-          cargo install cargo-tarpaulin
-
       - name: Run anvil
         run: |
           anvil </dev/null &>/dev/null &
@@ -39,24 +35,22 @@ jobs:
           echo "Running madara...."
           ./run_madara.sh
 
-      - name: Check if secret is accessible
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Clean workspace
         run: |
-          if [ -n "CODECOV_TOKEN" ]; then
-            echo "Secret is accessible"
-          else
-            echo "Secret is not accessible"
-            exit 1
-          fi
+          cargo llvm-cov clean --workspace
 
-      - name: Run tests
+      - name: Run llvm-cov
         run: |
-          echo "Running test...."
-          cargo tarpaulin --out Xml
-          sleep 5 # sleeping for few secs to ensure the coverage file is generated.
+          cargo llvm-cov nextest --release --lcov --output-path lcov.info
 
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4.0.1
+      - name: Coveralls
+        uses: coverallsapp/github-action@v2
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+          files: lcov.info
+          debug: true
+
+      - name: Upload coverage report to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          files: lcov.info
+          debug: true
