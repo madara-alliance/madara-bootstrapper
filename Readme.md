@@ -1,6 +1,6 @@
 # Madara Bootstrapper 👾
 
-[![codecov](https://codecov.io/gh/madara-alliance/madara-bootstrapper/graph/badge.svg?token=EHCDHVPLNN)](https://codecov.io/gh/madara-alliance/madara-bootstrapper)
+[![Coverage Status](https://coveralls.io/repos/github/madara-alliance/madara-bootstrapper/badge.svg?branch=main)](https://coveralls.io/github/madara-alliance/madara-bootstrapper?branch=main)
 
 Madara Bootstrapper is a tool that helps to deploy the **Token Bridge** & **Eth Bridge** contract
 between a madara/katana Appchain and another L2 or L1 network. It will also declare wallet
