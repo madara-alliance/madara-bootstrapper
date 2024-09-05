@@ -21,7 +21,7 @@ pub trait CoreContract {
 
     fn client(&self) -> Arc<LocalWalletSignerMiddleware>;
 
-    async fn initialize_with(&self, init_data: CoreContractInitData);
+    async fn initialize_with(&self, init_data: CoreContractInitData) -> anyhow::Result<()>;
 
     #[allow(clippy::too_many_arguments)]
     async fn add_implementation_core_contract(
@@ -33,7 +33,7 @@ pub trait CoreContract {
         implementation_address: Address,
         verifier_address: Address,
         finalized: bool,
-    );
+    ) -> anyhow::Result<()>;
 
     #[allow(clippy::too_many_arguments)]
     async fn upgrade_to_core_contract(
@@ -45,15 +45,15 @@ pub trait CoreContract {
         implementation_address: Address,
         verifier_address: Address,
         finalized: bool,
-    );
+    ) -> anyhow::Result<()>;
 
-    async fn register_operator_core_contract(&self, operator_address: Address);
+    async fn register_operator_core_contract(&self, operator_address: Address) -> anyhow::Result<()>;
 
-    async fn nominate_governor_core_contract(&self, l1_governor_address: Address);
+    async fn nominate_governor_core_contract(&self, l1_governor_address: Address) -> anyhow::Result<()>;
 
-    async fn nominate_governor_core_contract_proxy(&self, l1_governor_address: Address);
+    async fn nominate_governor_core_contract_proxy(&self, l1_governor_address: Address) -> anyhow::Result<()>;
 
-    async fn initialize(&self, program_hash: StarkFelt, config_hash: StarkFelt);
+    async fn initialize(&self, program_hash: StarkFelt, config_hash: StarkFelt) -> anyhow::Result<()>;
 
     async fn initialize_core_contract(
         &self,
@@ -62,11 +62,11 @@ pub trait CoreContract {
         program_hash: FieldElement,
         config_hash: StarkHash,
         verifer_address: Address,
-    );
+    ) -> anyhow::Result<()>;
 }
 
 pub trait CoreContractDeploy<T> {
-    fn deploy(config: &Config) -> impl Future<Output = T> + Send;
+    fn deploy(config: &Config) -> impl Future<Output = anyhow::Result<T>> + Send;
 }
 
 pub fn get_init_data_core_contract(

@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use anyhow::Context;
 use starknet_accounts::ConnectedAccount;
 use starknet_ff::FieldElement;
 use tokio::time::sleep;
@@ -26,14 +27,16 @@ impl<'a> UdcSetup<'a> {
         Self { account, account_address, arg_config }
     }
 
-    pub async fn setup(&self) -> UdcSetupOutput {
+    pub async fn setup(&self) -> anyhow::Result<UdcSetupOutput> {
         let udc_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(UDC_PATH),
             self.arg_config.rollup_seq_url.clone(),
         ))
-        .await;
+        .await
+        .context("Declaring UDC class")?;
         log::debug!("📣 UDC Class Hash Declared.");
-        save_to_json("udc_class_hash", &JsonValueType::StringType(udc_class_hash.to_string())).unwrap();
+        save_to_json("udc_class_hash", &JsonValueType::StringType(udc_class_hash.to_string()))
+            .context("Saving udc class hash to json")?;
         sleep(Duration::from_secs(10)).await;
 
         let txn = self
@@ -44,20 +47,24 @@ impl<'a> UdcSetup<'a> {
                 Vec::from([udc_class_hash, FieldElement::ZERO, FieldElement::ONE, FieldElement::ZERO]),
                 None,
             )
+            .context("Making deploy_contract transaction")?
             .send()
             .await
-            .unwrap();
+            .context("Sending deploy_contract transaction")?;
         wait_for_transaction(
             self.account.provider(),
             txn.transaction_hash,
             "deploy_non_bridge_contracts : deploy_contract : udc",
         )
         .await
-        .unwrap();
-        let udc_address = get_contract_address_from_deploy_tx(self.account.provider(), &txn).await.unwrap();
-        save_to_json("udc_address", &JsonValueType::StringType(udc_address.to_string())).unwrap();
+        .context("Waiting for deploy_contract transaction to settle")?;
+        let udc_address = get_contract_address_from_deploy_tx(self.account.provider(), &txn)
+            .await
+            .context("Getting resulting contract address")?;
+        save_to_json("udc_address", &JsonValueType::StringType(udc_address.to_string()))
+            .context("Saving UDC address to json")?;
         log::debug!("📣 udc_address : {:?}", udc_address);
 
-        UdcSetupOutput { udc_class_hash, udc_address }
+        Ok(UdcSetupOutput { udc_class_hash, udc_address })
     }
 }

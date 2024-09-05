@@ -1,3 +1,5 @@
+#![allow(clippy::unwrap_used)]
+
 pub mod constants;
 mod erc20_bridge;
 mod eth_bridge;
@@ -18,9 +20,9 @@ use crate::{bootstrap, CliArgs};
 #[tokio::test]
 #[ignore]
 async fn deploy_bridge() -> Result<(), anyhow::Error> {
-    env_logger::init();
+    let _ = env_logger::builder().is_test(true).try_init();
 
-    bootstrap(&get_config()).await;
+    bootstrap(&get_config()).await.unwrap();
 
     Ok(())
 }
@@ -29,9 +31,9 @@ async fn deploy_bridge() -> Result<(), anyhow::Error> {
 #[tokio::test]
 #[ignore]
 async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
-    env_logger::init();
-    let clients = Config::init(&get_config()).await;
-    let out = bootstrap(&get_config()).await;
+    let _ = env_logger::builder().is_test(true).try_init();
+    let clients = Config::init(&get_config()).await.unwrap();
+    let out = bootstrap(&get_config()).await.unwrap();
 
     let _ = eth_bridge_test_helper(
         &clients,
@@ -49,9 +51,9 @@ async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
 #[tokio::test]
 #[ignore]
 async fn deposit_and_withdraw_erc20_bridge() -> Result<(), anyhow::Error> {
-    env_logger::init();
-    let clients = Config::init(&get_config()).await;
-    let out = bootstrap(&get_config()).await;
+    let _ = env_logger::builder().is_test(true).try_init();
+    let clients = Config::init(&get_config()).await.unwrap();
+    let out = bootstrap(&get_config()).await.unwrap();
 
     let _ = erc20_bridge_test_helper(
         &clients,
@@ -68,9 +70,9 @@ async fn deposit_and_withdraw_erc20_bridge() -> Result<(), anyhow::Error> {
 #[rstest]
 #[tokio::test]
 async fn deposit_tests_both_bridges() -> Result<(), anyhow::Error> {
-    env_logger::init();
-    let clients = Config::init(&get_config()).await;
-    let out = bootstrap(&get_config()).await;
+    let _ = env_logger::builder().is_test(true).try_init();
+    let clients = Config::init(&get_config()).await.unwrap();
+    let out = bootstrap(&get_config()).await.unwrap();
 
     let _ = eth_bridge_test_helper(
         &clients,

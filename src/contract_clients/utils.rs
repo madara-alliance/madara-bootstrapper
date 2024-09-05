@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use anyhow::Context;
 use ethers::types::U256;
 use hex::encode;
 use serde::{Deserialize, Serialize};
@@ -25,34 +26,39 @@ pub async fn build_single_owner_account<'a>(
     private_key: &str,
     account_address: &str,
     is_legacy: bool,
-) -> RpcAccount<'a> {
-    let signer = LocalWallet::from(SigningKey::from_secret_scalar(FieldElement::from_hex_be(private_key).unwrap()));
-    let account_address = FieldElement::from_hex_be(account_address).expect("Invalid Contract Address");
+) -> anyhow::Result<RpcAccount<'a>> {
+    let signer = LocalWallet::from(SigningKey::from_secret_scalar(
+        FieldElement::from_hex_be(private_key).context("Parsing private key")?,
+    ));
+    let account_address = FieldElement::from_hex_be(account_address)
+        .with_context(|| format!("Invalid contract address: {account_address}"))?;
     let execution_encoding = if is_legacy {
         starknet_accounts::ExecutionEncoding::Legacy
     } else {
         starknet_accounts::ExecutionEncoding::New
     };
 
-    let chain_id = rpc.chain_id().await.unwrap();
-    SingleOwnerAccount::new(rpc, signer, account_address, chain_id, execution_encoding)
+    let chain_id = rpc.chain_id().await.context("Getting the chain id from RPC")?;
+    Ok(SingleOwnerAccount::new(rpc, signer, account_address, chain_id, execution_encoding))
 }
 
 pub async fn read_erc20_balance(
     rpc: &JsonRpcClient<HttpTransport>,
     contract_address: FieldElement,
     account_address: FieldElement,
-) -> Vec<FieldElement> {
+) -> anyhow::Result<Vec<FieldElement>> {
     rpc.call(
         FunctionCall {
             contract_address,
-            entry_point_selector: get_selector_from_name("balanceOf").unwrap(),
+            entry_point_selector: get_selector_from_name("balanceOf")?,
             calldata: vec![account_address],
         },
         BlockId::Tag(BlockTag::Latest),
     )
     .await
-    .unwrap()
+    .with_context(|| {
+        format!("Reading the erc20 balance for {account_address:#x} on ERC20 contract {contract_address:#x}")
+    })
 }
 
 pub fn field_element_to_u256(input: FieldElement) -> U256 {
@@ -71,14 +77,16 @@ pub fn generate_config_hash(
     ])
 }
 
-pub fn get_bridge_init_configs(config: &CliArgs) -> (FieldElement, StarkHash) {
-    let program_hash = FieldElement::from_hex_be(config.sn_os_program_hash.as_str()).unwrap();
+pub fn get_bridge_init_configs(config: &CliArgs) -> anyhow::Result<(FieldElement, StarkHash)> {
+    let program_hash =
+        FieldElement::from_hex_be(config.sn_os_program_hash.as_str()).context("Parsing sn_os_program_hash")?;
     let config_hash = generate_config_hash(
-        FieldElement::from_hex_be(&encode(config.config_hash_version.as_str())).expect("error in config_hash_version"),
-        FieldElement::from_hex_be(&encode(config.app_chain_id.as_str())).expect("error in app_chain_id"),
-        FieldElement::from_hex_be(config.fee_token_address.as_str()).expect("error in fee_token_address"),
+        FieldElement::from_hex_be(&encode(config.config_hash_version.as_str()))
+            .context("Parsing config_hash_version")?,
+        FieldElement::from_hex_be(&encode(config.app_chain_id.as_str())).context("Parsing app_chain_id")?,
+        FieldElement::from_hex_be(config.fee_token_address.as_str()).context("Parsing fee_token_address")?,
     );
-    (program_hash, config_hash)
+    Ok((program_hash, config_hash))
 }
 
 /// Broadcasted declare contract transaction v0.
@@ -114,29 +122,31 @@ pub(crate) enum DeclarationInput<'a> {
 }
 
 #[allow(private_interfaces)]
-pub async fn declare_contract(input: DeclarationInput<'_>) -> FieldElement {
+pub async fn declare_contract(input: DeclarationInput<'_>) -> anyhow::Result<FieldElement> {
     match input {
         DeclarationInputs(sierra_path, casm_path, account) => {
-            let (class_hash, sierra) = account.declare_contract_params_sierra(&sierra_path, &casm_path);
+            let (class_hash, sierra) = account
+                .declare_contract_params_sierra(&sierra_path, &casm_path)
+                .context("Creating declare sierra transaction")?;
 
             account
                 .declare(Arc::new(sierra.clone()), class_hash)
                 .send()
                 .await
-                .expect("Error in declaring the contract using Cairo 1 declaration using the provided account");
-            sierra.class_hash()
+                .context("Error while declaring the contract using Cairo 1 declaration using the provided account")?;
+            Ok(sierra.class_hash())
         }
         LegacyDeclarationInputs(artifact_path, url) => {
-            let contract_abi_artifact_temp: LegacyContractClass = serde_json::from_reader(
-                std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + &artifact_path).unwrap(),
-            )
-            .unwrap();
+            let path = format!("{}/{}", env!("CARGO_MANIFEST_DIR").to_owned(), &artifact_path);
+            let contract_abi_artifact_temp: LegacyContractClass =
+                serde_json::from_reader(std::fs::File::open(&path).with_context(|| format!("Opening file {}", path))?)
+                    .with_context(|| format!("Reading file {}", path))?;
 
             let contract_abi_artifact =
-                contract_abi_artifact_temp.clone().compress().expect("Error : Failed to compress the contract class");
+                contract_abi_artifact_temp.clone().compress().context("Failed to compress the contract class")?;
 
             let params: BroadcastedDeclareTransactionV0 = BroadcastedDeclareTransactionV0 {
-                sender_address: FieldElement::from_hex_be("0x1").unwrap(),
+                sender_address: FieldElement::from_hex_be("0x1").expect("Parsing constant"),
                 max_fee: FieldElement::from(482250u128),
                 signature: Vec::new(),
                 contract_class: Arc::new(contract_abi_artifact),
@@ -151,22 +161,18 @@ pub async fn declare_contract(input: DeclarationInput<'_>) -> FieldElement {
             });
 
             let req_client = reqwest::Client::new();
-            let raw_txn_rpc = req_client.post(url).json(json_body).send().await;
+            let raw_res: DeclareTransactionResult = req_client
+                .post(url)
+                .json(json_body)
+                .send()
+                .await
+                .context("Declaring contract via RPC")?
+                .json()
+                .await
+                .context("Parsing json response from RPC")?;
+            log::debug!("🚧 Txn Sent Successfully : {:?}", raw_res);
 
-            match raw_txn_rpc {
-                Ok(val) => {
-                    log::debug!(
-                        "🚧 Txn Sent Successfully : {:?}",
-                        val.json::<RpcResult<DeclareTransactionResult>>().await.unwrap()
-                    );
-                }
-                Err(err) => {
-                    log::debug!("Error : Error sending the transaction using RPC");
-                    log::debug!("{:?}", err);
-                }
-            }
-
-            contract_abi_artifact_temp.class_hash().unwrap()
+            contract_abi_artifact_temp.class_hash().context("Getting class hash from contract ABI")
         }
     }
 }
@@ -175,27 +181,31 @@ pub(crate) async fn deploy_account_using_priv_key(
     priv_key: String,
     provider: &JsonRpcClient<HttpTransport>,
     oz_account_class_hash: FieldElement,
-) -> FieldElement {
-    let chain_id = provider.chain_id().await.unwrap();
+) -> anyhow::Result<FieldElement> {
+    let chain_id = provider.chain_id().await.context("Parsing chain id")?;
     let signer = Arc::new(LocalWallet::from_signing_key(SigningKey::from_secret_scalar(
-        FieldElement::from_hex_be(&priv_key).unwrap(),
+        FieldElement::from_hex_be(&priv_key).context("Parsing private key")?,
     )));
     log::trace!("signer : {:?}", signer);
-    let mut oz_account_factory =
-        OpenZeppelinAccountFactory::new(oz_account_class_hash, chain_id, signer, provider).await.unwrap();
+    let mut oz_account_factory = OpenZeppelinAccountFactory::new(oz_account_class_hash, chain_id, signer, provider)
+        .await
+        .context("Making OZ factory")?;
     oz_account_factory.set_block_id(BlockId::Tag(BlockTag::Pending));
 
     let deploy_txn = oz_account_factory.deploy(FieldElement::ZERO);
     let account_address = deploy_txn.address();
     log::trace!("OZ Account Deployed : {:?}", account_address);
-    save_to_json("account_address", &JsonValueType::StringType(account_address.to_string())).unwrap();
+    save_to_json("account_address", &JsonValueType::StringType(account_address.to_string()))
+        .context("Saving deployed OZ account address to json")?;
 
-    let sent_txn = deploy_txn.send().await.expect("Error in deploying the OZ account");
+    let sent_txn = deploy_txn.send().await.context("Deploying the OZ account")?;
 
     log::trace!("deploy account txn_hash : {:?}", sent_txn.transaction_hash);
-    wait_for_transaction(provider, sent_txn.transaction_hash, "deploy_account_using_priv_key").await.unwrap();
+    wait_for_transaction(provider, sent_txn.transaction_hash, "deploy_account_using_priv_key")
+        .await
+        .context("Waiting for the OZ account to be deployed")?;
 
-    account_address
+    Ok(account_address)
 }
 
 pub(crate) async fn deploy_proxy_contract(
@@ -204,7 +214,7 @@ pub(crate) async fn deploy_proxy_contract(
     class_hash: FieldElement,
     salt: FieldElement,
     deploy_from_zero: FieldElement,
-) -> FieldElement {
+) -> anyhow::Result<FieldElement> {
     let txn = account
         .invoke_contract(
             account_address,
@@ -212,23 +222,35 @@ pub(crate) async fn deploy_proxy_contract(
             vec![class_hash, salt, deploy_from_zero, FieldElement::ONE, FieldElement::ZERO],
             None,
         )
+        .context("Making deploy_contract transaction")?
         .send()
         .await
-        .expect("Error deploying the contract proxy.");
+        .context("Error deploying the contract proxy")?;
 
     wait_for_transaction(account.provider(), txn.transaction_hash, "deploy_proxy_contract : deploy_contract")
         .await
-        .unwrap();
+        .context("Waiting for the proxy contract deployment")?;
 
     log::trace!("txn hash (proxy deployment) : {:?}", txn.transaction_hash);
 
-    let deployed_address = get_contract_address_from_deploy_tx(account.provider(), &txn).await.unwrap();
+    let deployed_address = get_contract_address_from_deploy_tx(account.provider(), &txn)
+        .await
+        .context("Getting contract address from deploy transaction")?;
     log::trace!("[IMP] Event : {:?}", deployed_address);
 
-    deployed_address
+    Ok(deployed_address)
 }
 
-pub(crate) async fn init_governance_proxy(account: &'_ RpcAccount<'_>, contract_address: FieldElement, tag: &str) {
-    let txn = invoke_contract(contract_address, "init_governance", vec![], account).await;
-    wait_for_transaction(account.provider(), txn.transaction_hash, tag).await.unwrap();
+pub(crate) async fn init_governance_proxy(
+    account: &'_ RpcAccount<'_>,
+    contract_address: FieldElement,
+    tag: &str,
+) -> anyhow::Result<()> {
+    let txn = invoke_contract(contract_address, "init_governance", vec![], account)
+        .await
+        .context("Making init_governance transaction")?;
+    wait_for_transaction(account.provider(), txn.transaction_hash, tag)
+        .await
+        .context("Waiting for init_governance transaction to settle")?;
+    Ok(())
 }

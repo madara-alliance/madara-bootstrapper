@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use anyhow::Context;
 use starknet_ff::FieldElement;
 use tokio::time::sleep;
 
@@ -20,17 +21,19 @@ impl<'a> ArgentSetup<'a> {
         Self { account }
     }
 
-    pub async fn setup(&self) -> ArgentSetupOutput {
+    pub async fn setup(&self) -> anyhow::Result<ArgentSetupOutput> {
         let argent_class_hash = declare_contract(DeclarationInput::DeclarationInputs(
             String::from(ARGENT_ACCOUNT_SIERRA_PATH),
             String::from(ARGENT_ACCOUNT_CASM_PATH),
             self.account.clone(),
         ))
-        .await;
+        .await
+        .context("Declaring argent class")?;
         log::debug!("📣 Argent Hash Declared");
-        save_to_json("argent_class_hash", &JsonValueType::StringType(argent_class_hash.to_string())).unwrap();
+        save_to_json("argent_class_hash", &JsonValueType::StringType(argent_class_hash.to_string()))
+            .context("Saving argent class hash to json")?;
         sleep(Duration::from_secs(10)).await;
 
-        ArgentSetupOutput { argent_class_hash }
+        Ok(ArgentSetupOutput { argent_class_hash })
     }
 }
