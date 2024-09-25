@@ -1,3 +1,5 @@
+#![deny(clippy::unwrap_used)]
+
 pub mod contract_clients;
 pub mod helpers;
 mod setup_scripts;
@@ -5,6 +7,7 @@ mod setup_scripts;
 pub mod tests;
 pub mod utils;
 
+use anyhow::Context;
 use clap::{ArgAction, Parser};
 use dotenv::dotenv;
 use inline_colorization::*;
@@ -71,13 +74,17 @@ pub struct CliArgs {
 }
 
 #[tokio::main]
-pub async fn main() {
-    env_logger::init();
-    dotenv().ok();
+pub async fn main() -> anyhow::Result<()> {
+    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
+    if let Err(err) = dotenv() {
+        // ignore dotenv errors, but do not fail silently.
+        log::warn!("Error while loading the .env file: {err:#}");
+    }
 
     let args = CliArgs::parse();
 
-    bootstrap(&args).await;
+    bootstrap(&args).await?;
+    Ok(())
 }
 
 pub struct DeployBridgeOutput {
@@ -96,21 +103,21 @@ pub struct DeployBridgeOutput {
     pub eth_bridge: StarknetLegacyEthBridge,
 }
 
-pub async fn bootstrap(config: &CliArgs) -> DeployBridgeOutput {
+pub async fn bootstrap(config: &CliArgs) -> anyhow::Result<DeployBridgeOutput> {
     println!("{color_red}{}{color_reset}", BANNER);
-    let clients = Config::init(config).await;
+    let clients = Config::init(config).await.context("Initializing client config")?;
     let core_contract = CoreContractStarknetL1::new(config, &clients);
-    let core_contract_client = core_contract.setup().await;
+    let core_contract_client = core_contract.setup().await.context("Setting up the L1 core contract")?;
     log::info!("📦 Core address : {:?}", core_contract_client.core_contract_client.address());
     save_to_json(
         "l1_core_contract_address",
         &JsonValueType::EthAddress(core_contract_client.core_contract_client.address()),
     )
-    .unwrap();
+    .context("Saving l1 core contract addresses to json")?;
     log::info!("✅ Core setup init for L1 successful.");
     log::info!("⏳ L2 State and Initialisation Started");
-    let account = account_init(&clients, config).await;
-    log::info!("🔐 Account with given  private key deployed on L2. [Account Address : {:?}]", account.address());
+    let account = account_init(&clients, config).await.context("Initializing L2 account")?;
+    log::info!("🔐 Account with given private key deployed on L2. [Account Address : {:?}]", account.address());
     log::info!("⏳ Starting ETH bridge deployment");
     let eth_bridge = EthBridge::new(
         account.clone(),
@@ -119,7 +126,7 @@ pub async fn bootstrap(config: &CliArgs) -> DeployBridgeOutput {
         &clients,
         core_contract_client.core_contract_client.as_ref(),
     );
-    let eth_bridge_setup_outputs = eth_bridge.setup().await;
+    let eth_bridge_setup_outputs = eth_bridge.setup().await.context("Setting up ETH bridge")?;
     log::info!("✅ ETH bridge deployment complete.");
     log::info!("⏳ Starting ERC20 token bridge deployment");
     let erc20_bridge = Erc20Bridge::new(
@@ -129,11 +136,11 @@ pub async fn bootstrap(config: &CliArgs) -> DeployBridgeOutput {
         &clients,
         core_contract_client.core_contract_client.as_ref(),
     );
-    let erc20_bridge_setup_outputs = erc20_bridge.setup().await;
+    let erc20_bridge_setup_outputs = erc20_bridge.setup().await.context("Setting up ETH token bridge")?;
     log::info!("✅ ERC20 token bridge deployment complete.");
     log::info!("⏳ Starting UDC (Universal Deployer Contract) deployment");
     let udc = UdcSetup::new(account.clone(), account.address(), config);
-    let udc_setup_outputs = udc.setup().await;
+    let udc_setup_outputs = udc.setup().await.context("Setting up UDC")?;
     log::info!(
         "*️⃣ UDC setup completed. [UDC Address : {:?}, UDC class hash : {:?}]",
         udc_setup_outputs.udc_address,
@@ -142,19 +149,19 @@ pub async fn bootstrap(config: &CliArgs) -> DeployBridgeOutput {
     log::info!("✅ UDC (Universal Deployer Contract) deployment complete.");
     log::info!("⏳ Starting Argent Account declaration");
     let argent = ArgentSetup::new(account.clone());
-    let argent_setup_outputs = argent.setup().await;
+    let argent_setup_outputs = argent.setup().await.context("Setting up Argent")?;
     log::info!("*️⃣ Argent setup completed. [Argent account class hash : {:?}]", argent_setup_outputs.argent_class_hash);
     log::info!("✅ Argent Account declaration complete.");
     log::info!("⏳ Starting Braavos Account declaration");
     let braavos = BraavosSetup::new(account.clone(), config);
-    let braavos_setup_outputs = braavos.setup().await;
+    let braavos_setup_outputs = braavos.setup().await.context("Setting up Braavos")?;
     log::info!(
         "*️⃣ Braavos setup completed. [Braavos account class hash : {:?}]",
         braavos_setup_outputs.braavos_class_hash
     );
     log::info!("✅ Braavos Account declaration complete.");
 
-    DeployBridgeOutput {
+    Ok(DeployBridgeOutput {
         starknet_contract: core_contract_client.core_contract_client,
         starknet_token_bridge: erc20_bridge_setup_outputs.starknet_token_bridge,
         erc20_class_hash: erc20_bridge_setup_outputs.erc20_cairo_one_class_hash,
@@ -168,5 +175,5 @@ pub async fn bootstrap(config: &CliArgs) -> DeployBridgeOutput {
         erc20_l2_bridge_address: erc20_bridge_setup_outputs.erc20_l2_bridge_address,
         l2_erc20_token_address: erc20_bridge_setup_outputs.l2_erc20_token_address,
         eth_bridge: eth_bridge_setup_outputs.eth_bridge,
-    }
+    })
 }

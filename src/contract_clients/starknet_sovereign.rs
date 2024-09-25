@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use anyhow::Context;
 use async_trait::async_trait;
 use ethers::types::Address;
 use starknet_api::hash::{StarkFelt, StarkHash};
@@ -21,12 +22,12 @@ pub struct StarknetSovereignContract {
 }
 
 impl CoreContractDeploy<StarknetSovereignContract> for StarknetSovereignContract {
-    async fn deploy(config: &Config) -> Self {
+    async fn deploy(config: &Config) -> anyhow::Result<Self> {
         let client = deploy_starknet_sovereign_behind_unsafe_proxy(config.eth_client().signer().clone())
             .await
-            .expect("Failed to deploy the starknet contact");
+            .context("Failed to deploy the starknet contact")?;
 
-        Self { core_contract_client: client }
+        Ok(Self { core_contract_client: client })
     }
 }
 
@@ -50,17 +51,18 @@ impl CoreContract for StarknetSovereignContract {
 
     /// Initialize Starknet core contract with the specified data.
     /// IMP : only need to be called when using unsafe proxy
-    async fn initialize_with(&self, init_data: CoreContractInitData) {
+    async fn initialize_with(&self, init_data: CoreContractInitData) -> anyhow::Result<()> {
         let data = ProxyInitializeData::<0> { sub_contract_addresses: [], eic_address: Default::default(), init_data };
 
         log::debug!("ℹ️  initialize_with : data : {:?}", data);
 
-        self.core_contract_client.initialize_with(data).await.expect("Failed to initialize");
+        self.core_contract_client.initialize_with(data).await.context("Failed to initialize")?;
 
         self.core_contract_client
             .register_operator(self.core_contract_client.client().address())
             .await
-            .expect("Failed to register operator");
+            .context("Failed to register operator")?;
+        Ok(())
     }
 
     /// Add implementation Starknet core contract with the specified data.
@@ -74,7 +76,7 @@ impl CoreContract for StarknetSovereignContract {
         implementation_address: Address,
         verifier_address: Address,
         finalized: bool,
-    ) {
+    ) -> anyhow::Result<()> {
         let program_hash = StarkFelt(program_hash.to_bytes_be());
 
         let init_data =
@@ -95,6 +97,7 @@ impl CoreContract for StarknetSovereignContract {
             .expect("Failed to call add implementation");
 
         log::debug!("ℹ️  add_implementation : done");
+        Ok(())
     }
 
     /// Add implementation Starknet core contract with the specified data.
@@ -108,7 +111,7 @@ impl CoreContract for StarknetSovereignContract {
         implementation_address: Address,
         verifier_address: Address,
         finalized: bool,
-    ) {
+    ) -> anyhow::Result<()> {
         let program_hash = StarkFelt(program_hash.to_bytes_be());
 
         let init_data =
@@ -129,42 +132,46 @@ impl CoreContract for StarknetSovereignContract {
             .expect("Failed to call upgrade to");
 
         log::debug!("ℹ️  upgrade_to : done");
+        Ok(())
     }
 
     /// For registering the operator for Starknet Core Contract
-    async fn register_operator_core_contract(&self, operator_address: Address) {
-        self.core_contract_client.register_operator(operator_address).await.expect("Failed to register operator");
+    async fn register_operator_core_contract(&self, operator_address: Address) -> anyhow::Result<()> {
+        self.core_contract_client.register_operator(operator_address).await.context("Failed to register operator")?;
         log::debug!("ℹ️  register_operator : done");
+        Ok(())
     }
 
     /// For nominating the governor for Starknet Core Contract
-    async fn nominate_governor_core_contract(&self, l1_governor_address: Address) {
+    async fn nominate_governor_core_contract(&self, l1_governor_address: Address) -> anyhow::Result<()> {
         self.core_contract_client
             .starknet_nominate_new_governor(l1_governor_address)
             .await
-            .expect("Failed to nominate governor");
+            .context("Failed to nominate governor")?;
         log::debug!("ℹ️  register_operator : done");
+        Ok(())
     }
 
     /// For nominating the governor for Starknet Core Contract Proxy
-    async fn nominate_governor_core_contract_proxy(&self, l1_governor_address: Address) {
+    async fn nominate_governor_core_contract_proxy(&self, l1_governor_address: Address) -> anyhow::Result<()> {
         self.core_contract_client
             .proxy_nominate_new_governor(l1_governor_address)
             .await
-            .expect("Failed to register operator");
+            .context("Failed to register operator")?;
         log::debug!("ℹ️  proxy_nominate_new_governor : done");
+        Ok(())
     }
 
     /// Initialize Starknet core contract with the specified program and config hashes. The rest of
     /// parameters will be left default.
     /// IMP : only need to be called when using unsafe proxy
-    async fn initialize(&self, program_hash: StarkFelt, config_hash: StarkFelt) {
+    async fn initialize(&self, program_hash: StarkFelt, config_hash: StarkFelt) -> anyhow::Result<()> {
         self.initialize_with(CoreContractInitData {
             program_hash: convert_felt_to_u256(program_hash),
             config_hash: convert_felt_to_u256(config_hash),
             ..Default::default()
         })
-        .await;
+        .await
     }
 
     /// Initialize Starknet core contract with the specified block number and state root hash.
@@ -176,12 +183,12 @@ impl CoreContract for StarknetSovereignContract {
         program_hash: FieldElement,
         config_hash: StarkHash,
         verifer_address: Address,
-    ) {
+    ) -> anyhow::Result<()> {
         let program_hash = StarkFelt(program_hash.to_bytes_be());
 
         let init_data =
             get_init_data_core_contract(block_number, state_root, program_hash, config_hash, verifer_address);
 
-        self.initialize_with(init_data).await;
+        self.initialize_with(init_data).await
     }
 }

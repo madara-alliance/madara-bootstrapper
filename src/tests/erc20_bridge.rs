@@ -20,7 +20,7 @@ pub async fn erc20_bridge_test_helper(
     token_bridge: StarknetTokenBridge,
     _l2_bridge_address: FieldElement,
 ) -> Result<(), anyhow::Error> {
-    token_bridge.approve(token_bridge.bridge_address(), 100000000.into()).await;
+    token_bridge.approve(token_bridge.bridge_address(), 100000000.into()).await.unwrap();
     sleep(Duration::from_secs(arg_config.l1_wait_time.parse().unwrap())).await;
     log::debug!("Approval done [✅]");
     log::debug!("Waiting for message to be consumed on l2 [⏳]");
@@ -31,7 +31,8 @@ pub async fn erc20_bridge_test_helper(
         l2_erc20_token_address,
         FieldElement::from_str(L2_DEPLOYER_ADDRESS).unwrap(),
     )
-    .await;
+    .await
+    .unwrap();
 
     token_bridge
         .deposit(
@@ -40,7 +41,8 @@ pub async fn erc20_bridge_test_helper(
             U256::from_str(L2_DEPLOYER_ADDRESS).unwrap(),
             U256::from_dec_str("100000000000000").unwrap(),
         )
-        .await;
+        .await
+        .unwrap();
     sleep(Duration::from_secs(arg_config.l1_wait_time.parse().unwrap())).await;
     log::debug!("Deposit done [💰]");
     log::debug!("Waiting for message to be consumed on l2 [⏳]");
@@ -51,7 +53,8 @@ pub async fn erc20_bridge_test_helper(
         l2_erc20_token_address,
         FieldElement::from_str(L2_DEPLOYER_ADDRESS).unwrap(),
     )
-    .await;
+    .await
+    .unwrap();
 
     assert_eq!(balance_before[0] + FieldElement::from_dec_str("10").unwrap(), balance_after[0]);
 

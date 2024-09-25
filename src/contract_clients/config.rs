@@ -1,3 +1,4 @@
+use anyhow::Context;
 use ethereum_instance::EthereumClient;
 use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::JsonRpcClient;
@@ -20,18 +21,18 @@ impl Config {
     }
 
     /// To deploy the instance of ethereum and starknet and returning the struct.
-    pub async fn init(config: &CliArgs) -> Self {
+    pub async fn init(config: &CliArgs) -> anyhow::Result<Self> {
         let client_instance = EthereumClient::attach(
-            Option::from(config.eth_rpc.clone()),
-            Option::from(config.eth_priv_key.clone()),
-            Option::from(config.eth_chain_id),
+            Some(config.eth_rpc.clone()),
+            Some(config.eth_priv_key.clone()),
+            Some(config.eth_chain_id),
         )
-        .unwrap();
+        .context("Creating the Ethereum RPC client")?;
 
         let provider_l2 = JsonRpcClient::new(HttpTransport::new(
             Url::parse(&config.rollup_seq_url).expect("Failed to declare provider for app chain"),
         ));
 
-        Self { eth_client: client_instance, provider_l2 }
+        Ok(Self { eth_client: client_instance, provider_l2 })
     }
 }

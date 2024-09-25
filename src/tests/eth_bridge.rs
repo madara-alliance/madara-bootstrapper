@@ -25,9 +25,10 @@ pub async fn eth_bridge_test_helper(
         l2_eth_address,
         FieldElement::from_hex_be(L2_DEPLOYER_ADDRESS).unwrap(),
     )
-    .await;
+    .await
+    .unwrap();
 
-    eth_bridge.deposit(10.into(), U256::from_str(L2_DEPLOYER_ADDRESS).unwrap(), 1000.into()).await;
+    eth_bridge.deposit(10.into(), U256::from_str(L2_DEPLOYER_ADDRESS).unwrap(), 1000.into()).await.unwrap();
     log::debug!("ETH deposited on l1 [💰]");
     sleep(Duration::from_secs(arg_config.cross_chain_wait_time)).await;
     sleep(Duration::from_secs((arg_config.l1_wait_time).parse()?)).await;
@@ -38,7 +39,8 @@ pub async fn eth_bridge_test_helper(
         l2_eth_address,
         FieldElement::from_hex_be(L2_DEPLOYER_ADDRESS).unwrap(),
     )
-    .await;
+    .await
+    .unwrap();
 
     assert_eq!(balance_before[0] + FieldElement::from_dec_str("10").unwrap(), balance_after[0]);
 

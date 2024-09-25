@@ -1,7 +1,9 @@
+use std::fs;
+use std::fs::File;
 use std::path::Path;
 use std::time::Duration;
-use std::{fs, io};
 
+use anyhow::Context;
 use ethers::addressbook::Address;
 use ethers::types::U256;
 use num_bigint::BigUint;
@@ -26,13 +28,19 @@ pub async fn invoke_contract<'a>(
     method: &str,
     calldata: Vec<FieldElement>,
     account: &RpcAccount<'a>,
-) -> InvokeTransactionResult {
-    let txn_res =
-        account.invoke_contract(contract, method, calldata, None).send().await.expect("Error in invoking the contract");
+) -> anyhow::Result<InvokeTransactionResult> {
+    let txn_res = account
+        .invoke_contract(contract, method, calldata, None)
+        .with_context(|| format!("Making invoke transaction for contract {contract:#x}, method {method}"))?
+        .send()
+        .await
+        .with_context(|| format!("Sending invoke transaction for contract {contract:#x}, method {method}"))?;
 
-    wait_for_transaction(account.provider(), txn_res.transaction_hash, "invoking_contract").await.unwrap();
+    wait_for_transaction(account.provider(), txn_res.transaction_hash, "invoking_contract").await.with_context(
+        || format!("Waiting for invoke transaction for contract {contract:#x}, method {method} to settle"),
+    )?;
 
-    txn_res
+    Ok(txn_res)
 }
 
 pub fn pad_bytes(address: Address) -> Vec<u8> {
@@ -47,12 +55,12 @@ pub async fn wait_for_transaction(
     provider_l2: &JsonRpcClient<HttpTransport>,
     transaction_hash: FieldElement,
     tag: &str,
-) -> Result<(), anyhow::Error> {
-    let transaction_receipt = get_transaction_receipt(provider_l2, transaction_hash).await;
+) -> anyhow::Result<()> {
+    let transaction_receipt = get_transaction_receipt(provider_l2, transaction_hash)
+        .await
+        .with_context(|| format!("Getting transaction receipt for transaction hash {transaction_hash:#x}"))?;
 
-    let transaction_status = transaction_receipt.ok().unwrap();
-
-    match transaction_status {
+    match transaction_receipt {
         Receipt(transaction_receipt) => {
             log::trace!("txn : {:?} : {:?}", tag, transaction_receipt);
             Ok(())
@@ -74,12 +82,15 @@ pub enum JsonValueType {
     StringType(String),
 }
 
-pub fn save_to_json(key: &str, value: &JsonValueType) -> Result<(), io::Error> {
-    let file_path: &str = "./data/addresses.json";
-    let data = fs::read_to_string(file_path);
-    let mut json: Map<String, Value> = match data {
-        Ok(content) => serde_json::from_str(&content).unwrap_or_else(|_| Map::new()),
-        Err(_) => Map::new(),
+pub fn save_to_json(key: &str, value: &JsonValueType) -> anyhow::Result<()> {
+    let file_path = Path::new("./data/addresses.json");
+
+    let mut json: Map<String, Value> = if file_path.exists() {
+        let file = File::open(file_path).with_context(|| format!("Opening file {}", file_path.display()))?;
+        serde_json::from_reader(file)
+            .with_context(|| format!("Reading and deserializing file {}", file_path.display()))?
+    } else {
+        Default::default()
     };
 
     match value {
@@ -87,24 +98,25 @@ pub fn save_to_json(key: &str, value: &JsonValueType) -> Result<(), io::Error> {
             json.insert(key.to_string(), serde_json::json!(x));
         }
         JsonValueType::StringType(x) => {
-            json.insert(key.to_string(), serde_json::json!(convert_to_hex(x)));
+            json.insert(key.to_string(), serde_json::json!(convert_to_hex(x)?));
         }
     }
 
-    let updated_json = serde_json::to_string_pretty(&json)?;
+    let updated_json = serde_json::to_string_pretty(&json).context("Serializing to json")?;
 
     // Ensure the directory exists before writing the file
     if let Some(dir_path) = Path::new(file_path).parent() {
-        fs::create_dir_all(dir_path)?;
+        fs::create_dir_all(dir_path)
+            .with_context(|| format!("Creating the parent directories for file {}", file_path.display()))?;
     }
 
-    fs::write(file_path, updated_json)?;
+    fs::write(file_path, updated_json).with_context(|| format!("Writing the json file to {}", file_path.display()))?;
 
     Ok(())
 }
 
-pub fn convert_to_hex(address: &str) -> String {
-    let big_uint = address.parse::<BigUint>().map_err(|_| "Invalid number");
-    let hex = big_uint.expect("error converting decimal string ---> hex string").to_str_radix(16);
-    "0x".to_string() + &hex
+pub fn convert_to_hex(address: &str) -> anyhow::Result<String> {
+    let big_uint = address.parse::<BigUint>().with_context(|| format!("Parsing address {address}"))?;
+    let hex = big_uint.to_str_radix(16);
+    Ok(format!("0x{hex}"))
 }
