@@ -7,25 +7,20 @@ use serde_json::json;
 use starknet::accounts::{
     Account, AccountFactory, ConnectedAccount, ExecutionEncoding, OpenZeppelinAccountFactory, SingleOwnerAccount,
 };
-use starknet::contract::ContractFactory;
-use starknet::core::chain_id;
 use starknet::core::types::contract::legacy::LegacyContractClass;
-use starknet::core::types::{BlockId, BlockTag, DeclareTransactionResult, Felt, FlattenedSierraClass, FunctionCall};
+use starknet::core::types::{BlockId, BlockTag, DeclareTransactionResult, Felt, FunctionCall};
 use starknet::core::utils::get_selector_from_name;
 use starknet::providers::jsonrpc::{HttpTransport, JsonRpcClient};
-use starknet::providers::{Provider, Url};
+use starknet::providers::Provider;
 use starknet::signers::{LocalWallet, SigningKey};
 use starknet_core::types::contract::{CompiledClass, SierraClass};
 use starknet_core::types::BlockTag::Pending;
-use starknet_types_core::hash::{Pedersen, Poseidon, StarkHash};
+use starknet_types_core::hash::{Pedersen, StarkHash};
 
 use crate::contract_clients::utils::DeclarationInput::{DeclarationInputs, LegacyDeclarationInputs};
 use crate::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::utils::{invoke_contract, save_to_json, wait_for_transaction, JsonValueType};
 use crate::CliArgs;
-
-const SIERRA_VERSION: Felt = Felt::from_hex_unchecked("0x434f4e54524143545f434c4153535f56302e312e30"); //b"CONTRACT_CLASS_V0.1.0"
-
 #[derive(Clone, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct EntryPointsByType {
     pub constructor: Vec<SierraEntryPoint>,

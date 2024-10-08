@@ -1,19 +1,15 @@
 use std::path::Path;
-use std::time::Duration;
 use std::{fs, io};
 
 use ethers::addressbook::Address;
 use ethers::types::U256;
 use num_bigint::BigUint;
 use serde_json::{Map, Value};
-use starknet::accounts::{Account, ConnectedAccount};
+use starknet::accounts::ConnectedAccount;
 use starknet::core::types::{Felt, InvokeTransactionResult, TransactionReceipt};
-use starknet_api::hash::StarkFelt;
 use starknet_core::types::TransactionReceiptWithBlockInfo;
-use starknet_core::utils::get_selector_from_name;
 use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::JsonRpcClient;
-use tokio::time::sleep;
 
 use crate::contract_clients::utils::RpcAccount;
 use crate::helpers::account_actions::{get_transaction_receipt, AccountActions};
@@ -46,7 +42,7 @@ pub fn pad_bytes(address: Address) -> Vec<u8> {
 pub async fn wait_for_transaction(
     provider_l2: &JsonRpcClient<HttpTransport>,
     transaction_hash: Felt,
-    tag: &str,
+    _tag: &str,
 ) -> Result<(), anyhow::Error> {
     let transaction_receipt = get_transaction_receipt(provider_l2, transaction_hash).await;
 
@@ -54,7 +50,7 @@ pub async fn wait_for_transaction(
 
     match transaction_status {
         // TODO: make sure we are checking that the invoke is working fine
-        TransactionReceiptWithBlockInfo { receipt: TransactionReceipt::Invoke(receipt), .. } => {
+        TransactionReceiptWithBlockInfo { receipt: TransactionReceipt::Invoke(_receipt), .. } => {
             // let contract_deployed_event = receipt.events.iter().find(|e| e.keys[0] ==
             // get_selector_from_name("ContractDeployed").unwrap()).unwrap(); let contract_address =
             // contract_deployed_event.data[0];

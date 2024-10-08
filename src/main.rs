@@ -10,7 +10,7 @@ use std::time::Duration;
 use clap::{ArgAction, Parser};
 use dotenv::dotenv;
 use inline_colorization::*;
-use starknet::accounts::{Account, ConnectedAccount};
+use starknet::accounts::Account;
 use starknet::core::types::Felt;
 use tokio::time::sleep;
 

@@ -2,7 +2,7 @@ use std::future::Future;
 
 use assert_matches::assert_matches;
 use async_trait::async_trait;
-use starknet::accounts::{Account, AccountFactory, Call, ConnectedAccount, ExecutionV1, SingleOwnerAccount};
+use starknet::accounts::{Account, Call, ExecutionV1, SingleOwnerAccount};
 use starknet::core::types::contract::legacy::LegacyContractClass;
 use starknet::core::types::{Felt, FlattenedSierraClass, TransactionReceipt};
 use starknet::core::utils::get_selector_from_name;

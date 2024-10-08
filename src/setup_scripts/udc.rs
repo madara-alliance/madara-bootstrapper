@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use starknet::accounts::{Account, ConnectedAccount};
+use starknet::accounts::ConnectedAccount;
 use starknet::core::types::Felt;
 use tokio::time::sleep;
 

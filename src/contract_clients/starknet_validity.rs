@@ -3,7 +3,6 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use ethers::types::Address;
 use starknet::core::types::Felt;
-use starknet_api::hash::{StarkFelt, StarkHash};
 use starknet_core_contract_client::clients::StarknetValidityContractClient;
 use starknet_core_contract_client::deploy_starknet_validity_behind_safe_proxy;
 use starknet_core_contract_client::interfaces::{OperatorTrait, StarknetGovernanceTrait};

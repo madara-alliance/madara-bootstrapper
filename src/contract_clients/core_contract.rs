@@ -6,7 +6,6 @@ use ethers::abi::AbiEncode;
 use ethers::addressbook::Address;
 use ethers::prelude::{Bytes, I256, U256};
 use starknet::core::types::Felt;
-use starknet_api::hash::{StarkFelt, StarkHash};
 use starknet_proxy_client::interfaces::proxy::{CoreContractInitData, CoreContractState};
 use zaun_utils::LocalWalletSignerMiddleware;
 

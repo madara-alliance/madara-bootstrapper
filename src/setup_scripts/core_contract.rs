@@ -1,7 +1,6 @@
 use std::str::FromStr;
 
 use ethers::abi::Address;
-use starknet_api::hash::StarkFelt;
 
 use crate::contract_clients::config::Config;
 use crate::contract_clients::core_contract::{CoreContract, CoreContractDeploy};
