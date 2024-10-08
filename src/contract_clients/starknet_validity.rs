@@ -2,11 +2,11 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 use ethers::types::Address;
+use starknet::core::types::Felt;
 use starknet_api::hash::{StarkFelt, StarkHash};
 use starknet_core_contract_client::clients::StarknetValidityContractClient;
 use starknet_core_contract_client::deploy_starknet_validity_behind_safe_proxy;
 use starknet_core_contract_client::interfaces::{OperatorTrait, StarknetGovernanceTrait};
-use starknet_ff::FieldElement;
 use starknet_proxy_client::interfaces::proxy::{CoreContractInitData, ProxyInitializeData, ProxySupport3_0_2Trait};
 use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
 
@@ -67,15 +67,15 @@ impl CoreContract for StarknetValidityContract {
     #[allow(clippy::too_many_arguments)]
     async fn add_implementation_core_contract(
         &self,
-        block_number: StarkFelt,
-        state_root: StarkFelt,
-        program_hash: FieldElement,
-        config_hash: StarkHash,
+        block_number: Felt,
+        state_root: Felt,
+        program_hash: Felt,
+        config_hash: Felt,
         implementation_address: Address,
         verifier_address: Address,
         finalized: bool,
     ) {
-        let program_hash = StarkFelt(program_hash.to_bytes_be());
+        // let program_hash = StarkFelt(program_hash.to_bytes_be());
 
         let init_data =
             get_init_data_core_contract(block_number, state_root, program_hash, config_hash, verifier_address);
@@ -101,15 +101,15 @@ impl CoreContract for StarknetValidityContract {
     #[allow(clippy::too_many_arguments)]
     async fn upgrade_to_core_contract(
         &self,
-        block_number: StarkFelt,
-        state_root: StarkFelt,
-        program_hash: FieldElement,
-        config_hash: StarkHash,
+        block_number: Felt,
+        state_root: Felt,
+        program_hash: Felt,
+        config_hash: Felt,
         implementation_address: Address,
         verifier_address: Address,
         finalized: bool,
     ) {
-        let program_hash = StarkFelt(program_hash.to_bytes_be());
+        // let program_hash = StarkFelt(program_hash.to_bytes_be());
 
         let init_data =
             get_init_data_core_contract(block_number, state_root, program_hash, config_hash, verifier_address);
@@ -158,7 +158,7 @@ impl CoreContract for StarknetValidityContract {
     /// Initialize Starknet core contract with the specified program and config hashes. The rest of
     /// parameters will be left default.
     /// IMP : only need to be called when using unsafe proxy
-    async fn initialize(&self, program_hash: StarkFelt, config_hash: StarkFelt) {
+    async fn initialize(&self, program_hash: Felt, config_hash: Felt) {
         self.initialize_with(CoreContractInitData {
             program_hash: convert_felt_to_u256(program_hash),
             config_hash: convert_felt_to_u256(config_hash),
@@ -171,13 +171,13 @@ impl CoreContract for StarknetValidityContract {
     /// IMP : only need to be called when using unsafe proxy
     async fn initialize_core_contract(
         &self,
-        block_number: StarkFelt,
-        state_root: StarkFelt,
-        program_hash: FieldElement,
-        config_hash: StarkHash,
+        block_number: Felt,
+        state_root: Felt,
+        program_hash: Felt,
+        config_hash: Felt,
         verifer_address: Address,
     ) {
-        let program_hash = StarkFelt(program_hash.to_bytes_be());
+        // let program_hash = StarkFelt(program_hash.to_bytes_be());
 
         let init_data =
             get_init_data_core_contract(block_number, state_root, program_hash, config_hash, verifer_address);

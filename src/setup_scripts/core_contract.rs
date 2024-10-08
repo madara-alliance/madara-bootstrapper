@@ -31,11 +31,12 @@ impl<'a> CoreContractStarknetL1<'a> {
             false => Box::new(StarknetValidityContract::deploy(self.clients).await),
         };
         log::info!("📦 Core address : {:?}", core_contract_client.address());
+
         save_to_json("l1_core_contract_address", &JsonValueType::EthAddress(core_contract_client.address())).unwrap();
         let (program_hash, config_hash) = get_bridge_init_configs(self.arg_config);
 
         if self.arg_config.dev {
-            core_contract_client.initialize(StarkFelt(program_hash.to_bytes_be()), config_hash).await;
+            core_contract_client.initialize(program_hash, config_hash).await;
         } else {
             core_contract_client
                 .add_implementation_core_contract(

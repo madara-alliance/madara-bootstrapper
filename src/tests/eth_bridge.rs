@@ -2,7 +2,8 @@ use std::str::FromStr;
 use std::time::Duration;
 
 use ethers::prelude::U256;
-use starknet_ff::FieldElement;
+use ethers::types::Address;
+use starknet::core::types::Felt;
 use tokio::time::sleep;
 
 use crate::contract_clients::config::Config;
@@ -16,31 +17,24 @@ use crate::CliArgs;
 pub async fn eth_bridge_test_helper(
     clients: &Config,
     arg_config: &CliArgs,
-    l2_eth_address: FieldElement,
-    _l2_bridge_address: FieldElement,
+    l2_eth_address: Felt,
+    _l2_bridge_address: Felt,
     eth_bridge: StarknetLegacyEthBridge,
 ) -> Result<(), anyhow::Error> {
-    let balance_before = read_erc20_balance(
-        clients.provider_l2(),
-        l2_eth_address,
-        FieldElement::from_hex_be(L2_DEPLOYER_ADDRESS).unwrap(),
-    )
-    .await;
+    let balance_before =
+        read_erc20_balance(clients.provider_l2(), l2_eth_address, Felt::from_hex(L2_DEPLOYER_ADDRESS).unwrap()).await;
 
     eth_bridge.deposit(10.into(), U256::from_str(L2_DEPLOYER_ADDRESS).unwrap(), 1000.into()).await;
+
     log::debug!("ETH deposited on l1 [💰]");
     sleep(Duration::from_secs(arg_config.cross_chain_wait_time)).await;
     sleep(Duration::from_secs((arg_config.l1_wait_time).parse()?)).await;
     log::debug!("L1 message executed on L2 [🔁]");
 
-    let balance_after = read_erc20_balance(
-        clients.provider_l2(),
-        l2_eth_address,
-        FieldElement::from_hex_be(L2_DEPLOYER_ADDRESS).unwrap(),
-    )
-    .await;
+    let balance_after =
+        read_erc20_balance(clients.provider_l2(), l2_eth_address, Felt::from_hex(L2_DEPLOYER_ADDRESS).unwrap()).await;
 
-    assert_eq!(balance_before[0] + FieldElement::from_dec_str("10").unwrap(), balance_after[0]);
+    assert_eq!(balance_before[0] + Felt::from_dec_str("10").unwrap(), balance_after[0]);
 
     // let l1_receipient = FieldElement::from_hex_be(&arg_config.l1_deployer_address).unwrap();
     //

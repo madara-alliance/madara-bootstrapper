@@ -1,7 +1,7 @@
 use std::time::Duration;
 
-use starknet_accounts::ConnectedAccount;
-use starknet_ff::FieldElement;
+use starknet::accounts::{Account, ConnectedAccount};
+use starknet::core::types::Felt;
 use tokio::time::sleep;
 
 use crate::contract_clients::utils::{declare_contract, DeclarationInput, RpcAccount};
@@ -12,17 +12,17 @@ use crate::CliArgs;
 
 pub struct UdcSetup<'a> {
     account: RpcAccount<'a>,
-    account_address: FieldElement,
+    account_address: Felt,
     arg_config: &'a CliArgs,
 }
 
 pub struct UdcSetupOutput {
-    pub udc_class_hash: FieldElement,
-    pub udc_address: FieldElement,
+    pub udc_class_hash: Felt,
+    pub udc_address: Felt,
 }
 
 impl<'a> UdcSetup<'a> {
-    pub fn new(account: RpcAccount<'a>, account_address: FieldElement, arg_config: &'a CliArgs) -> Self {
+    pub fn new(account: RpcAccount<'a>, account_address: Felt, arg_config: &'a CliArgs) -> Self {
         Self { account, account_address, arg_config }
     }
 
@@ -41,7 +41,7 @@ impl<'a> UdcSetup<'a> {
             .invoke_contract(
                 self.account_address,
                 "deploy_contract",
-                Vec::from([udc_class_hash, FieldElement::ZERO, FieldElement::ONE, FieldElement::ZERO]),
+                Vec::from([udc_class_hash, Felt::ZERO, Felt::ONE, Felt::ZERO]),
                 None,
             )
             .send()

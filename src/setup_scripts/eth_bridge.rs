@@ -2,8 +2,8 @@ use std::str::FromStr;
 use std::time::Duration;
 
 use ethers::abi::Address;
-use starknet_accounts::{Account, ConnectedAccount};
-use starknet_ff::FieldElement;
+use starknet::accounts::{Account, ConnectedAccount};
+use starknet::core::types::Felt;
 use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::JsonRpcClient;
 use tokio::time::sleep;
@@ -22,26 +22,26 @@ use crate::CliArgs;
 
 pub struct EthBridge<'a> {
     account: RpcAccount<'a>,
-    account_address: FieldElement,
+    account_address: Felt,
     arg_config: &'a CliArgs,
     clients: &'a Config,
     core_contract: &'a dyn CoreContract,
 }
 
 pub struct EthBridgeSetupOutput {
-    pub legacy_proxy_class_hash: FieldElement,
-    pub starkgate_proxy_class_hash: FieldElement,
-    pub erc20_legacy_class_hash: FieldElement,
-    pub legacy_eth_bridge_class_hash: FieldElement,
-    pub eth_proxy_address: FieldElement,
-    pub eth_bridge_proxy_address: FieldElement,
+    pub legacy_proxy_class_hash: Felt,
+    pub starkgate_proxy_class_hash: Felt,
+    pub erc20_legacy_class_hash: Felt,
+    pub legacy_eth_bridge_class_hash: Felt,
+    pub eth_proxy_address: Felt,
+    pub eth_bridge_proxy_address: Felt,
     pub eth_bridge: StarknetLegacyEthBridge,
 }
 
 impl<'a> EthBridge<'a> {
     pub fn new(
         account: RpcAccount<'a>,
-        account_address: FieldElement,
+        account_address: Felt,
         arg_config: &'a CliArgs,
         clients: &'a Config,
         core_contract: &'a dyn CoreContract,
@@ -98,8 +98,8 @@ impl<'a> EthBridge<'a> {
             self.account_address,
             legacy_proxy_class_hash,
             // salt taken from : https://sepolia.starkscan.co/tx/0x06a5a493cf33919e58aa4c75777bffdef97c0e39cac968896d7bee8cc67905a1
-            FieldElement::from_str("0x322c2610264639f6b2cee681ac53fa65c37e187ea24292d1b21d859c55e1a78").unwrap(),
-            FieldElement::ONE,
+            Felt::from_str("0x322c2610264639f6b2cee681ac53fa65c37e187ea24292d1b21d859c55e1a78").unwrap(),
+            Felt::ONE,
         )
         .await;
         log::info!("✴️ ETH ERC20 proxy deployed [ETH : {:?}]", eth_proxy_address);
@@ -110,8 +110,8 @@ impl<'a> EthBridge<'a> {
             &self.account,
             self.account_address,
             legacy_proxy_class_hash,
-            FieldElement::from_str("0xabcdabcdabcd").unwrap(),
-            FieldElement::ZERO,
+            Felt::from_str("0xabcdabcdabcd").unwrap(),
+            Felt::ZERO,
         )
         .await;
         log::info!("✴️ ETH Bridge proxy deployed [ETH Bridge : {:?}]", eth_bridge_proxy_address);
@@ -121,6 +121,7 @@ impl<'a> EthBridge<'a> {
 
         init_governance_proxy(&self.account, eth_proxy_address, "eth_proxy_address : init_governance_proxy").await;
         sleep(Duration::from_secs(10)).await;
+
         init_governance_proxy(
             &self.account,
             eth_bridge_proxy_address,
@@ -211,16 +212,16 @@ impl<'a> EthBridge<'a> {
 
 pub async fn deploy_eth_token_on_l2(
     rpc_provider_l2: &JsonRpcClient<HttpTransport>,
-    eth_proxy_address: FieldElement,
-    eth_erc20_class_hash: FieldElement,
+    eth_proxy_address: Felt,
+    eth_erc20_class_hash: Felt,
     account: &RpcAccount<'_>,
-    eth_legacy_bridge_address: FieldElement,
-) -> FieldElement {
+    eth_legacy_bridge_address: Felt,
+) -> Felt {
     let deploy_tx = account
         .invoke_contract(
             account.address(),
             "deploy_contract",
-            vec![eth_erc20_class_hash, FieldElement::ZERO, FieldElement::ZERO, FieldElement::ZERO],
+            vec![eth_erc20_class_hash, Felt::ZERO, Felt::ZERO, Felt::ZERO],
             None,
         )
         .send()
@@ -236,13 +237,13 @@ pub async fn deploy_eth_token_on_l2(
         "add_implementation",
         vec![
             contract_address,
-            FieldElement::ZERO,
-            FieldElement::from(4u64),
-            FieldElement::from_byte_slice_be("Ether".as_bytes()).unwrap(),
-            FieldElement::from_byte_slice_be("ETH".as_bytes()).unwrap(),
-            FieldElement::from_str("18").unwrap(),
+            Felt::ZERO,
+            Felt::from(4u64),
+            Felt::from_bytes_be_slice("Ether".as_bytes()),
+            Felt::from_bytes_be_slice("ETH".as_bytes()),
+            Felt::from_str("18").unwrap(),
             eth_legacy_bridge_address,
-            FieldElement::ZERO,
+            Felt::ZERO,
         ],
         account,
     )
@@ -261,13 +262,13 @@ pub async fn deploy_eth_token_on_l2(
         "upgrade_to",
         vec![
             contract_address,
-            FieldElement::ZERO,
-            FieldElement::from(4u64),
-            FieldElement::from_byte_slice_be("Ether".as_bytes()).unwrap(),
-            FieldElement::from_byte_slice_be("ETH".as_bytes()).unwrap(),
-            FieldElement::from_str("18").unwrap(),
+            Felt::ZERO,
+            Felt::from(4u64),
+            Felt::from_bytes_be_slice("Ether".as_bytes()),
+            Felt::from_bytes_be_slice("ETH".as_bytes()),
+            Felt::from_str("18").unwrap(),
             eth_legacy_bridge_address,
-            FieldElement::ZERO,
+            Felt::ZERO,
         ],
         account,
     )

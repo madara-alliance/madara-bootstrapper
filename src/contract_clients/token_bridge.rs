@@ -14,7 +14,8 @@ use starkgate_registry_client::clients::starkgate_registry::StarkgateRegistryCon
 use starkgate_registry_client::{
     deploy_starkgate_registry_behind_safe_proxy, deploy_starkgate_registry_behind_unsafe_proxy,
 };
-use starknet_accounts::{Account, ConnectedAccount};
+use starknet::accounts::{Account, ConnectedAccount};
+use starknet_core::types::Felt;
 use starknet_erc20_client::clients::erc20::ERC20ContractClient;
 use starknet_erc20_client::deploy_dai_erc20_behind_unsafe_proxy;
 use starknet_erc20_client::interfaces::erc20::ERC20TokenTrait;
@@ -111,7 +112,7 @@ impl StarknetTokenBridge {
         rpc_provider_l2: &JsonRpcClient<HttpTransport>,
         priv_key: &str,
         l2_deployer_address: &str,
-    ) -> FieldElement {
+    ) -> Felt {
         let account = build_single_owner_account(rpc_provider_l2, priv_key, l2_deployer_address, false).await;
 
         let token_bridge_class_hash = declare_contract(DeclarationInput::DeclarationInputs(
@@ -130,13 +131,7 @@ impl StarknetTokenBridge {
             .invoke_contract(
                 account.address(),
                 "deploy_contract",
-                vec![
-                    token_bridge_class_hash,
-                    FieldElement::ZERO,
-                    FieldElement::ZERO,
-                    FieldElement::ONE,
-                    FieldElement::ZERO,
-                ],
+                vec![token_bridge_class_hash, Felt::ZERO, Felt::ZERO, Felt::ONE, Felt::ZERO],
                 None,
             )
             .send()
@@ -281,7 +276,7 @@ impl StarknetTokenBridge {
     }
 
     /// Deploys a test ERC20 token from L1 to L2
-    pub async fn setup_l1_bridge(&self, fee: U256, l2_bridge: FieldElement) {
+    pub async fn setup_l1_bridge(&self, fee: U256, l2_bridge: Felt) {
         self.token_bridge.set_l2_token_bridge(field_element_to_u256(l2_bridge)).await.unwrap();
         self.manager.enroll_token_bridge(self.address(), fee).await.unwrap();
     }
@@ -289,18 +284,14 @@ impl StarknetTokenBridge {
     pub async fn setup_l2_bridge(
         &self,
         rpc_provider_l2: &JsonRpcClient<HttpTransport>,
-        l2_bridge: FieldElement,
+        l2_bridge: Felt,
         l2_address: &str,
         account: &RpcAccount<'_>,
-        erc20_class_hash: FieldElement,
+        erc20_class_hash: Felt,
     ) {
-        let tx = invoke_contract(
-            l2_bridge,
-            "register_app_role_admin",
-            vec![FieldElement::from_hex_be(l2_address).unwrap()],
-            account,
-        )
-        .await;
+        let tx =
+            invoke_contract(l2_bridge, "register_app_role_admin", vec![Felt::from_hex(l2_address).unwrap()], account)
+                .await;
 
         wait_for_transaction(
             rpc_provider_l2,
@@ -311,13 +302,9 @@ impl StarknetTokenBridge {
         .unwrap();
         log::debug!("🌗 setup_l2_bridge : register_app_role_admin //");
 
-        let tx = invoke_contract(
-            l2_bridge,
-            "register_app_governor",
-            vec![FieldElement::from_hex_be(l2_address).unwrap()],
-            account,
-        )
-        .await;
+        let tx =
+            invoke_contract(l2_bridge, "register_app_governor", vec![Felt::from_hex(l2_address).unwrap()], account)
+                .await;
 
         wait_for_transaction(
             rpc_provider_l2,
@@ -328,13 +315,9 @@ impl StarknetTokenBridge {
         .unwrap();
         log::debug!("🌗 setup_l2_bridge : register_app_governor //");
 
-        let tx = invoke_contract(
-            l2_bridge,
-            "set_l2_token_governance",
-            vec![FieldElement::from_hex_be(l2_address).unwrap()],
-            account,
-        )
-        .await;
+        let tx =
+            invoke_contract(l2_bridge, "set_l2_token_governance", vec![Felt::from_hex(l2_address).unwrap()], account)
+                .await;
 
         wait_for_transaction(
             rpc_provider_l2,
@@ -367,7 +350,7 @@ impl StarknetTokenBridge {
         let tx = invoke_contract(
             l2_bridge,
             "set_l1_bridge",
-            vec![FieldElement::from_byte_slice_be(self.token_bridge.address().as_bytes()).unwrap()],
+            vec![Felt::from_bytes_be_slice(self.token_bridge.address().as_bytes())],
             account,
         )
         .await;

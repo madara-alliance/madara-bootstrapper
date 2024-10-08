@@ -23,7 +23,6 @@ pub async fn account_init<'a>(clients: &'a Config, arg_config: &'a CliArgs) -> R
     save_to_json("oz_account_class_hash", &JsonValueType::StringType(oz_account_class_hash.to_string())).unwrap();
     sleep(Duration::from_secs(10)).await;
 
-    log::debug!("Waiting for block to be mined [/]");
     sleep(Duration::from_secs(10)).await;
 
     let account_address_temp =

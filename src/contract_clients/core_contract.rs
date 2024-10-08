@@ -5,8 +5,8 @@ use async_trait::async_trait;
 use ethers::abi::AbiEncode;
 use ethers::addressbook::Address;
 use ethers::prelude::{Bytes, I256, U256};
+use starknet::core::types::Felt;
 use starknet_api::hash::{StarkFelt, StarkHash};
-use starknet_ff::FieldElement;
 use starknet_proxy_client::interfaces::proxy::{CoreContractInitData, CoreContractState};
 use zaun_utils::LocalWalletSignerMiddleware;
 
@@ -26,10 +26,10 @@ pub trait CoreContract {
     #[allow(clippy::too_many_arguments)]
     async fn add_implementation_core_contract(
         &self,
-        block_number: StarkFelt,
-        state_root: StarkFelt,
-        program_hash: FieldElement,
-        config_hash: StarkHash,
+        block_number: Felt,
+        state_root: Felt,
+        program_hash: Felt,
+        config_hash: Felt,
         implementation_address: Address,
         verifier_address: Address,
         finalized: bool,
@@ -38,10 +38,10 @@ pub trait CoreContract {
     #[allow(clippy::too_many_arguments)]
     async fn upgrade_to_core_contract(
         &self,
-        block_number: StarkFelt,
-        state_root: StarkFelt,
-        program_hash: FieldElement,
-        config_hash: StarkHash,
+        block_number: Felt,
+        state_root: Felt,
+        program_hash: Felt,
+        config_hash: Felt,
         implementation_address: Address,
         verifier_address: Address,
         finalized: bool,
@@ -53,14 +53,14 @@ pub trait CoreContract {
 
     async fn nominate_governor_core_contract_proxy(&self, l1_governor_address: Address);
 
-    async fn initialize(&self, program_hash: StarkFelt, config_hash: StarkFelt);
+    async fn initialize(&self, program_hash: Felt, config_hash: Felt);
 
     async fn initialize_core_contract(
         &self,
-        block_number: StarkFelt,
-        state_root: StarkFelt,
-        program_hash: FieldElement,
-        config_hash: StarkHash,
+        block_number: Felt,
+        state_root: Felt,
+        program_hash: Felt,
+        config_hash: Felt,
         verifer_address: Address,
     );
 }
@@ -70,10 +70,10 @@ pub trait CoreContractDeploy<T> {
 }
 
 pub fn get_init_data_core_contract(
-    block_number: StarkFelt,
-    state_root: StarkFelt,
-    program_hash: StarkFelt,
-    config_hash: StarkHash,
+    block_number: Felt,
+    state_root: Felt,
+    program_hash: Felt,
+    config_hash: Felt,
     verifier_address: Address,
 ) -> CoreContractInitData {
     CoreContractInitData {
