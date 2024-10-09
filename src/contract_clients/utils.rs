@@ -17,11 +17,11 @@ use starknet_core::types::contract::{CompiledClass, SierraClass};
 use starknet_core::types::BlockTag::Pending;
 use starknet_types_core::hash::{Pedersen, StarkHash};
 
+use crate::contract_clients::legacy_class::CompressedLegacyContractClass;
 use crate::contract_clients::utils::DeclarationInput::{DeclarationInputs, LegacyDeclarationInputs};
 use crate::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::utils::{invoke_contract, save_to_json, wait_for_transaction, JsonValueType};
 use crate::CliArgs;
-use crate::contract_clients::legacy_class::CompressedLegacyContractClass;
 
 pub type RpcAccount<'a> = SingleOwnerAccount<&'a JsonRpcClient<HttpTransport>, LocalWallet>;
 pub async fn build_single_owner_account<'a>(
