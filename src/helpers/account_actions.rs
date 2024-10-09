@@ -42,6 +42,7 @@ impl AccountActions for SingleOwnerAccount<&JsonRpcClient<HttpTransport>, LocalW
     ) -> TransactionExecution {
         let calls = vec![Call { to: address, selector: get_selector_from_name(method).unwrap(), calldata }];
 
+        // TODO: if we have the madara with fee flag set as 0, it shouldn't matter
         let max_fee = Felt::ZERO;
         match nonce {
             Some(nonce) => self.execute_v1(calls).max_fee(max_fee).nonce(nonce.into()),
@@ -98,7 +99,7 @@ pub async fn get_transaction_receipt(
     transaction_hash: Felt,
 ) -> TransactionReceiptResult {
     // there is a delay between the transaction being available at the client
-    // and the sealing of the block, hence sleeping for 100ms
+    // and the sealing of the block, hence sleeping for 500ms
     assert_poll(|| async { rpc.get_transaction_receipt(transaction_hash).await.is_ok() }, 500, 20).await;
 
     rpc.get_transaction_receipt(transaction_hash).await

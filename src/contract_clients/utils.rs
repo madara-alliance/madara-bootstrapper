@@ -495,9 +495,14 @@ pub async fn build_single_owner_account<'a>(
     let execution_encoding = if is_legacy { ExecutionEncoding::Legacy } else { ExecutionEncoding::New };
 
     let chain_id = rpc.chain_id().await.unwrap();
-    let mut something = SingleOwnerAccount::new(rpc, signer, account_address, chain_id, execution_encoding);
-    something.set_block_id(BlockId::Tag(Pending));
-    something
+
+    // Note: it's a fix for the starknet rs issue, by default, starknet.rs asks for nonce at the latest
+    // block which causes the issues hence setting the block id to pending so that we get nonce in
+    // right order
+    let mut singer_with_pending_id =
+        SingleOwnerAccount::new(rpc, signer, account_address, chain_id, execution_encoding);
+    singer_with_pending_id.set_block_id(BlockId::Tag(Pending));
+    singer_with_pending_id
 }
 
 pub async fn read_erc20_balance(
@@ -522,7 +527,7 @@ pub fn field_element_to_u256(input: Felt) -> U256 {
 }
 
 pub fn generate_config_hash(config_hash_version: Felt, chain_id: Felt, fee_token_address: Felt) -> Felt {
-    Pedersen::hash_array(&[(config_hash_version), (chain_id), (fee_token_address)])
+    Pedersen::hash_array(&[config_hash_version, chain_id, fee_token_address])
 }
 
 pub fn get_bridge_init_configs(config: &CliArgs) -> (Felt, Felt) {
@@ -609,6 +614,7 @@ pub async fn declare_contract(input: DeclarationInput<'_>) -> Felt {
                 is_query: false,
             };
 
+            // TODO: method can be updated based on the madara PR
             let json_body = &json!({
                 "jsonrpc": "2.0",
                 "method": "addDeclareV0Transaction",
@@ -644,15 +650,19 @@ pub(crate) async fn deploy_account_using_priv_key(
     let chain_id = provider.chain_id().await.unwrap();
 
     let signer = LocalWallet::from(SigningKey::from_secret_scalar(Felt::from_hex(&priv_key).unwrap()));
+    log::trace!("signer : {:?}", signer);
     let mut oz_account_factory =
         OpenZeppelinAccountFactory::new(oz_account_class_hash, chain_id, signer, provider).await.unwrap();
     oz_account_factory.set_block_id(BlockId::Tag(BlockTag::Pending));
 
     let deploy_txn = oz_account_factory.deploy_v1(Felt::ZERO).max_fee(Felt::ZERO);
     let account_address = deploy_txn.address();
+    log::trace!("OZ Account Deployed : {:?}", account_address);
     save_to_json("account_address", &JsonValueType::StringType(account_address.to_string())).unwrap();
 
     let sent_txn = deploy_txn.send().await.expect("Error in deploying the OZ account");
+
+    log::trace!("deploy account txn_hash : {:?}", sent_txn.transaction_hash);
 
     wait_for_transaction(provider, sent_txn.transaction_hash, "deploy_account_using_priv_key").await.unwrap();
 

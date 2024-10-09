@@ -74,8 +74,6 @@ impl CoreContract for StarknetSovereignContract {
         verifier_address: Address,
         finalized: bool,
     ) {
-        // let program_hash = StarkFelt(program_hash.to_bytes_be());
-
         let init_data =
             get_init_data_core_contract(block_number, state_root, program_hash, config_hash, verifier_address);
         let final_bytes = get_calldata_bytes(init_data.clone());
@@ -108,8 +106,6 @@ impl CoreContract for StarknetSovereignContract {
         verifier_address: Address,
         finalized: bool,
     ) {
-        // let program_hash = StarkFelt(program_hash.to_bytes_be());
-
         let init_data =
             get_init_data_core_contract(block_number, state_root, program_hash, config_hash, verifier_address);
         let final_bytes = get_calldata_bytes(init_data.clone());
@@ -176,8 +172,6 @@ impl CoreContract for StarknetSovereignContract {
         config_hash: Felt,
         verifer_address: Address,
     ) {
-        // let program_hash = StarkFelt(program_hash.to_bytes_be());
-
         let init_data =
             get_init_data_core_contract(block_number, state_root, program_hash, config_hash, verifer_address);
 

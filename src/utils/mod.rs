@@ -42,23 +42,19 @@ pub fn pad_bytes(address: Address) -> Vec<u8> {
 pub async fn wait_for_transaction(
     provider_l2: &JsonRpcClient<HttpTransport>,
     transaction_hash: Felt,
-    _tag: &str,
+    tag: &str,
 ) -> Result<(), anyhow::Error> {
     let transaction_receipt = get_transaction_receipt(provider_l2, transaction_hash).await;
 
     let transaction_status = transaction_receipt.ok().unwrap();
 
     match transaction_status {
-        // TODO: make sure we are checking that the invoke is working fine
         TransactionReceiptWithBlockInfo { receipt: TransactionReceipt::Invoke(receipt), .. } => {
-            // let contract_deployed_event = receipt.events.iter().find(|e| e.keys[0] ==
-            // get_selector_from_name("ContractDeployed").unwrap()).unwrap(); let contract_address =
-            // contract_deployed_event.data[0];
-            log::debug!("invoke receipt we got here: {:?}", receipt);
+            log::trace!("txn : {:?} : {:?}", tag, receipt);
         }
         TransactionReceiptWithBlockInfo { receipt: TransactionReceipt::DeployAccount(receipt), .. } => {
             let contract_address = receipt.contract_address;
-            log::debug!("Account deployed at address: {:?}", contract_address);
+            log::trace!("txn : {:?} : {:?}", tag, contract_address);
         }
         _ => {
             log::error!("Transaction status: {:?}", transaction_status);
