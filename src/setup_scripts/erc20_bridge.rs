@@ -3,9 +3,9 @@ use std::time::Duration;
 
 use ethers::abi::Address;
 use ethers::prelude::{H160, U256};
+use starknet::core::types::Felt;
 use starknet_core::types::{BlockId, BlockTag, FunctionCall};
 use starknet_core::utils::get_selector_from_name;
-use starknet_ff::FieldElement;
 use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::{JsonRpcClient, Provider};
 use tokio::time::sleep;
@@ -21,23 +21,23 @@ use crate::CliArgs;
 
 pub struct Erc20Bridge<'a> {
     account: RpcAccount<'a>,
-    account_address: FieldElement,
+    account_address: Felt,
     arg_config: &'a CliArgs,
     clients: &'a Config,
     core_contract: &'a dyn CoreContract,
 }
 
 pub struct Erc20BridgeSetupOutput {
-    pub erc20_cairo_one_class_hash: FieldElement,
+    pub erc20_cairo_one_class_hash: Felt,
     pub starknet_token_bridge: StarknetTokenBridge,
-    pub erc20_l2_bridge_address: FieldElement,
-    pub l2_erc20_token_address: FieldElement,
+    pub erc20_l2_bridge_address: Felt,
+    pub l2_erc20_token_address: Felt,
 }
 
 impl<'a> Erc20Bridge<'a> {
     pub fn new(
         account: RpcAccount<'a>,
-        account_address: FieldElement,
+        account_address: Felt,
         arg_config: &'a CliArgs,
         clients: &'a Config,
         core_contract: &'a dyn CoreContract,
@@ -146,15 +146,15 @@ impl<'a> Erc20Bridge<'a> {
 
 async fn get_l2_token_address(
     rpc_provider_l2: &JsonRpcClient<HttpTransport>,
-    l2_bridge_address: &FieldElement,
+    l2_bridge_address: &Felt,
     l1_erc_20_address: &H160,
-) -> FieldElement {
+) -> Felt {
     rpc_provider_l2
         .call(
             FunctionCall {
                 contract_address: *l2_bridge_address,
                 entry_point_selector: get_selector_from_name("get_l2_token").unwrap(),
-                calldata: vec![FieldElement::from_byte_slice_be(l1_erc_20_address.as_bytes()).unwrap()],
+                calldata: vec![Felt::from_bytes_be_slice(l1_erc_20_address.as_bytes())],
             },
             BlockId::Tag(BlockTag::Pending),
         )

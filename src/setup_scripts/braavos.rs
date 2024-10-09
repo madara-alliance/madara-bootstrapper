@@ -1,7 +1,7 @@
 use std::time::Duration;
 
-use starknet_accounts::{Account, ConnectedAccount};
-use starknet_ff::FieldElement;
+use starknet::accounts::{Account, ConnectedAccount};
+use starknet::core::types::Felt;
 use tokio::time::sleep;
 
 use crate::contract_clients::utils::{declare_contract, DeclarationInput, RpcAccount};
@@ -19,7 +19,7 @@ pub struct BraavosSetup<'a> {
 }
 
 pub struct BraavosSetupOutput {
-    pub braavos_class_hash: FieldElement,
+    pub braavos_class_hash: Felt,
 }
 
 impl<'a> BraavosSetup<'a> {
@@ -70,7 +70,7 @@ impl<'a> BraavosSetup<'a> {
             .invoke_contract(
                 self.account.address(),
                 "deploy_contract",
-                vec![braavos_aggregator_class_hash, FieldElement::ZERO, FieldElement::ZERO, FieldElement::ZERO],
+                vec![braavos_aggregator_class_hash, Felt::ZERO, Felt::ZERO, Felt::ZERO],
                 None,
             )
             .send()

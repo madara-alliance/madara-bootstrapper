@@ -2,7 +2,7 @@ use std::str::FromStr;
 use std::time::Duration;
 
 use ethers::prelude::U256;
-use starknet_ff::FieldElement;
+use starknet::core::types::Felt;
 use tokio::time::sleep;
 
 use crate::contract_clients::config::Config;
@@ -16,9 +16,9 @@ use crate::CliArgs;
 pub async fn erc20_bridge_test_helper(
     clients: &Config,
     arg_config: &CliArgs,
-    l2_erc20_token_address: FieldElement,
+    l2_erc20_token_address: Felt,
     token_bridge: StarknetTokenBridge,
-    _l2_bridge_address: FieldElement,
+    _l2_bridge_address: Felt,
 ) -> Result<(), anyhow::Error> {
     token_bridge.approve(token_bridge.bridge_address(), 100000000.into()).await;
     sleep(Duration::from_secs(arg_config.l1_wait_time.parse().unwrap())).await;
@@ -26,12 +26,9 @@ pub async fn erc20_bridge_test_helper(
     log::debug!("Waiting for message to be consumed on l2 [⏳]");
     sleep(Duration::from_secs(arg_config.cross_chain_wait_time)).await;
 
-    let balance_before = read_erc20_balance(
-        clients.provider_l2(),
-        l2_erc20_token_address,
-        FieldElement::from_str(L2_DEPLOYER_ADDRESS).unwrap(),
-    )
-    .await;
+    let balance_before =
+        read_erc20_balance(clients.provider_l2(), l2_erc20_token_address, Felt::from_str(L2_DEPLOYER_ADDRESS).unwrap())
+            .await;
 
     token_bridge
         .deposit(
@@ -46,14 +43,11 @@ pub async fn erc20_bridge_test_helper(
     log::debug!("Waiting for message to be consumed on l2 [⏳]");
     sleep(Duration::from_secs(arg_config.cross_chain_wait_time)).await;
 
-    let balance_after = read_erc20_balance(
-        clients.provider_l2(),
-        l2_erc20_token_address,
-        FieldElement::from_str(L2_DEPLOYER_ADDRESS).unwrap(),
-    )
-    .await;
+    let balance_after =
+        read_erc20_balance(clients.provider_l2(), l2_erc20_token_address, Felt::from_str(L2_DEPLOYER_ADDRESS).unwrap())
+            .await;
 
-    assert_eq!(balance_before[0] + FieldElement::from_dec_str("10").unwrap(), balance_after[0]);
+    assert_eq!(balance_before[0] + Felt::from_dec_str("10").unwrap(), balance_after[0]);
 
     // let l1_recipient = FieldElement::from_hex_be(&arg_config.l1_deployer_address).unwrap();
     //
