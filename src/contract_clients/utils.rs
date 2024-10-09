@@ -522,33 +522,17 @@ pub fn field_element_to_u256(input: Felt) -> U256 {
 }
 
 pub fn generate_config_hash(config_hash_version: Felt, chain_id: Felt, fee_token_address: Felt) -> Felt {
-    println!("checkpoint generate hash 1");
     Pedersen::hash_array(&[(config_hash_version), (chain_id), (fee_token_address)])
 }
 
 pub fn get_bridge_init_configs(config: &CliArgs) -> (Felt, Felt) {
-    println!("checkpoint init config 1");
     let program_hash = Felt::from_hex(config.sn_os_program_hash.as_str()).unwrap();
-    println!("checkpoint init config 2");
 
-    println!(
-        "checkpoint init config {:?}",
-        Felt::from_hex(&encode(config.config_hash_version.as_str())).expect("error in config_hash_version")
-    );
-    println!(
-        "checkpoint init config {:?}",
-        Felt::from_hex(&encode(config.app_chain_id.as_str())).expect("error in app_chain_id")
-    );
-    println!(
-        "checkpoint init config {:?}",
-        Felt::from_hex(config.fee_token_address.as_str()).expect("error in fee_token_address")
-    );
     let config_hash = generate_config_hash(
         Felt::from_hex(&encode(config.config_hash_version.as_str())).expect("error in config_hash_version"),
         Felt::from_hex(&encode(config.app_chain_id.as_str())).expect("error in app_chain_id"),
         Felt::from_hex(config.fee_token_address.as_str()).expect("error in fee_token_address"),
     );
-    println!("checkpoint init config 3");
     (program_hash, config_hash)
 }
 
@@ -585,12 +569,8 @@ pub(crate) enum DeclarationInput<'a> {
 
 #[allow(private_interfaces)]
 pub async fn declare_contract(input: DeclarationInput<'_>) -> Felt {
-    println!("checkpoint declare contract 1");
     match input {
         DeclarationInputs(sierra_path, casm_path, account) => {
-            // let (class_hash, sierra) = account.declare_contract_params_sierra(&sierra_path, &casm_path);
-            println!("checkpoint declare contract a.1");
-
             let contract_artifact: SierraClass =
                 serde_json::from_reader(std::fs::File::open(sierra_path).unwrap()).unwrap();
 
@@ -598,7 +578,6 @@ pub async fn declare_contract(input: DeclarationInput<'_>) -> Felt {
                 serde_json::from_reader(std::fs::File::open(casm_path).unwrap()).unwrap();
             let class_hash = contract_artifact_casm.class_hash().unwrap();
             let sierra_class_hash = contract_artifact.class_hash().unwrap();
-            println!("checkpoint declare contract a.2");
 
             let flattened_class = contract_artifact.flatten().unwrap();
 
@@ -611,7 +590,6 @@ pub async fn declare_contract(input: DeclarationInput<'_>) -> Felt {
             sierra_class_hash
         }
         LegacyDeclarationInputs(artifact_path, url) => {
-            println!("checkpoint declare contract b.1");
             let contract_abi_artifact_temp: LegacyContractClass = serde_json::from_reader(
                 std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + &artifact_path).unwrap(),
             )
@@ -623,7 +601,6 @@ pub async fn declare_contract(input: DeclarationInput<'_>) -> Felt {
                 .expect("Error : Failed to compress the contract class")
                 .into();
 
-            println!("checkpoint declare contract b.2");
             let params: BroadcastedDeclareTransactionV0 = BroadcastedDeclareTransactionV0 {
                 sender_address: Felt::from_hex("0x1").unwrap(),
                 max_fee: Felt::ZERO,
@@ -639,11 +616,8 @@ pub async fn declare_contract(input: DeclarationInput<'_>) -> Felt {
                 "id": 4
             });
 
-            println!("checkpoint declare contract b.3");
-
             let req_client = reqwest::Client::new();
             let raw_txn_rpc = req_client.post(url).json(json_body).send().await;
-            println!("raw_txn_rpc : {:?}", raw_txn_rpc);
             match raw_txn_rpc {
                 Ok(val) => {
                     log::debug!(
@@ -670,21 +644,16 @@ pub(crate) async fn deploy_account_using_priv_key(
     let chain_id = provider.chain_id().await.unwrap();
 
     let signer = LocalWallet::from(SigningKey::from_secret_scalar(Felt::from_hex(&priv_key).unwrap()));
-    log::debug!("signer : {:?}", signer);
     let mut oz_account_factory =
         OpenZeppelinAccountFactory::new(oz_account_class_hash, chain_id, signer, provider).await.unwrap();
     oz_account_factory.set_block_id(BlockId::Tag(BlockTag::Pending));
-    // oz_account_factory.
 
     let deploy_txn = oz_account_factory.deploy_v1(Felt::ZERO).max_fee(Felt::ZERO);
-    // deploy_txn.nonce(Felt::ZERO);
     let account_address = deploy_txn.address();
-    log::debug!("OZ Account Deployed : {:?}", account_address);
     save_to_json("account_address", &JsonValueType::StringType(account_address.to_string())).unwrap();
 
     let sent_txn = deploy_txn.send().await.expect("Error in deploying the OZ account");
 
-    log::debug!("deploy account txn_hash : {:?}", sent_txn.transaction_hash);
     wait_for_transaction(provider, sent_txn.transaction_hash, "deploy_account_using_priv_key").await.unwrap();
 
     account_address
@@ -697,7 +666,6 @@ pub(crate) async fn deploy_proxy_contract(
     salt: Felt,
     deploy_from_zero: Felt,
 ) -> Felt {
-    // let contract_factory = ContractFactory::new(class_hash, account);
     let txn = account
         .invoke_contract(
             account_address,
@@ -708,12 +676,6 @@ pub(crate) async fn deploy_proxy_contract(
         .send()
         .await
         .expect("Error deploying the contract proxy.");
-
-    // let txn = contract_factory
-    //     .deploy_v1(vec![Felt::ONE], salt, true).max_fee(Felt::ZERO)
-    // .send()
-    // .await
-    // .expect("Unable to deploy contract");
 
     log::debug!("txn in proxy contract is: {:?}", txn);
 

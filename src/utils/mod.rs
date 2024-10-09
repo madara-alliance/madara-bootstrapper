@@ -50,18 +50,18 @@ pub async fn wait_for_transaction(
 
     match transaction_status {
         // TODO: make sure we are checking that the invoke is working fine
-        TransactionReceiptWithBlockInfo { receipt: TransactionReceipt::Invoke(_receipt), .. } => {
+        TransactionReceiptWithBlockInfo { receipt: TransactionReceipt::Invoke(receipt), .. } => {
             // let contract_deployed_event = receipt.events.iter().find(|e| e.keys[0] ==
             // get_selector_from_name("ContractDeployed").unwrap()).unwrap(); let contract_address =
             // contract_deployed_event.data[0];
-            println!("invoke called, might be a contract deployment or something else xD");
+            log::debug!("invoke receipt we got here: {:?}", receipt);
         }
         TransactionReceiptWithBlockInfo { receipt: TransactionReceipt::DeployAccount(receipt), .. } => {
             let contract_address = receipt.contract_address;
-            println!("Account deployed at address: {:?}", contract_address);
+            log::debug!("Account deployed at address: {:?}", contract_address);
         }
         _ => {
-            println!("Transaction status: {:?}", transaction_status);
+            log::error!("Transaction status: {:?}", transaction_status);
             panic!("Transaction failed");
         }
     };
