@@ -66,8 +66,13 @@ pub fn field_element_to_u256(input: Felt) -> U256 {
     U256::from_big_endian(&input.to_bytes_be())
 }
 
-pub fn generate_config_hash(config_hash_version: Felt, chain_id: Felt, fee_token_address: Felt) -> Felt {
-    Pedersen::hash_array(&[config_hash_version, chain_id, fee_token_address])
+pub fn generate_config_hash(
+    config_hash_version: Felt,
+    chain_id: Felt,
+    fee_token_address: Felt,
+    native_fee_token_address: Felt,
+) -> Felt {
+    Pedersen::hash_array(&[config_hash_version, chain_id, fee_token_address, native_fee_token_address])
 }
 
 pub fn get_bridge_init_configs(config: &CliArgs) -> (Felt, Felt) {
@@ -77,6 +82,7 @@ pub fn get_bridge_init_configs(config: &CliArgs) -> (Felt, Felt) {
         Felt::from_hex(&encode(config.config_hash_version.as_str())).expect("error in config_hash_version"),
         Felt::from_hex(&encode(config.app_chain_id.as_str())).expect("error in app_chain_id"),
         Felt::from_hex(config.fee_token_address.as_str()).expect("error in fee_token_address"),
+        Felt::from_hex(config.native_fee_token_address.as_str()).expect("error in fee_token_address"),
     );
     (program_hash, config_hash)
 }
