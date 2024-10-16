@@ -163,7 +163,7 @@ pub async fn declare_contract(input: DeclarationInput<'_>) -> Felt {
             // TODO: method can be updated based on the madara PR
             let json_body = &json!({
                 "jsonrpc": "2.0",
-                "method": "addDeclareV0Transaction",
+                "method": "madara_addDeclareV0Transaction",
                 "params": [params],
                 "id": 4
             });

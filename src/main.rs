@@ -49,13 +49,13 @@ pub struct CliArgs {
     sn_os_program_hash: String,
     #[clap(long, env, default_value = "StarknetOsConfig1")]
     config_hash_version: String,
-    #[clap(long, env, default_value = "MADARA")]
+    #[clap(long, env, default_value = "MADARA_DEVNET")]
     app_chain_id: String,
     #[clap(long, env, default_value = "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7")]
     fee_token_address: String,
     #[clap(long, env, default_value = "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d")]
     native_fee_token_address: String,
-    #[clap(long, env, default_value_t = 10)]
+    #[clap(long, env, default_value_t =20)]
     cross_chain_wait_time: u64,
     // Default test address value taken from anvil
     // IMP : Not to be used in prod environment
