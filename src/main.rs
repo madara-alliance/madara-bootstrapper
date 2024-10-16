@@ -5,11 +5,14 @@ mod setup_scripts;
 pub mod tests;
 pub mod utils;
 
+use std::time::Duration;
+
 use clap::{ArgAction, Parser};
 use dotenv::dotenv;
 use inline_colorization::*;
-use starknet_accounts::Account;
-use starknet_ff::FieldElement;
+use starknet::accounts::Account;
+use starknet::core::types::Felt;
+use tokio::time::sleep;
 
 use crate::contract_clients::config::Config;
 use crate::contract_clients::core_contract::CoreContract;
@@ -46,11 +49,13 @@ pub struct CliArgs {
     sn_os_program_hash: String,
     #[clap(long, env, default_value = "StarknetOsConfig1")]
     config_hash_version: String,
-    #[clap(long, env, default_value = "MADARA")]
+    #[clap(long, env, default_value = "MADARA_DEVNET")]
     app_chain_id: String,
     #[clap(long, env, default_value = "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7")]
     fee_token_address: String,
-    #[clap(long, env, default_value_t = 80)]
+    #[clap(long, env, default_value = "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d")]
+    native_fee_token_address: String,
+    #[clap(long, env, default_value_t =20)]
     cross_chain_wait_time: u64,
     // Default test address value taken from anvil
     // IMP : Not to be used in prod environment
@@ -83,16 +88,16 @@ pub async fn main() {
 pub struct DeployBridgeOutput {
     pub starknet_contract: Box<dyn CoreContract>,
     pub starknet_token_bridge: StarknetTokenBridge,
-    pub erc20_class_hash: FieldElement,
-    pub legacy_eth_bridge_class_hash: FieldElement,
-    pub account_address: FieldElement,
-    pub eth_proxy_address: FieldElement,
-    pub eth_bridge_proxy_address: FieldElement,
-    pub legacy_proxy_class_hash: FieldElement,
-    pub starkgate_proxy_class_hash: FieldElement,
-    pub erc20_legacy_class_hash: FieldElement,
-    pub erc20_l2_bridge_address: FieldElement,
-    pub l2_erc20_token_address: FieldElement,
+    pub erc20_class_hash: Felt,
+    pub legacy_eth_bridge_class_hash: Felt,
+    pub account_address: Felt,
+    pub eth_proxy_address: Felt,
+    pub eth_bridge_proxy_address: Felt,
+    pub legacy_proxy_class_hash: Felt,
+    pub starkgate_proxy_class_hash: Felt,
+    pub erc20_legacy_class_hash: Felt,
+    pub erc20_l2_bridge_address: Felt,
+    pub l2_erc20_token_address: Felt,
     pub eth_bridge: StarknetLegacyEthBridge,
 }
 
@@ -108,6 +113,7 @@ pub async fn bootstrap(config: &CliArgs) -> DeployBridgeOutput {
     )
     .unwrap();
     log::info!("✅ Core setup init for L1 successful.");
+    sleep(Duration::from_secs(60)).await;
     log::info!("⏳ L2 State and Initialisation Started");
     let account = account_init(&clients, config).await;
     log::info!("🔐 Account with given  private key deployed on L2. [Account Address : {:?}]", account.address());

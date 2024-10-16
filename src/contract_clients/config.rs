@@ -1,7 +1,6 @@
 use ethereum_instance::EthereumClient;
-use starknet_providers::jsonrpc::HttpTransport;
-use starknet_providers::JsonRpcClient;
-use url::Url;
+use starknet::providers::jsonrpc::{HttpTransport, JsonRpcClient};
+use starknet::providers::Url;
 
 use crate::CliArgs;
 

@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use starknet_ff::FieldElement;
+use starknet::core::types::Felt;
 use tokio::time::sleep;
 
 use crate::contract_clients::utils::{declare_contract, DeclarationInput, RpcAccount};
@@ -12,7 +12,7 @@ pub struct ArgentSetup<'a> {
 }
 
 pub struct ArgentSetupOutput {
-    pub argent_class_hash: FieldElement,
+    pub argent_class_hash: Felt,
 }
 
 impl<'a> ArgentSetup<'a> {
