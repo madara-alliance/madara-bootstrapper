@@ -5,6 +5,7 @@ mod setup_scripts;
 pub mod tests;
 pub mod utils;
 
+use std::io::stdin;
 use std::time::Duration;
 
 use clap::{ArgAction, Parser};
@@ -55,7 +56,7 @@ pub struct CliArgs {
     fee_token_address: String,
     #[clap(long, env, default_value = "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d")]
     native_fee_token_address: String,
-    #[clap(long, env, default_value_t =20)]
+    #[clap(long, env, default_value_t = 20)]
     cross_chain_wait_time: u64,
     // Default test address value taken from anvil
     // IMP : Not to be used in prod environment
@@ -113,7 +114,11 @@ pub async fn bootstrap(config: &CliArgs) -> DeployBridgeOutput {
     )
     .unwrap();
     log::info!("✅ Core setup init for L1 successful.");
-    sleep(Duration::from_secs(60)).await;
+    // sleep(Duration::from_secs(60)).await;
+
+    println!("Press Enter to continue erc20 bridge...");
+    let _ = stdin().read_line(&mut String::new()).unwrap();
+
     log::info!("⏳ L2 State and Initialisation Started");
     let account = account_init(&clients, config).await;
     log::info!("🔐 Account with given  private key deployed on L2. [Account Address : {:?}]", account.address());
