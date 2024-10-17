@@ -3,6 +3,7 @@ use std::time::Duration;
 
 use ethers::abi::Address;
 use ethers::prelude::{H160, U256};
+use serde::Serialize;
 use starknet::core::types::Felt;
 use starknet_core::types::{BlockId, BlockTag, FunctionCall};
 use starknet_core::utils::get_selector_from_name;
@@ -27,11 +28,14 @@ pub struct Erc20Bridge<'a> {
     core_contract: &'a dyn CoreContract,
 }
 
+#[derive(Debug, Clone, Serialize)]
 pub struct Erc20BridgeSetupOutput {
     pub erc20_cairo_one_class_hash: Felt,
-    pub starknet_token_bridge: StarknetTokenBridge,
-    pub erc20_l2_bridge_address: Felt,
-    pub l2_erc20_token_address: Felt,
+    pub l1_token_bridge_proxy: Address,
+    pub l1_manager_address: Address,
+    pub l1_registry_address: Address,
+    pub l2_token_bridge: Felt,
+    pub test_erc20_token_address: Felt,
 }
 
 impl<'a> Erc20Bridge<'a> {
@@ -137,9 +141,11 @@ impl<'a> Erc20Bridge<'a> {
 
         Erc20BridgeSetupOutput {
             erc20_cairo_one_class_hash,
-            starknet_token_bridge: token_bridge,
-            erc20_l2_bridge_address: l2_bridge_address,
-            l2_erc20_token_address,
+            l1_token_bridge_proxy: token_bridge.bridge_address(),
+            l1_manager_address: token_bridge.manager_address(),
+            l1_registry_address: token_bridge.registry_address(),
+            l2_token_bridge: l2_bridge_address,
+            test_erc20_token_address: l2_erc20_token_address,
         }
     }
 }

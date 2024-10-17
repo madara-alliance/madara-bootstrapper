@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use serde::Serialize;
 use starknet::accounts::{Account, ConnectedAccount};
 use starknet::core::types::Felt;
 use tokio::time::sleep;
@@ -18,6 +19,7 @@ pub struct BraavosSetup<'a> {
     arg_config: &'a CliArgs,
 }
 
+#[derive(Debug, Clone, Serialize)]
 pub struct BraavosSetupOutput {
     pub braavos_class_hash: Felt,
 }

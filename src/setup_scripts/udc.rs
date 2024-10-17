@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use serde::Serialize;
 use starknet::accounts::ConnectedAccount;
 use starknet::core::types::Felt;
 use tokio::time::sleep;
@@ -16,6 +17,7 @@ pub struct UdcSetup<'a> {
     arg_config: &'a CliArgs,
 }
 
+#[derive(Debug, Clone, Serialize)]
 pub struct UdcSetupOutput {
     pub udc_class_hash: Felt,
     pub udc_address: Felt,

@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use serde::Serialize;
 use starknet::core::types::Felt;
 use tokio::time::sleep;
 
@@ -11,6 +12,7 @@ pub struct ArgentSetup<'a> {
     account: RpcAccount<'a>,
 }
 
+#[derive(Debug, Clone, Serialize)]
 pub struct ArgentSetupOutput {
     pub argent_class_hash: Felt,
 }

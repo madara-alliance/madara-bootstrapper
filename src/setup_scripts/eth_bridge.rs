@@ -2,6 +2,7 @@ use std::str::FromStr;
 use std::time::Duration;
 
 use ethers::abi::Address;
+use serde::{Deserialize, Serialize};
 use starknet::accounts::{Account, ConnectedAccount};
 use starknet::core::types::Felt;
 use starknet_providers::jsonrpc::HttpTransport;
@@ -28,14 +29,15 @@ pub struct EthBridge<'a> {
     core_contract: &'a dyn CoreContract,
 }
 
+#[derive(Debug, Clone, Serialize)]
 pub struct EthBridgeSetupOutput {
-    pub legacy_proxy_class_hash: Felt,
-    pub starkgate_proxy_class_hash: Felt,
-    pub erc20_legacy_class_hash: Felt,
-    pub legacy_eth_bridge_class_hash: Felt,
-    pub eth_proxy_address: Felt,
-    pub eth_bridge_proxy_address: Felt,
-    pub eth_bridge: StarknetLegacyEthBridge,
+    pub l2_legacy_proxy_class_hash: Felt,
+    pub l2_erc20_legacy_class_hash: Felt,
+    pub l2_eth_proxy_address: Felt,
+    pub l2_starkgate_proxy_class_hash: Felt,
+    pub l2_legacy_eth_bridge_class_hash: Felt,
+    pub l2_eth_bridge_proxy_address: Felt,
+    pub l1_bridge_address: Address,
 }
 
 impl<'a> EthBridge<'a> {
@@ -199,13 +201,13 @@ impl<'a> EthBridge<'a> {
         log::info!("✴️ ETH Bridge setup on L1 completed");
 
         EthBridgeSetupOutput {
-            legacy_proxy_class_hash,
-            starkgate_proxy_class_hash,
-            erc20_legacy_class_hash,
-            legacy_eth_bridge_class_hash,
-            eth_proxy_address,
-            eth_bridge_proxy_address,
-            eth_bridge,
+            l2_legacy_proxy_class_hash: legacy_proxy_class_hash,
+            l2_starkgate_proxy_class_hash: starkgate_proxy_class_hash,
+            l2_erc20_legacy_class_hash: erc20_legacy_class_hash,
+            l2_legacy_eth_bridge_class_hash: legacy_eth_bridge_class_hash,
+            l2_eth_proxy_address: eth_proxy_address,
+            l2_eth_bridge_proxy_address: eth_bridge_proxy_address,
+            l1_bridge_address: eth_bridge.address(),
         }
     }
 }
