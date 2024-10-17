@@ -16,7 +16,7 @@ use crate::contract_clients::core_contract::{
 use crate::utils::convert_felt_to_u256;
 
 pub struct StarknetValidityContract {
-    core_contract_client: StarknetValidityContractClient,
+    pub core_contract_client: StarknetValidityContractClient,
 }
 
 impl CoreContractDeploy<StarknetValidityContract> for StarknetValidityContract {
