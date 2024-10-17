@@ -77,6 +77,7 @@ pub fn get_init_data_core_contract(
 ) -> CoreContractInitData {
     CoreContractInitData {
         program_hash: convert_felt_to_u256(program_hash), // zero program hash would be deemed invalid
+        aggregate_program_hash: U256::zero(),
         verifier_address,
         config_hash: convert_felt_to_u256(config_hash),
         // TODO :
