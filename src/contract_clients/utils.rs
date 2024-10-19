@@ -115,7 +115,7 @@ pub(crate) enum DeclarationInput<'a> {
     // inputs : sierra_path, casm_path
     DeclarationInputs(String, String, RpcAccount<'a>),
     // input : artifact_path
-    LegacyDeclarationInputs(String, String),
+    LegacyDeclarationInputs(String, String, &'a JsonRpcClient<HttpTransport>),
 }
 
 #[allow(private_interfaces)]
@@ -130,6 +130,10 @@ pub async fn declare_contract(input: DeclarationInput<'_>) -> Felt {
             let class_hash = contract_artifact_casm.class_hash().unwrap();
             let sierra_class_hash = contract_artifact.class_hash().unwrap();
 
+            if account.provider().get_class(BlockId::Tag(Pending), sierra_class_hash).await.is_ok() {
+                return sierra_class_hash;
+            }
+
             let flattened_class = contract_artifact.flatten().unwrap();
 
             account
@@ -140,11 +144,16 @@ pub async fn declare_contract(input: DeclarationInput<'_>) -> Felt {
                 .expect("Error in declaring the contract using Cairo 1 declaration using the provided account");
             sierra_class_hash
         }
-        LegacyDeclarationInputs(artifact_path, url) => {
+        LegacyDeclarationInputs(artifact_path, url, provider) => {
             let contract_abi_artifact_temp: LegacyContractClass = serde_json::from_reader(
                 std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + &artifact_path).unwrap(),
             )
             .unwrap();
+
+            let class_hash = contract_abi_artifact_temp.class_hash().expect("Failed to get class hash");
+            if provider.get_class(BlockId::Tag(Pending), class_hash).await.is_ok() {
+                return class_hash;
+            }
 
             let contract_abi_artifact: CompressedLegacyContractClass = contract_abi_artifact_temp
                 .clone()
@@ -183,7 +192,7 @@ pub async fn declare_contract(input: DeclarationInput<'_>) -> Felt {
                 }
             }
 
-            contract_abi_artifact_temp.class_hash().unwrap()
+            class_hash
         }
     }
 }
@@ -203,8 +212,13 @@ pub(crate) async fn deploy_account_using_priv_key(
 
     let deploy_txn = oz_account_factory.deploy_v1(Felt::ZERO).max_fee(Felt::ZERO);
     let account_address = deploy_txn.address();
-    log::trace!("OZ Account Deployed : {:?}", account_address);
+    log::trace!("OZ Account Deploy Address: {:?}", account_address);
     save_to_json("account_address", &JsonValueType::StringType(account_address.to_string())).unwrap();
+
+    if provider.get_class_at(BlockId::Tag(Pending), account_address).await.is_ok() {
+        log::debug!("ℹ️ Account is already deployed. Skipping....");
+        return account_address;
+    }
 
     let sent_txn = deploy_txn.send().await.expect("Error in deploying the OZ account");
 

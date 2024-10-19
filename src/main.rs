@@ -156,6 +156,7 @@ pub async fn main() {
     if let Some(output_file) = args.output_file {
         let file = File::create(&output_file).unwrap();
         serde_json::to_writer_pretty(file, &output).unwrap();
+        println!("Output : {:#?}", output);
         println!("✅ Bootstrap output saved to {}", output_file);
     }
 }
@@ -308,7 +309,7 @@ async fn setup_udc<'a>(account: Option<RpcAccount<'a>>, args: &CliArgs, config: 
         None => get_account(config, args).await,
     };
     log::info!("⏳ Starting UDC (Universal Deployer Contract) deployment");
-    let udc = UdcSetup::new(account.clone(), account.address(), args);
+    let udc = UdcSetup::new(account.clone(), account.address(), args, config);
     let udc_setup_outputs = udc.setup().await;
     log::info!(
         "*️⃣ UDC setup completed. [UDC Address : {:?}, UDC class hash : {:?}]",
@@ -338,7 +339,7 @@ async fn setup_braavos<'a>(account: Option<RpcAccount<'a>>, args: &CliArgs, conf
         None => get_account(config, args).await,
     };
     log::info!("⏳ Starting Braavos Account deployment");
-    let braavos = BraavosSetup::new(account.clone(), args);
+    let braavos = BraavosSetup::new(account.clone(), args, config);
     let braavos_setup_outputs = braavos.setup().await;
     log::info!(
         "*️⃣ Braavos setup completed. [Braavos account class hash : {:?}]",

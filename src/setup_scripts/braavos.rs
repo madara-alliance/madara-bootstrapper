@@ -13,10 +13,12 @@ use crate::utils::constants::{
 };
 use crate::utils::{save_to_json, wait_for_transaction, JsonValueType};
 use crate::CliArgs;
+use crate::contract_clients::config::Config;
 
 pub struct BraavosSetup<'a> {
     account: RpcAccount<'a>,
     arg_config: &'a CliArgs,
+    config: &'a Config
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -25,8 +27,8 @@ pub struct BraavosSetupOutput {
 }
 
 impl<'a> BraavosSetup<'a> {
-    pub fn new(account: RpcAccount<'a>, arg_config: &'a CliArgs) -> Self {
-        Self { account, arg_config }
+    pub fn new(account: RpcAccount<'a>, arg_config: &'a CliArgs, config: &'a Config) -> Self {
+        Self { account, arg_config, config }
     }
 
     pub async fn setup(&self) -> BraavosSetupOutput {
@@ -57,6 +59,7 @@ impl<'a> BraavosSetup<'a> {
         let braavos_aggregator_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(BRAAVOS_AGGREGATOR_PATH),
             self.arg_config.rollup_seq_url.clone(),
+            self.config.provider_l2()
         ))
         .await;
         log::debug!("📣 Braavos Aggregator class hash declared.");
