@@ -19,8 +19,8 @@ use crate::{bootstrap, CliArgs};
 #[ignore]
 async fn deploy_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
-
-    bootstrap(&get_config()).await;
+    let clients = Config::init(&get_config()).await;
+    bootstrap(&get_config(), &clients).await;
 
     Ok(())
 }
@@ -31,7 +31,7 @@ async fn deploy_bridge() -> Result<(), anyhow::Error> {
 async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
     let clients = Config::init(&get_config()).await;
-    let out = bootstrap(&get_config()).await;
+    let out = bootstrap(&get_config(), &clients).await;
 
     let _ = eth_bridge_test_helper(
         &clients,
@@ -51,7 +51,7 @@ async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
 async fn deposit_and_withdraw_erc20_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
     let clients = Config::init(&get_config()).await;
-    let out = bootstrap(&get_config()).await;
+    let out = bootstrap(&get_config(), &clients).await;
 
     let _ = erc20_bridge_test_helper(
         &clients,
@@ -70,7 +70,7 @@ async fn deposit_and_withdraw_erc20_bridge() -> Result<(), anyhow::Error> {
 async fn deposit_tests_both_bridges() -> Result<(), anyhow::Error> {
     env_logger::init();
     let clients = Config::init(&get_config()).await;
-    let out = bootstrap(&get_config()).await;
+    let out = bootstrap(&get_config(), &clients).await;
 
     let _ = eth_bridge_test_helper(
         &clients,
@@ -113,5 +113,8 @@ fn get_config() -> CliArgs {
         verifier_address: String::from(VERIFIER_ADDRESS),
         operator_address: String::from(OPERATOR_ADDRESS),
         dev: false,
+        mode: crate::BootstrapMode::Full,
+        core_contract_address: None,
+        core_contract_implementation_address: None,
     }
 }
