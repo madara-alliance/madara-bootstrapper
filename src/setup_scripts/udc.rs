@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use serde::Serialize;
 use starknet::accounts::ConnectedAccount;
 use starknet::core::types::Felt;
 use tokio::time::sleep;
@@ -9,27 +10,31 @@ use crate::helpers::account_actions::{get_contract_address_from_deploy_tx, Accou
 use crate::utils::constants::UDC_PATH;
 use crate::utils::{save_to_json, wait_for_transaction, JsonValueType};
 use crate::CliArgs;
+use crate::contract_clients::config::Config;
 
 pub struct UdcSetup<'a> {
     account: RpcAccount<'a>,
     account_address: Felt,
     arg_config: &'a CliArgs,
+    config: &'a Config
 }
 
+#[derive(Debug, Clone, Serialize)]
 pub struct UdcSetupOutput {
     pub udc_class_hash: Felt,
     pub udc_address: Felt,
 }
 
 impl<'a> UdcSetup<'a> {
-    pub fn new(account: RpcAccount<'a>, account_address: Felt, arg_config: &'a CliArgs) -> Self {
-        Self { account, account_address, arg_config }
+    pub fn new(account: RpcAccount<'a>, account_address: Felt, arg_config: &'a CliArgs, config: &'a Config) -> Self {
+        Self { account, account_address, arg_config, config }
     }
 
     pub async fn setup(&self) -> UdcSetupOutput {
         let udc_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(UDC_PATH),
             self.arg_config.rollup_seq_url.clone(),
+            self.config.provider_l2()
         ))
         .await;
         log::debug!("📣 UDC Class Hash Declared.");
