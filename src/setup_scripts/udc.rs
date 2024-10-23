@@ -5,18 +5,18 @@ use starknet::accounts::ConnectedAccount;
 use starknet::core::types::Felt;
 use tokio::time::sleep;
 
+use crate::contract_clients::config::Config;
 use crate::contract_clients::utils::{declare_contract, DeclarationInput, RpcAccount};
 use crate::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::utils::constants::UDC_PATH;
 use crate::utils::{save_to_json, wait_for_transaction, JsonValueType};
 use crate::CliArgs;
-use crate::contract_clients::config::Config;
 
 pub struct UdcSetup<'a> {
     account: RpcAccount<'a>,
     account_address: Felt,
     arg_config: &'a CliArgs,
-    config: &'a Config
+    config: &'a Config,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -34,7 +34,7 @@ impl<'a> UdcSetup<'a> {
         let udc_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(UDC_PATH),
             self.arg_config.rollup_seq_url.clone(),
-            self.config.provider_l2()
+            self.config.provider_l2(),
         ))
         .await;
         log::debug!("📣 UDC Class Hash Declared.");

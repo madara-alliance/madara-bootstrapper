@@ -17,7 +17,7 @@ pub async fn account_init<'a>(clients: &'a Config, arg_config: &'a CliArgs) -> R
     let oz_account_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
         String::from(OZ_ACCOUNT_PATH),
         arg_config.rollup_seq_url.clone(),
-        clients.provider_l2()
+        clients.provider_l2(),
     ))
     .await;
     log::debug!("OZ Account Class Hash Declared");

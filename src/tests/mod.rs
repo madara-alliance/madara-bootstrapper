@@ -36,9 +36,15 @@ async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
     let _ = eth_bridge_test_helper(
         &clients,
         &get_config(),
-        out.eth_proxy_address,
-        out.eth_bridge_proxy_address,
-        out.eth_bridge,
+        out.eth_bridge_setup_outputs
+            .ok_or_else(|| anyhow::anyhow!("eth_bridge_setup_outputs is None"))?
+            .l2_eth_proxy_address,
+        out.eth_bridge_setup_outputs
+            .ok_or_else(|| anyhow::anyhow!("eth_bridge_setup_outputs is None"))?
+            .l2_eth_bridge_proxy_address,
+        out.eth_bridge_setup_outputs
+            .ok_or_else(|| anyhow::anyhow!("eth_bridge_setup_outputs is None"))?
+            .l1_bridge,
     )
     .await;
 
@@ -53,12 +59,15 @@ async fn deposit_and_withdraw_erc20_bridge() -> Result<(), anyhow::Error> {
     let clients = Config::init(&get_config()).await;
     let out = bootstrap(&get_config(), &clients).await;
 
+    let erc20_bridge_setup = out.erc20_bridge_setup_outputs.as_ref()
+    .ok_or_else(|| anyhow::anyhow!("erc20_bridge_setup_outputs is None"))?;
+    
     let _ = erc20_bridge_test_helper(
         &clients,
         &get_config(),
-        out.l2_erc20_token_address,
-        out.starknet_token_bridge,
-        out.erc20_l2_bridge_address,
+        erc20_bridge_setup.test_erc20_token_address,
+        erc20_bridge_setup.token_bridge,
+        erc20_bridge_setup.l2_token_bridge,
     )
     .await;
 
@@ -75,18 +84,30 @@ async fn deposit_tests_both_bridges() -> Result<(), anyhow::Error> {
     let _ = eth_bridge_test_helper(
         &clients,
         &get_config(),
-        out.eth_proxy_address,
-        out.eth_bridge_proxy_address,
-        out.eth_bridge,
+        out.eth_bridge_setup_outputs
+            .ok_or_else(|| anyhow::anyhow!("eth_bridge_setup_outputs is None"))?
+            .l2_eth_proxy_address,
+        out.eth_bridge_setup_outputs
+            .ok_or_else(|| anyhow::anyhow!("eth_bridge_setup_outputs is None"))?
+            .l2_eth_bridge_proxy_address,
+        out.eth_bridge_setup_outputs
+            .ok_or_else(|| anyhow::anyhow!("eth_bridge_setup_outputs is None"))?
+            .l1_bridge,
     )
     .await;
 
     let _ = erc20_bridge_test_helper(
         &clients,
         &get_config(),
-        out.l2_erc20_token_address,
-        out.starknet_token_bridge,
-        out.erc20_l2_bridge_address,
+        out.erc20_bridge_setup_outputs
+            .ok_or_else(|| anyhow::anyhow!("erc20_bridge_setup_outputs is None"))?
+            .test_erc20_token_address,
+        out.erc20_bridge_setup_outputs
+            .ok_or_else(|| anyhow::anyhow!("erc20_bridge_setup_outputs is None"))?
+            .token_bridge,
+        out.erc20_bridge_setup_outputs
+            .ok_or_else(|| anyhow::anyhow!("erc20_bridge_setup_outputs is None"))?
+            .l2_token_bridge,
     )
     .await;
 
@@ -116,5 +137,6 @@ fn get_config() -> CliArgs {
         mode: crate::BootstrapMode::Full,
         core_contract_address: None,
         core_contract_implementation_address: None,
+        output_file: None,
     }
 }

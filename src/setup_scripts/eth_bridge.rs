@@ -2,7 +2,7 @@ use std::str::FromStr;
 use std::time::Duration;
 
 use ethers::abi::Address;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use starknet::accounts::{Account, ConnectedAccount};
 use starknet::core::types::Felt;
 use starknet_providers::jsonrpc::HttpTransport;
@@ -29,7 +29,7 @@ pub struct EthBridge<'a> {
     core_contract: &'a dyn CoreContract,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Serialize)]
 pub struct EthBridgeSetupOutput {
     pub l2_legacy_proxy_class_hash: Felt,
     pub l2_erc20_legacy_class_hash: Felt,
@@ -37,7 +37,8 @@ pub struct EthBridgeSetupOutput {
     pub l2_starkgate_proxy_class_hash: Felt,
     pub l2_legacy_eth_bridge_class_hash: Felt,
     pub l2_eth_bridge_proxy_address: Felt,
-    pub l1_bridge_address: Address,
+    #[serde(skip_serializing)]
+    pub l1_bridge: StarknetLegacyEthBridge,
 }
 
 impl<'a> EthBridge<'a> {
@@ -55,7 +56,7 @@ impl<'a> EthBridge<'a> {
         let legacy_proxy_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(PROXY_LEGACY_PATH),
             self.arg_config.rollup_seq_url.clone(),
-            self.clients.provider_l2()
+            self.clients.provider_l2(),
         ))
         .await;
         log::debug!("🎡 Legacy proxy class hash declared.");
@@ -66,7 +67,7 @@ impl<'a> EthBridge<'a> {
         let starkgate_proxy_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(STARKGATE_PROXY_PATH),
             self.arg_config.rollup_seq_url.clone(),
-            self.clients.provider_l2()
+            self.clients.provider_l2(),
         ))
         .await;
         log::debug!("🎡 Starkgate proxy class hash declared.");
@@ -77,7 +78,7 @@ impl<'a> EthBridge<'a> {
         let erc20_legacy_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(ERC20_LEGACY_PATH),
             self.arg_config.rollup_seq_url.clone(),
-            self.clients.provider_l2()
+            self.clients.provider_l2(),
         ))
         .await;
         log::debug!("🎡 ERC20 legacy class hash declared.");
@@ -88,7 +89,7 @@ impl<'a> EthBridge<'a> {
         let legacy_eth_bridge_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(LEGACY_BRIDGE_PATH),
             self.arg_config.rollup_seq_url.clone(),
-            self.clients.provider_l2()
+            self.clients.provider_l2(),
         ))
         .await;
         log::debug!("🎡 Legacy ETH Bridge class hash declared");
@@ -211,7 +212,7 @@ impl<'a> EthBridge<'a> {
             l2_legacy_eth_bridge_class_hash: legacy_eth_bridge_class_hash,
             l2_eth_proxy_address: eth_proxy_address,
             l2_eth_bridge_proxy_address: eth_bridge_proxy_address,
-            l1_bridge_address: eth_bridge.address(),
+            l1_bridge: eth_bridge,
         }
     }
 }
