@@ -63,7 +63,7 @@ async fn deposit_and_withdraw_erc20_bridge() -> Result<(), anyhow::Error> {
         extras.token_bridge,
         eth_token_setup.l2_token_bridge,
     )
-        .await;
+    .await;
 
     Ok(())
 }
@@ -85,7 +85,7 @@ async fn deposit_tests_both_bridges() -> Result<(), anyhow::Error> {
         eth_bridge_setup.l2_eth_bridge_proxy_address,
         extras.eth_bridge,
     )
-        .await;
+    .await;
 
     let _ = erc20_bridge_test_helper(
         &clients,

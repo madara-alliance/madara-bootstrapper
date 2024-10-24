@@ -3,15 +3,13 @@ use std::str::FromStr;
 use std::time::Duration;
 
 use ethers::prelude::U256;
-use ethers::types::Address;
 use starknet::core::types::Felt;
 use tokio::time::sleep;
 
 use crate::contract_clients::config::Config;
 use crate::contract_clients::token_bridge::StarknetTokenBridge;
-use crate::contract_clients::utils::{build_single_owner_account, read_erc20_balance};
+use crate::contract_clients::utils::read_erc20_balance;
 use crate::tests::constants::L2_DEPLOYER_ADDRESS;
-use crate::utils::invoke_contract;
 use crate::CliArgs;
 // TODO : Uncomment L2 --> L1 part after this part is added in the madara-orchestrator.
 
@@ -53,11 +51,10 @@ pub async fn erc20_bridge_test_helper(
 
     println!("Press Enter to continue erc20 bridge...");
     let _ = stdin().read_line(&mut String::new()).unwrap();
-    //
     // let l1_recipient = Felt::from_hex(&arg_config.l1_deployer_address).unwrap();
     // let account =
-    //     build_single_owner_account(clients.provider_l2(), &arg_config.rollup_priv_key, L2_DEPLOYER_ADDRESS, false)
-    //         .await;
+    //     build_single_owner_account(clients.provider_l2(), &arg_config.rollup_priv_key,
+    // L2_DEPLOYER_ADDRESS, false)         .await;
     //
     // log::debug!("Initiated token withdraw on L2 [⏳]");
     // invoke_contract(

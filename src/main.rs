@@ -8,14 +8,13 @@ pub mod utils;
 use std::fs::File;
 use std::io::stdin;
 use std::str::FromStr;
-use std::time::Duration;
 
 use clap::{ArgAction, Parser, ValueEnum};
 use contract_clients::utils::RpcAccount;
 use dotenv::dotenv;
 use ethers::abi::Address;
 use inline_colorization::*;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use setup_scripts::argent::ArgentSetupOutput;
 use setup_scripts::braavos::BraavosSetupOutput;
 use setup_scripts::core_contract::CoreContractStarknetL1Output;
@@ -23,12 +22,9 @@ use setup_scripts::erc20_bridge::Erc20BridgeSetupOutput;
 use setup_scripts::eth_bridge::EthBridgeSetupOutput;
 use setup_scripts::udc::UdcSetupOutput;
 use starknet::accounts::Account;
-use starknet::core::types::Felt;
 use starknet_core_contract_client::clients::StarknetValidityContractClient;
-use tokio::time::sleep;
 
 use crate::contract_clients::config::Config;
-use crate::contract_clients::core_contract::CoreContract;
 use crate::contract_clients::eth_bridge::StarknetLegacyEthBridge;
 use crate::contract_clients::starknet_validity::StarknetValidityContract;
 use crate::contract_clients::token_bridge::StarknetTokenBridge;
@@ -123,34 +119,39 @@ pub async fn main() {
         BootstrapMode::Full => bootstrap(&args, &config).await,
         BootstrapMode::Core => {
             let output = setup_core_contract(&args, &config).await;
-            (BootstrapperOutput {
-                starknet_contract_address: Some(output.core_contract_client.address()),
-                starknet_contract_implementation_address: Some(output.core_contract_client.implementation_address()),
-                ..Default::default()
-            }, None)
+            (
+                BootstrapperOutput {
+                    starknet_contract_address: Some(output.core_contract_client.address()),
+                    starknet_contract_implementation_address: Some(
+                        output.core_contract_client.implementation_address(),
+                    ),
+                    ..Default::default()
+                },
+                None,
+            )
         }
         BootstrapMode::EthBridge => {
             let core_contract_client = get_core_contract_client(&args, &config);
             let (output, _) = setup_eth_bridge(None, &core_contract_client, &args, &config).await;
-           ( BootstrapperOutput { eth_bridge_setup_outputs: Some(output), ..Default::default() }, None)
+            (BootstrapperOutput { eth_bridge_setup_outputs: Some(output), ..Default::default() }, None)
         }
         BootstrapMode::Erc20Bridge => {
             let core_contract_client = get_core_contract_client(&args, &config);
             let (output, _) = setup_erc20_bridge(None, &core_contract_client, &args, &config).await;
-(            BootstrapperOutput { erc20_bridge_setup_outputs: Some(output), ..Default::default() }, None
-)        }
+            (BootstrapperOutput { erc20_bridge_setup_outputs: Some(output), ..Default::default() }, None)
+        }
         BootstrapMode::Udc => {
             let output = setup_udc(None, &args, &config).await;
-(            BootstrapperOutput { udc_setup_outputs: Some(output), ..Default::default() }, None
-)        }
+            (BootstrapperOutput { udc_setup_outputs: Some(output), ..Default::default() }, None)
+        }
         BootstrapMode::Argent => {
             let output = setup_argent(None, &args, &config).await;
-(            BootstrapperOutput { argent_setup_outputs: Some(output), ..Default::default() }, None
-)        }
+            (BootstrapperOutput { argent_setup_outputs: Some(output), ..Default::default() }, None)
+        }
         BootstrapMode::Braavos => {
             let output = setup_braavos(None, &args, &config).await;
-(            BootstrapperOutput { braavos_setup_outputs: Some(output), ..Default::default() }, None
-)        }
+            (BootstrapperOutput { braavos_setup_outputs: Some(output), ..Default::default() }, None)
+        }
     };
 
     if let Some(output_file) = args.output_file {
@@ -173,16 +174,12 @@ fn get_core_contract_client(args: &CliArgs, config: &Config) -> CoreContractStar
         config.eth_client().signer().clone(),
         Address::from_str(&core_contract_implementation_address).unwrap(),
     );
-    let core_contract_client = CoreContractStarknetL1Output {
-        core_contract_client: Box::new(StarknetValidityContract { core_contract_client }),
-    };
-
-    core_contract_client
+    CoreContractStarknetL1Output { core_contract_client: Box::new(StarknetValidityContract { core_contract_client }) }
 }
 
 async fn get_account<'a>(config: &'a Config, args: &'a CliArgs) -> RpcAccount<'a> {
     log::info!("⏳ L2 State and Initialisation Started");
-    let account = account_init(config, &args).await;
+    let account = account_init(config, args).await;
     log::info!("🔐 Account with given  private key deployed on L2. [Account Address : {:?}]", account.address());
     account
 }
@@ -205,16 +202,17 @@ pub struct BootstrapperOutput {
     pub braavos_setup_outputs: Option<BraavosSetupOutput>,
 }
 
+#[allow(dead_code)]
 pub struct Extra {
     eth_bridge: StarknetLegacyEthBridge,
-    token_bridge: StarknetTokenBridge
+    token_bridge: StarknetTokenBridge,
 }
 
 pub async fn bootstrap(args: &CliArgs, config: &Config) -> (BootstrapperOutput, Option<Extra>) {
     let account = get_account(config, args).await;
 
     // setup core contract
-    let core_contract_client = setup_core_contract(&args, config).await;
+    let core_contract_client = setup_core_contract(args, config).await;
 
     // take user input for testing
 
@@ -222,7 +220,8 @@ pub async fn bootstrap(args: &CliArgs, config: &Config) -> (BootstrapperOutput, 
     let _ = stdin().read_line(&mut String::new()).unwrap();
 
     // setup eth bridge
-    let (eth_bridge_setup_outputs, eth_bridge) = setup_eth_bridge(Some(account.clone()), &core_contract_client, args, config).await;
+    let (eth_bridge_setup_outputs, eth_bridge) =
+        setup_eth_bridge(Some(account.clone()), &core_contract_client, args, config).await;
 
     // setup erc20 bridge
     let (erc20_bridge_setup_outputs, token_bridge) =
@@ -237,24 +236,24 @@ pub async fn bootstrap(args: &CliArgs, config: &Config) -> (BootstrapperOutput, 
     // setup braavos account
     let braavos_setup_outputs = setup_braavos(Some(account.clone()), args, config).await;
 
-    (BootstrapperOutput {
-        starknet_contract_address: Some(core_contract_client.core_contract_client.address()),
-        starknet_contract_implementation_address: Some(
-            core_contract_client.core_contract_client.implementation_address(),
-        ),
-        eth_bridge_setup_outputs: Some(eth_bridge_setup_outputs),
-        erc20_bridge_setup_outputs: Some(erc20_bridge_setup_outputs),
-        udc_setup_outputs: Some(udc_setup_outputs),
-        argent_setup_outputs: Some(argent_setup_outputs),
-        braavos_setup_outputs: Some(braavos_setup_outputs),
-    }, Some(Extra {
-        eth_bridge,
-        token_bridge
-    }))
+    (
+        BootstrapperOutput {
+            starknet_contract_address: Some(core_contract_client.core_contract_client.address()),
+            starknet_contract_implementation_address: Some(
+                core_contract_client.core_contract_client.implementation_address(),
+            ),
+            eth_bridge_setup_outputs: Some(eth_bridge_setup_outputs),
+            erc20_bridge_setup_outputs: Some(erc20_bridge_setup_outputs),
+            udc_setup_outputs: Some(udc_setup_outputs),
+            argent_setup_outputs: Some(argent_setup_outputs),
+            braavos_setup_outputs: Some(braavos_setup_outputs),
+        },
+        Some(Extra { eth_bridge, token_bridge }),
+    )
 }
 
 async fn setup_core_contract(args: &CliArgs, config: &Config) -> CoreContractStarknetL1Output {
-    let core_contract = CoreContractStarknetL1::new(args, &config);
+    let core_contract = CoreContractStarknetL1::new(args, config);
     let core_contract_client = core_contract.setup().await;
     log::info!("📦 Core address : {:?}", core_contract_client.core_contract_client.address());
     log::info!(
@@ -285,7 +284,7 @@ async fn setup_eth_bridge<'a>(
         account.clone(),
         account.address(),
         args,
-        &config,
+        config,
         core_contract_client.core_contract_client.as_ref(),
     );
     let (eth_bridge_setup_outputs, eth_bridge) = eth_bridge.setup().await;
@@ -308,7 +307,7 @@ async fn setup_erc20_bridge<'a>(
         account.clone(),
         account.address(),
         args,
-        &config,
+        config,
         core_contract_client.core_contract_client.as_ref(),
     );
     let (erc20_bridge_setup_outputs, token_bridge) = erc20_bridge.setup().await;

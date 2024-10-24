@@ -77,7 +77,8 @@ pub fn get_init_data_core_contract(
     _verifier_address: Address,
 ) -> CoreContractInitData {
     CoreContractInitData {
-        program_hash: U256::from_str_radix("1e324682835e60c4779a683b32713504aed894fd73842f7d05b18e7bd29cd70", 16).unwrap(), // zero program hash would be deemed invalid
+        program_hash: U256::from_str_radix("1e324682835e60c4779a683b32713504aed894fd73842f7d05b18e7bd29cd70", 16)
+            .unwrap(), // zero program hash would be deemed invalid
         aggregate_program_hash: U256::zero(),
         verifier_address: Address::from_str("0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512").unwrap(),
         config_hash: convert_felt_to_u256(config_hash),
@@ -85,10 +86,12 @@ pub fn get_init_data_core_contract(
         // Figure out the exact params for production env
         initial_state: CoreContractState {
             block_number: I256::from(11),
-            state_root: U256::from_str_radix("5f41b32fadc9d1bd9d2bf2eb8771e1c64b2ad1b6f3334bf6be0b38c408e4746", 16).unwrap(),
+            state_root: U256::from_str_radix("5f41b32fadc9d1bd9d2bf2eb8771e1c64b2ad1b6f3334bf6be0b38c408e4746", 16)
+                .unwrap(),
             // TODO :
             // Remove hardcoded values.
-            block_hash: U256::from_str_radix("6aeb708c2a47182fd921db56803102eabbd2940c75e0c306012fff144b02186", 16).unwrap(),
+            block_hash: U256::from_str_radix("6aeb708c2a47182fd921db56803102eabbd2940c75e0c306012fff144b02186", 16)
+                .unwrap(),
         },
     }
 }
