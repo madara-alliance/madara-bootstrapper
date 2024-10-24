@@ -51,7 +51,7 @@ impl<'a> EthBridge<'a> {
         Self { account, account_address, arg_config, clients, core_contract }
     }
 
-    pub async fn setup(&self) -> EthBridgeSetupOutput {
+    pub async fn setup(&self) -> (EthBridgeSetupOutput, StarknetLegacyEthBridge) {
         let legacy_proxy_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(PROXY_LEGACY_PATH),
             self.arg_config.rollup_seq_url.clone(),
@@ -204,7 +204,7 @@ impl<'a> EthBridge<'a> {
             .await;
         log::info!("✴️ ETH Bridge setup on L1 completed");
 
-        EthBridgeSetupOutput {
+        (EthBridgeSetupOutput {
             l2_legacy_proxy_class_hash: legacy_proxy_class_hash,
             l2_starkgate_proxy_class_hash: starkgate_proxy_class_hash,
             l2_erc20_legacy_class_hash: erc20_legacy_class_hash,
@@ -212,7 +212,7 @@ impl<'a> EthBridge<'a> {
             l2_eth_proxy_address: eth_proxy_address,
             l2_eth_bridge_proxy_address: eth_bridge_proxy_address,
             l1_bridge_address: eth_bridge.address(),
-        }
+        }, eth_bridge)
     }
 }
 

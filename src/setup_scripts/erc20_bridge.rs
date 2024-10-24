@@ -49,7 +49,7 @@ impl<'a> Erc20Bridge<'a> {
         Self { account, account_address, arg_config, clients, core_contract }
     }
 
-    pub async fn setup(&self) -> Erc20BridgeSetupOutput {
+    pub async fn setup(&self) -> (Erc20BridgeSetupOutput, StarknetTokenBridge) {
         let erc20_cairo_one_class_hash = declare_contract(DeclarationInput::DeclarationInputs(
             String::from(ERC20_SIERRA_PATH),
             String::from(ERC20_CASM_PATH),
@@ -139,14 +139,14 @@ impl<'a> Erc20Bridge<'a> {
         )
         .unwrap();
 
-        Erc20BridgeSetupOutput {
+        (Erc20BridgeSetupOutput {
             erc20_cairo_one_class_hash,
             l1_token_bridge_proxy: token_bridge.bridge_address(),
             l1_manager_address: token_bridge.manager_address(),
             l1_registry_address: token_bridge.registry_address(),
             l2_token_bridge: l2_bridge_address,
             test_erc20_token_address: l2_erc20_token_address,
-        }
+        }, token_bridge)
     }
 }
 
