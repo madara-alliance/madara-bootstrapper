@@ -31,7 +31,7 @@ async fn deploy_bridge() -> Result<(), anyhow::Error> {
 async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
     let clients = Config::init(&get_config()).await;
-    let (out, extras) = bootstrap(&get_config(), &clients).await;
+    let out = bootstrap(&get_config(), &clients).await;
     let eth_bridge_setup = out.eth_bridge_setup_outputs.unwrap();
 
     let _ = eth_bridge_test_helper(
@@ -39,7 +39,7 @@ async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
         &get_config(),
         eth_bridge_setup.l2_eth_proxy_address,
         eth_bridge_setup.l2_eth_bridge_proxy_address,
-        extras.unwrap().eth_bridge,
+        eth_bridge_setup.l1_bridge_address,
     )
     .await;
 
@@ -52,15 +52,14 @@ async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
 async fn deposit_and_withdraw_erc20_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
     let clients = Config::init(&get_config()).await;
-    let (out, extras) = bootstrap(&get_config(), &clients).await;
+    let out = bootstrap(&get_config(), &clients).await;
     let eth_token_setup = out.erc20_bridge_setup_outputs.unwrap();
-    let extras = extras.unwrap();
 
     let _ = erc20_bridge_test_helper(
         &clients,
         &get_config(),
         eth_token_setup.test_erc20_token_address,
-        extras.token_bridge,
+        eth_token_setup.token_bridge,
         eth_token_setup.l2_token_bridge,
     )
     .await;
@@ -73,17 +72,16 @@ async fn deposit_and_withdraw_erc20_bridge() -> Result<(), anyhow::Error> {
 async fn deposit_tests_both_bridges() -> Result<(), anyhow::Error> {
     env_logger::init();
     let clients = Config::init(&get_config()).await;
-    let (out, extras) = bootstrap(&get_config(), &clients).await;
+    let out = bootstrap(&get_config(), &clients).await;
     let eth_bridge_setup = out.eth_bridge_setup_outputs.unwrap();
     let eth_token_setup = out.erc20_bridge_setup_outputs.unwrap();
-    let extras = extras.unwrap();
 
     let _ = eth_bridge_test_helper(
         &clients,
         &get_config(),
         eth_bridge_setup.l2_eth_proxy_address,
         eth_bridge_setup.l2_eth_bridge_proxy_address,
-        extras.eth_bridge,
+        eth_bridge_setup.l1_bridge_address,
     )
     .await;
 
@@ -91,7 +89,7 @@ async fn deposit_tests_both_bridges() -> Result<(), anyhow::Error> {
         &clients,
         &get_config(),
         eth_token_setup.test_erc20_token_address,
-        extras.token_bridge,
+        eth_token_setup.token_bridge,
         eth_token_setup.l2_token_bridge,
     )
     .await;

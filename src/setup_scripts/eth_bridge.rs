@@ -29,7 +29,7 @@ pub struct EthBridge<'a> {
     core_contract: &'a dyn CoreContract,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Serialize)]
 pub struct EthBridgeSetupOutput {
     pub l2_legacy_proxy_class_hash: Felt,
     pub l2_erc20_legacy_class_hash: Felt,
@@ -37,7 +37,8 @@ pub struct EthBridgeSetupOutput {
     pub l2_starkgate_proxy_class_hash: Felt,
     pub l2_legacy_eth_bridge_class_hash: Felt,
     pub l2_eth_bridge_proxy_address: Felt,
-    pub l1_bridge_address: Address,
+    #[serde(skip)]
+    pub l1_bridge_address: StarknetLegacyEthBridge,
 }
 
 impl<'a> EthBridge<'a> {
@@ -51,7 +52,7 @@ impl<'a> EthBridge<'a> {
         Self { account, account_address, arg_config, clients, core_contract }
     }
 
-    pub async fn setup(&self) -> (EthBridgeSetupOutput, StarknetLegacyEthBridge) {
+    pub async fn setup(&self) -> EthBridgeSetupOutput {
         let legacy_proxy_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(PROXY_LEGACY_PATH),
             self.arg_config.rollup_seq_url.clone(),
@@ -204,18 +205,15 @@ impl<'a> EthBridge<'a> {
             .await;
         log::info!("✴️ ETH Bridge setup on L1 completed");
 
-        (
-            EthBridgeSetupOutput {
-                l2_legacy_proxy_class_hash: legacy_proxy_class_hash,
-                l2_starkgate_proxy_class_hash: starkgate_proxy_class_hash,
-                l2_erc20_legacy_class_hash: erc20_legacy_class_hash,
-                l2_legacy_eth_bridge_class_hash: legacy_eth_bridge_class_hash,
-                l2_eth_proxy_address: eth_proxy_address,
-                l2_eth_bridge_proxy_address: eth_bridge_proxy_address,
-                l1_bridge_address: eth_bridge.address(),
-            },
-            eth_bridge,
-        )
+        EthBridgeSetupOutput {
+            l2_legacy_proxy_class_hash: legacy_proxy_class_hash,
+            l2_starkgate_proxy_class_hash: starkgate_proxy_class_hash,
+            l2_erc20_legacy_class_hash: erc20_legacy_class_hash,
+            l2_legacy_eth_bridge_class_hash: legacy_eth_bridge_class_hash,
+            l2_eth_proxy_address: eth_proxy_address,
+            l2_eth_bridge_proxy_address: eth_bridge_proxy_address,
+            l1_bridge_address: eth_bridge,
+        }
     }
 }
 
