@@ -36,7 +36,7 @@ impl CoreContract for StarknetValidityContract {
     }
 
     fn implementation_address(&self) -> Address {
-        log::debug!(
+        log::info!(
             "🎡 self.core_contract_client.implementation_address() : {:?}",
             self.core_contract_client.implementation_address()
         );
@@ -52,7 +52,7 @@ impl CoreContract for StarknetValidityContract {
     async fn initialize_with(&self, init_data: CoreContractInitData) {
         let data = ProxyInitializeData::<0> { sub_contract_addresses: [], eic_address: Default::default(), init_data };
 
-        log::debug!("ℹ️  initialize_with : data : {:?}", data);
+        log::info!("ℹ️  initialize_with : data : {:?}", data);
 
         self.core_contract_client.initialize_with(data).await.expect("Failed to initialize");
 
@@ -78,7 +78,7 @@ impl CoreContract for StarknetValidityContract {
             get_init_data_core_contract(block_number, state_root, program_hash, config_hash, verifier_address);
         let final_bytes = get_calldata_bytes(init_data.clone());
 
-        log::debug!("ℹ️  add_implementation : data : {:?} : {:?}", init_data, final_bytes.clone());
+        log::info!("ℹ️  add_implementation : data : {:?} : {:?}", init_data, final_bytes.clone());
 
         // https://sepolia.etherscan.io/tx/0x9ac02beb912e5c6226828110380d727a6fd7e4748cbded2198cdf62ea78dab62
         // let bytes_etherscan =
@@ -91,7 +91,7 @@ impl CoreContract for StarknetValidityContract {
             .await
             .expect("Failed to call add implementation");
 
-        log::debug!("ℹ️  add_implementation : done");
+        log::info!("ℹ️  add_implementation : done");
     }
 
     /// Add implementation Starknet core contract with the specified data.
@@ -110,7 +110,7 @@ impl CoreContract for StarknetValidityContract {
             get_init_data_core_contract(block_number, state_root, program_hash, config_hash, verifier_address);
         let final_bytes = get_calldata_bytes(init_data.clone());
 
-        log::debug!("ℹ️  upgrade_to : data : {:?} : {:?}", init_data, final_bytes.clone());
+        log::info!("ℹ️  upgrade_to : data : {:?} : {:?}", init_data, final_bytes.clone());
 
         // https://sepolia.etherscan.io/tx/0x9ac02beb912e5c6226828110380d727a6fd7e4748cbded2198cdf62ea78dab62
         // let bytes_etherscan =
@@ -123,13 +123,13 @@ impl CoreContract for StarknetValidityContract {
             .await
             .expect("Failed to call upgrade to");
 
-        log::debug!("ℹ️  upgrade_to : done");
+        log::info!("ℹ️  upgrade_to : done");
     }
 
     /// For registering the operator for Starknet Core Contract
     async fn register_operator_core_contract(&self, operator_address: Address) {
         self.core_contract_client.register_operator(operator_address).await.expect("Failed to register operator");
-        log::debug!("ℹ️  register_operator : done");
+        log::info!("ℹ️  register_operator : done");
     }
 
     /// For nominating the governor for Starknet Core Contract
@@ -138,7 +138,7 @@ impl CoreContract for StarknetValidityContract {
             .starknet_nominate_new_governor(l1_governor_address)
             .await
             .expect("Failed to nominate governor");
-        log::debug!("ℹ️  register_operator : done");
+        log::info!("ℹ️  register_operator : done");
     }
 
     /// For nominating the governor for Starknet Core Contract Proxy
@@ -147,7 +147,7 @@ impl CoreContract for StarknetValidityContract {
             .proxy_nominate_new_governor(l1_governor_address)
             .await
             .expect("Failed to register operator");
-        log::debug!("ℹ️  proxy_nominate_new_governor : done");
+        log::info!("ℹ️  proxy_nominate_new_governor : done");
     }
 
     /// Initialize Starknet core contract with the specified program and config hashes. The rest of

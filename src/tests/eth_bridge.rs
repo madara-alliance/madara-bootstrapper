@@ -24,10 +24,10 @@ pub async fn eth_bridge_test_helper(
 
     eth_bridge.deposit(10.into(), U256::from_str(L2_DEPLOYER_ADDRESS).unwrap(), 1000.into()).await;
 
-    log::debug!("ETH deposited on l1 [💰]");
+    log::info!("ETH deposited on l1 [💰]");
     sleep(Duration::from_secs(arg_config.cross_chain_wait_time)).await;
     sleep(Duration::from_secs((arg_config.l1_wait_time).parse()?)).await;
-    log::debug!("L1 message executed on L2 [🔁]");
+    log::info!("L1 message executed on L2 [🔁]");
 
     let balance_after =
         read_erc20_balance(clients.provider_l2(), l2_eth_address, Felt::from_hex(L2_DEPLOYER_ADDRESS).unwrap()).await;
@@ -44,16 +44,16 @@ pub async fn eth_bridge_test_helper(
     //
     // invoke_contract(l2_bridge_address, "initiate_withdraw", vec![l1_receipient, Felt::from(5),
     // Felt::ZERO], &account)     .await;
-    // log::debug!("ETH withdrawal initiated on l2 [💰]");
-    // log::debug!("Waiting for message to be consumed on l2 [⏳]");
+    // log::info!("ETH withdrawal initiated on l2 [💰]");
+    // log::info!("Waiting for message to be consumed on l2 [⏳]");
     // sleep(Duration::from_secs(arg_config.cross_chain_wait_time)).await;
     // sleep(Duration::from_secs((arg_config.l1_wait_time).parse()?)).await;
     //
     // let balance_before =
     // eth_bridge.eth_balance(Address::from_str(&arg_config.l1_deployer_address).unwrap()).await;
-    // log::debug!("Withdraw initiated on ETH Bridge [⏳]");
+    // log::info!("Withdraw initiated on ETH Bridge [⏳]");
     // eth_bridge.withdraw(5.into(), Address::from_str(&arg_config.l1_deployer_address).unwrap()).await;
-    // log::debug!("Withdraw completed on ETH Bridge [✅]");
+    // log::info!("Withdraw completed on ETH Bridge [✅]");
     // let balance_after =
     // eth_bridge.eth_balance(Address::from_str(&arg_config.l1_deployer_address).unwrap()).await;
     //

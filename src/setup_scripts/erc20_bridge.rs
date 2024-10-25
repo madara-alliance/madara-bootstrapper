@@ -55,7 +55,7 @@ impl<'a> Erc20Bridge<'a> {
             self.account.clone(),
         ))
         .await;
-        log::debug!("🌗 ERC20 Class Hash declared : {:?}", erc20_cairo_one_class_hash);
+        log::info!("🌗 ERC20 Class Hash declared : {:?}", erc20_cairo_one_class_hash);
         save_to_json("erc20_cairo_one_class_hash", &JsonValueType::StringType(erc20_cairo_one_class_hash.to_string()))
             .unwrap();
         sleep(Duration::from_secs(10)).await;

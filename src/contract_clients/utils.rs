@@ -181,14 +181,14 @@ pub async fn declare_contract(input: DeclarationInput<'_>) -> Felt {
             let raw_txn_rpc = req_client.post(url).json(json_body).send().await;
             match raw_txn_rpc {
                 Ok(val) => {
-                    log::debug!(
+                    log::info!(
                         "🚧 Txn Sent Successfully : {:?}",
                         val.json::<RpcResult<DeclareTransactionResult>>().await.unwrap()
                     );
                 }
                 Err(err) => {
-                    log::debug!("Error : Error sending the transaction using RPC");
-                    log::debug!("{:?}", err);
+                    log::info!("Error : Error sending the transaction using RPC");
+                    log::info!("{:?}", err);
                 }
             }
 
@@ -216,7 +216,7 @@ pub(crate) async fn deploy_account_using_priv_key(
     save_to_json("account_address", &JsonValueType::StringType(account_address.to_string())).unwrap();
 
     if provider.get_class_at(BlockId::Tag(Pending), account_address).await.is_ok() {
-        log::debug!("ℹ️ Account is already deployed. Skipping....");
+        log::info!("ℹ️ Account is already deployed. Skipping....");
         return account_address;
     }
 
@@ -247,7 +247,7 @@ pub(crate) async fn deploy_proxy_contract(
         .await
         .expect("Error deploying the contract proxy.");
 
-    log::debug!("txn in proxy contract is: {:?}", txn);
+    log::info!("txn in proxy contract is: {:?}", txn);
 
     wait_for_transaction(account.provider(), txn.transaction_hash, "deploy_proxy_contract : deploy_contract")
         .await

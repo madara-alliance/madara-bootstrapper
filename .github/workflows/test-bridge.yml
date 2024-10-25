@@ -27,13 +27,7 @@ jobs:
 
       - name: Run anvil
         run: |
-          anvil </dev/null &>/dev/null &
-
-      - name: Run madara
-        run: |
-          cd bin
-          echo "Running madara...."
-          ./run_madara.sh
+          anvil </dev/null &>/dev/null &"
 
       - uses: taiki-e/install-action@cargo-llvm-cov
       - uses: taiki-e/install-action@nextest

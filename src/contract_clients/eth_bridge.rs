@@ -83,7 +83,7 @@ impl StarknetLegacyEthBridge {
         .unwrap();
         let contract_address = get_contract_address_from_deploy_tx(account.provider(), &deploy_tx).await.unwrap();
 
-        log::debug!("🎡 contract address (eth bridge) : {:?}", contract_address);
+        log::info!("🎡 contract address (eth bridge) : {:?}", contract_address);
 
         let add_implementation_txn = invoke_contract(
             legacy_eth_bridge_proxy_address,
@@ -158,7 +158,7 @@ impl StarknetLegacyEthBridge {
         calldata.extend(empty_bytes);
         calldata.extend(padded_messaging_bytes);
 
-        log::debug!("🎡 add_implementation_eth_bridge : bytes : {:?}", Bytes::from(calldata.clone()));
+        log::info!("🎡 add_implementation_eth_bridge : bytes : {:?}", Bytes::from(calldata.clone()));
 
         self.eth_bridge
             .add_implementation(Bytes::from(calldata), self.implementation_address(), false)
@@ -185,7 +185,7 @@ impl StarknetLegacyEthBridge {
         calldata.extend(empty_bytes);
         calldata.extend(padded_messaging_bytes);
 
-        log::debug!("🎡 upgrade_to_eth_bridge : bytes : {:?}", Bytes::from(calldata.clone()));
+        log::info!("🎡 upgrade_to_eth_bridge : bytes : {:?}", Bytes::from(calldata.clone()));
 
         self.eth_bridge
             .upgrade_to(Bytes::from(calldata), self.implementation_address(), false)
@@ -228,12 +228,12 @@ impl StarknetLegacyEthBridge {
         )
         .await;
 
-        log::debug!("🎡 setup_l2_bridge : l2 bridge initialized //");
+        log::info!("🎡 setup_l2_bridge : l2 bridge initialized //");
         wait_for_transaction(rpc_provider, tx.transaction_hash, "setup_l2_bridge : initialize").await.unwrap();
 
         let tx = invoke_contract(l2_bridge_address, "set_l2_token", vec![erc20_address], account).await;
 
-        log::debug!("🎡 setup_l2_bridge : l2 token set //");
+        log::info!("🎡 setup_l2_bridge : l2 token set //");
         wait_for_transaction(rpc_provider, tx.transaction_hash, "setup_l2_bridge : set_l2_token").await.unwrap();
 
         let tx = invoke_contract(
@@ -244,7 +244,7 @@ impl StarknetLegacyEthBridge {
         )
         .await;
 
-        log::debug!("🎡 setup_l2_bridge : l1 bridge set //");
+        log::info!("🎡 setup_l2_bridge : l1 bridge set //");
         wait_for_transaction(rpc_provider, tx.transaction_hash, "setup_l2_bridge : set_l1_bridge").await.unwrap();
     }
 

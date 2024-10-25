@@ -1,6 +1,7 @@
 pub mod constants;
 mod erc20_bridge;
 mod eth_bridge;
+mod madara;
 
 use constants::{
     APP_CHAIN_ID, ETH_CHAIN_ID, ETH_PRIV_KEY, ETH_RPC, FEE_TOKEN_ADDRESS, L1_DEPLOYER_ADDRESS, L1_WAIT_TIME,
@@ -12,7 +13,85 @@ use crate::contract_clients::config::Config;
 use crate::tests::constants::{L1_MULTISIG_ADDRESS, L2_MULTISIG_ADDRESS, OPERATOR_ADDRESS, VERIFIER_ADDRESS};
 use crate::tests::erc20_bridge::erc20_bridge_test_helper;
 use crate::tests::eth_bridge::eth_bridge_test_helper;
-use crate::{bootstrap, CliArgs};
+use crate::tests::madara::{MadaraCmd, MadaraCmdBuilder};
+use crate::{
+    bootstrap, get_account, setup_argent, setup_braavos, setup_core_contract, setup_erc20_bridge, setup_eth_bridge,
+    setup_udc, BootstrapperOutput, CliArgs,
+};
+
+async fn test_setup(config: &CliArgs, clients: &Config) -> (BootstrapperOutput, MadaraCmd) {
+    // setup the core contract first, given it would start on a empty anvil, the address would be same
+    let core_contract_client = setup_core_contract(config, clients).await;
+
+    // run the madara with the commans:
+    // cargo run --release -- --name madara --base-path ../madara_db --rpc-port 9944 --rpc-cors "*"
+    // --rpc-external --sequencer --chain-config-path configs/presets/devnet.yaml --gas-price 0
+    // --blob-gas-price 0 --strk-gas-price 0 --strk-blob-gas-price 0 --rpc-methods unsafe
+    // --feeder-gateway-enable --gateway-enable --gateway-external --no-l1-sync
+    let mut node = MadaraCmdBuilder::new()
+        .args([
+            "--no-sync-polling",
+            "--l1-endpoint",
+            "http://localhost:8545",
+            "--chain-config-path=./src/tests/devnet.yml",
+            "--rpc-cors",
+            "*",
+            "--rpc-external",
+            "--sequencer",
+            "--feeder-gateway-enable",
+            "--gateway-enable",
+            "--gateway-external",
+            "--rpc-methods",
+            "unsafe",
+            "--gas-price",
+            "0",
+            "--blob-gas-price",
+            "0",
+            "--strk-gas-price",
+            "0",
+            "--strk-blob-gas-price",
+            "0",
+        ])
+        .run();
+    node.wait_for_ready().await;
+
+    // setup the rest of the stuff and return the ideal output for the tests
+
+    // setup the account
+    let account = get_account(clients, config).await;
+
+    // setup eth bridge
+    let eth_bridge_setup_outputs =
+        setup_eth_bridge(Some(account.clone()), &core_contract_client, config, clients).await;
+
+    // setup erc20 bridge
+    let erc20_bridge_setup_outputs =
+        setup_erc20_bridge(Some(account.clone()), &core_contract_client, config, clients).await;
+
+    // setup udc
+    let udc_setup_outputs = setup_udc(Some(account.clone()), config, clients).await;
+
+    // setup argent account
+    let argent_setup_outputs = setup_argent(Some(account.clone()), config, clients).await;
+
+    // setup braavos account
+    let braavos_setup_outputs = setup_braavos(Some(account.clone()), config, clients).await;
+
+    (
+        BootstrapperOutput {
+            starknet_contract_address: Some(core_contract_client.core_contract_client.address()),
+            starknet_contract_implementation_address: Some(
+                core_contract_client.core_contract_client.implementation_address(),
+            ),
+            eth_bridge_setup_outputs: Some(eth_bridge_setup_outputs),
+            erc20_bridge_setup_outputs: Some(erc20_bridge_setup_outputs),
+            udc_setup_outputs: Some(udc_setup_outputs),
+            argent_setup_outputs: Some(argent_setup_outputs),
+            braavos_setup_outputs: Some(braavos_setup_outputs),
+        },
+        node,
+    )
+}
 
 #[rstest]
 #[tokio::test]
@@ -72,7 +151,8 @@ async fn deposit_and_withdraw_erc20_bridge() -> Result<(), anyhow::Error> {
 async fn deposit_tests_both_bridges() -> Result<(), anyhow::Error> {
     env_logger::init();
     let clients = Config::init(&get_config()).await;
-    let out = bootstrap(&get_config(), &clients).await;
+    let (out, _madara) = test_setup(&get_config(), &clients).await;
+
     let eth_bridge_setup = out.eth_bridge_setup_outputs.unwrap();
     let eth_token_setup = out.erc20_bridge_setup_outputs.unwrap();
 

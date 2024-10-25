@@ -21,8 +21,8 @@ pub async fn erc20_bridge_test_helper(
 ) -> Result<(), anyhow::Error> {
     token_bridge.approve(token_bridge.bridge_address(), 100000000.into()).await;
     sleep(Duration::from_secs(arg_config.l1_wait_time.parse().unwrap())).await;
-    log::debug!("Approval done [✅]");
-    log::debug!("Waiting for message to be consumed on l2 [⏳]");
+    log::info!("Approval done [✅]");
+    log::info!("Waiting for message to be consumed on l2 [⏳]");
     sleep(Duration::from_secs(arg_config.cross_chain_wait_time)).await;
 
     let balance_before =
@@ -38,8 +38,8 @@ pub async fn erc20_bridge_test_helper(
         )
         .await;
     sleep(Duration::from_secs(arg_config.l1_wait_time.parse().unwrap())).await;
-    log::debug!("Deposit done [💰]");
-    log::debug!("Waiting for message to be consumed on l2 [⏳]");
+    log::info!("Deposit done [💰]");
+    log::info!("Waiting for message to be consumed on l2 [⏳]");
     sleep(Duration::from_secs(arg_config.cross_chain_wait_time)).await;
 
     let balance_after =
@@ -53,7 +53,7 @@ pub async fn erc20_bridge_test_helper(
     //     build_single_owner_account(clients.provider_l2(), &arg_config.rollup_priv_key,
     // L2_DEPLOYER_ADDRESS, false)         .await;
     //
-    // log::debug!("Initiated token withdraw on L2 [⏳]");
+    // log::info!("Initiated token withdraw on L2 [⏳]");
     // invoke_contract(
     //     l2_bridge_address,
     //     "initiate_token_withdraw",
@@ -68,7 +68,7 @@ pub async fn erc20_bridge_test_helper(
     // .await;
     //
     // sleep(Duration::from_secs(arg_config.l1_wait_time.parse().unwrap())).await;
-    // log::debug!("Waiting for message to be consumed on l2 [⏳]");
+    // log::info!("Waiting for message to be consumed on l2 [⏳]");
     // sleep(Duration::from_secs(arg_config.cross_chain_wait_time)).await;
     // sleep(Duration::from_secs(arg_config.l1_wait_time.parse().unwrap())).await;
     //
@@ -79,7 +79,7 @@ pub async fn erc20_bridge_test_helper(
     //
     // assert_eq!(balance_before + U256::from_dec_str("5").unwrap(), balance_after);
     //
-    // log::debug!("Token withdraw successful [✅]");
+    // log::info!("Token withdraw successful [✅]");
 
     anyhow::Ok(())
 }

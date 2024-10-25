@@ -59,7 +59,7 @@ impl<'a> EthBridge<'a> {
             self.clients.provider_l2(),
         ))
         .await;
-        log::debug!("🎡 Legacy proxy class hash declared.");
+        log::info!("🎡 Legacy proxy class hash declared.");
         save_to_json("legacy_proxy_class_hash", &JsonValueType::StringType(legacy_proxy_class_hash.to_string()))
             .unwrap();
         sleep(Duration::from_secs(10)).await;
@@ -70,7 +70,7 @@ impl<'a> EthBridge<'a> {
             self.clients.provider_l2(),
         ))
         .await;
-        log::debug!("🎡 Starkgate proxy class hash declared.");
+        log::info!("🎡 Starkgate proxy class hash declared.");
         save_to_json("starkgate_proxy_class_hash", &JsonValueType::StringType(starkgate_proxy_class_hash.to_string()))
             .unwrap();
         sleep(Duration::from_secs(10)).await;
@@ -81,7 +81,7 @@ impl<'a> EthBridge<'a> {
             self.clients.provider_l2(),
         ))
         .await;
-        log::debug!("🎡 ERC20 legacy class hash declared.");
+        log::info!("🎡 ERC20 legacy class hash declared.");
         save_to_json("erc20_legacy_class_hash", &JsonValueType::StringType(erc20_legacy_class_hash.to_string()))
             .unwrap();
         sleep(Duration::from_secs(10)).await;
@@ -92,7 +92,7 @@ impl<'a> EthBridge<'a> {
             self.clients.provider_l2(),
         ))
         .await;
-        log::debug!("🎡 Legacy ETH Bridge class hash declared");
+        log::info!("🎡 Legacy ETH Bridge class hash declared");
         save_to_json(
             "legacy_eth_bridge_class_hash",
             &JsonValueType::StringType(legacy_eth_bridge_class_hash.to_string()),
@@ -237,7 +237,7 @@ pub async fn deploy_eth_token_on_l2(
     wait_for_transaction(rpc_provider_l2, deploy_tx.transaction_hash, "deploy_eth_token_on_l2 : deploy").await.unwrap();
     let contract_address = get_contract_address_from_deploy_tx(account.provider(), &deploy_tx).await.unwrap();
 
-    log::debug!("Contract address (eth erc20) : {:?}", contract_address);
+    log::info!("Contract address (eth erc20) : {:?}", contract_address);
 
     let add_implementation_txn = invoke_contract(
         eth_proxy_address,
