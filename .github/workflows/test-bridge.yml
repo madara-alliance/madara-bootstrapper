@@ -25,6 +25,20 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
 
+      - name: Checkout Madara
+        uses: actions/checkout@v4
+        with:
+          repository: madara-alliance/madara
+          ref: "346700a1b3cf1dc857ee73c479720ef9c7abcc39"
+          path: madara
+
+      - name: Build Madara
+        working-directory: madara
+        run: |
+          cargo build
+          mv target/debug/madara ../bin/madara
+          cd ..
+
       - name: Run anvil
         run: |
           anvil </dev/null &>/dev/null &"
