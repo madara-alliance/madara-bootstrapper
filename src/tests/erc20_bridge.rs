@@ -1,4 +1,3 @@
-use std::io::stdin;
 use std::str::FromStr;
 use std::time::Duration;
 
@@ -49,8 +48,6 @@ pub async fn erc20_bridge_test_helper(
 
     assert_eq!(balance_before[0] + Felt::from(10), balance_after[0]);
 
-    println!("Press Enter to continue erc20 bridge...");
-    let _ = stdin().read_line(&mut String::new()).unwrap();
     // let l1_recipient = Felt::from_hex(&arg_config.l1_deployer_address).unwrap();
     // let account =
     //     build_single_owner_account(clients.provider_l2(), &arg_config.rollup_priv_key,
