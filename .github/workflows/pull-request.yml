@@ -22,4 +22,3 @@ jobs:
   test_bridge:
     name: Test Bridge
     uses: ./.github/workflows/test-bridge.yml
-    needs: rust_build
