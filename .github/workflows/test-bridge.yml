@@ -53,7 +53,7 @@ jobs:
 
       - name: Run anvil
         run: |
-          anvil </dev/null &>/dev/null &"
+          anvil
 
       - uses: taiki-e/install-action@cargo-llvm-cov
       - uses: taiki-e/install-action@nextest
