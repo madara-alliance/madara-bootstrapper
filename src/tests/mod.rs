@@ -14,20 +14,20 @@ use crate::tests::constants::{L1_MULTISIG_ADDRESS, L2_MULTISIG_ADDRESS, OPERATOR
 use crate::tests::erc20_bridge::erc20_bridge_test_helper;
 use crate::tests::eth_bridge::eth_bridge_test_helper;
 use crate::tests::madara::{MadaraCmd, MadaraCmdBuilder};
-use crate::{
-    bootstrap, get_account, setup_argent, setup_braavos, setup_core_contract, setup_erc20_bridge, setup_eth_bridge,
-    setup_udc, BootstrapperOutput, CliArgs,
-};
+use crate::{bootstrap, setup_core_contract, setup_l2, BootstrapperOutput, CliArgs};
 
 async fn test_setup(config: &CliArgs, clients: &Config) -> (BootstrapperOutput, MadaraCmd) {
-    // setup the core contract first, given it would start on a empty anvil, the address would be same
+    // Setup L1 (core contract)
     let core_contract_client = setup_core_contract(config, clients).await;
 
-    // run the madara with the commans:
-    // cargo run --release -- --name madara --base-path ../madara_db --rpc-port 9944 --rpc-cors "*"
-    // --rpc-external --sequencer --chain-config-path configs/presets/devnet.yaml --gas-price 0
-    // --blob-gas-price 0 --strk-gas-price 0 --strk-blob-gas-price 0 --rpc-methods unsafe
-    // --feeder-gateway-enable --gateway-enable --gateway-external --no-l1-sync
+    let core_contract_address = core_contract_client.core_contract_client.address();
+    let core_contract_implementation_address = core_contract_client.core_contract_client.implementation_address();
+
+    // Create a new CliArgs with the core contract addresses
+    let mut updated_config = get_config();
+    updated_config.core_contract_address = Some(format!("{:?}", core_contract_address));
+    updated_config.core_contract_implementation_address = Some(format!("{:?}", core_contract_implementation_address));
+
     let mut node = MadaraCmdBuilder::new()
         .args([
             "--no-sync-polling",
@@ -55,47 +55,23 @@ async fn test_setup(config: &CliArgs, clients: &Config) -> (BootstrapperOutput, 
         .run();
     node.wait_for_ready().await;
 
-    // setup the rest of the stuff and return the ideal output for the tests
+    // Setup L2 with the updated config
+    let l2_output = setup_l2(&updated_config, clients).await;
 
-    // setup the account
-    let account = get_account(clients, config).await;
+    let output = BootstrapperOutput {
+        starknet_contract_address: Some(core_contract_address),
+        starknet_contract_implementation_address: Some(core_contract_implementation_address),
+        ..l2_output
+    };
 
-    // setup eth bridge
-    let eth_bridge_setup_outputs =
-        setup_eth_bridge(Some(account.clone()), &core_contract_client, config, clients).await;
-
-    // setup erc20 bridge
-    let erc20_bridge_setup_outputs =
-        setup_erc20_bridge(Some(account.clone()), &core_contract_client, config, clients).await;
-
-    // setup udc
-    let udc_setup_outputs = setup_udc(Some(account.clone()), config, clients).await;
-
-    // setup argent account
-    let argent_setup_outputs = setup_argent(Some(account.clone()), config, clients).await;
-
-    // setup braavos account
-    let braavos_setup_outputs = setup_braavos(Some(account.clone()), config, clients).await;
-
-    (
-        BootstrapperOutput {
-            starknet_contract_address: Some(core_contract_client.core_contract_client.address()),
-            starknet_contract_implementation_address: Some(
-                core_contract_client.core_contract_client.implementation_address(),
-            ),
-            eth_bridge_setup_outputs: Some(eth_bridge_setup_outputs),
-            erc20_bridge_setup_outputs: Some(erc20_bridge_setup_outputs),
-            udc_setup_outputs: Some(udc_setup_outputs),
-            argent_setup_outputs: Some(argent_setup_outputs),
-            braavos_setup_outputs: Some(braavos_setup_outputs),
-        },
-        node,
-    )
+    (output, node)
 }
+
+// setup the account
 
 #[rstest]
 #[tokio::test]
-#[ignore]
+#[ignore = "ignored because we have a e2e test, and this is for a local test"]
 async fn deploy_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
     let clients = Config::init(&get_config()).await;
@@ -106,7 +82,7 @@ async fn deploy_bridge() -> Result<(), anyhow::Error> {
 
 #[rstest]
 #[tokio::test]
-#[ignore]
+#[ignore = "ignored because we have a e2e test, and this is for a local test"]
 async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
     let clients = Config::init(&get_config()).await;
@@ -118,7 +94,7 @@ async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
         &get_config(),
         eth_bridge_setup.l2_eth_proxy_address,
         eth_bridge_setup.l2_eth_bridge_proxy_address,
-        eth_bridge_setup.l1_bridge_address,
+        eth_bridge_setup.l1_bridge,
     )
     .await;
 
@@ -127,7 +103,7 @@ async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
 
 #[rstest]
 #[tokio::test]
-#[ignore]
+#[ignore = "ignored because we have a e2e test, and this is for a local test"]
 async fn deposit_and_withdraw_erc20_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
     let clients = Config::init(&get_config()).await;
@@ -161,7 +137,7 @@ async fn deposit_tests_both_bridges() -> Result<(), anyhow::Error> {
         &get_config(),
         eth_bridge_setup.l2_eth_proxy_address,
         eth_bridge_setup.l2_eth_bridge_proxy_address,
-        eth_bridge_setup.l1_bridge_address,
+        eth_bridge_setup.l1_bridge,
     )
     .await;
 

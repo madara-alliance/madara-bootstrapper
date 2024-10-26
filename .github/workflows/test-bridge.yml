@@ -44,6 +44,11 @@ jobs:
           ref: "346700a1b3cf1dc857ee73c479720ef9c7abcc39"
           path: madara
 
+      - name: Move Madara Devnet config
+        working-directory: madara
+        run: |
+          mv configs/preset/devnet.yml ./src/tests/devnet.yml
+
       - name: Build Madara
         working-directory: madara
         run: |

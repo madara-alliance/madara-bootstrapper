@@ -79,7 +79,7 @@ impl Drop for MadaraCmd {
             }
         }
         match child.wait() {
-            Ok(exit_status) => log::info!("{}", exit_status),
+            Ok(exit_status) => log::debug!("{}", exit_status),
             Err(e) => log::error!("failed to exit madara {:?}", e),
         }
     }
@@ -143,7 +143,7 @@ impl MadaraCmdBuilder {
     }
 
     pub fn run(self) -> MadaraCmd {
-        let target_bin = PathBuf::from("./bin/madara");
+        let target_bin = PathBuf::from("/Users/mohit/Desktop/karnot/madara/target/release/madara");
 
         if !target_bin.exists() {
             panic!("No binary to run: {:?}", target_bin)

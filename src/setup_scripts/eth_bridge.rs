@@ -37,8 +37,9 @@ pub struct EthBridgeSetupOutput {
     pub l2_starkgate_proxy_class_hash: Felt,
     pub l2_legacy_eth_bridge_class_hash: Felt,
     pub l2_eth_bridge_proxy_address: Felt,
+    pub l1_bridge_address: Address,
     #[serde(skip)]
-    pub l1_bridge_address: StarknetLegacyEthBridge,
+    pub l1_bridge: StarknetLegacyEthBridge,
 }
 
 impl<'a> EthBridge<'a> {
@@ -212,7 +213,8 @@ impl<'a> EthBridge<'a> {
             l2_legacy_eth_bridge_class_hash: legacy_eth_bridge_class_hash,
             l2_eth_proxy_address: eth_proxy_address,
             l2_eth_bridge_proxy_address: eth_bridge_proxy_address,
-            l1_bridge_address: eth_bridge,
+            l1_bridge_address: eth_bridge.address(),
+            l1_bridge: eth_bridge,
         }
     }
 }
