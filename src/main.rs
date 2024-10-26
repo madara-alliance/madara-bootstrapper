@@ -150,6 +150,14 @@ pub async fn main() {
         }
     };
 
+    let output_json = serde_json::to_string_pretty(&output).unwrap_or_else(|e| {
+        format!("Error serializing output: {}", e)
+    });
+
+    // Print the output to the console
+    println!("Bootstrap Output:");
+    println!("{}", output_json);
+
     if let Some(output_file) = args.output_file {
         let file = File::create(&output_file).unwrap();
         serde_json::to_writer_pretty(file, &output).unwrap();
