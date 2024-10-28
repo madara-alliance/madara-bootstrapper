@@ -34,6 +34,9 @@ pub async fn eth_bridge_test_helper(
 
     assert_eq!(balance_before[0] + Felt::from_dec_str("10").unwrap(), balance_after[0]);
 
+    // Note: we are ignoring the withdrawal tests here, it would be part of e2e where
+    // we have orch running as well
+
     // let l1_receipient = Felt::from_hex(&arg_config.l1_deployer_address).unwrap();
     //
     // sleep(Duration::from_secs((arg_config.l1_wait_time).parse()?)).await;

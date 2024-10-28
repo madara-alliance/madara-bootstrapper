@@ -48,6 +48,9 @@ pub async fn erc20_bridge_test_helper(
 
     assert_eq!(balance_before[0] + Felt::from(10), balance_after[0]);
 
+    // Note: we are ignoring the withdrawal tests here, it would be part of e2e where
+    // we have orch running as well
+
     // let l1_recipient = Felt::from_hex(&arg_config.l1_deployer_address).unwrap();
     // let account =
     //     build_single_owner_account(clients.provider_l2(), &arg_config.rollup_priv_key,
