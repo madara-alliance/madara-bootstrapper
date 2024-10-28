@@ -17,14 +17,14 @@ pub async fn account_init<'a>(clients: &'a Config, arg_config: &'a CliArgs) -> R
     let oz_account_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
         String::from(OZ_ACCOUNT_PATH),
         arg_config.rollup_seq_url.clone(),
-        clients.provider_l2()
+        clients.provider_l2(),
     ))
     .await;
-    log::debug!("OZ Account Class Hash Declared");
+    log::info!("OZ Account Class Hash Declared");
     save_to_json("oz_account_class_hash", &JsonValueType::StringType(oz_account_class_hash.to_string())).unwrap();
     sleep(Duration::from_secs(10)).await;
 
-    log::debug!("Waiting for block to be mined [/]");
+    log::info!("Waiting for block to be mined [/]");
     sleep(Duration::from_secs(10)).await;
 
     let account_address_temp =

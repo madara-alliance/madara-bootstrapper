@@ -181,14 +181,13 @@ pub async fn declare_contract(input: DeclarationInput<'_>) -> Felt {
             let raw_txn_rpc = req_client.post(url).json(json_body).send().await;
             match raw_txn_rpc {
                 Ok(val) => {
-                    log::debug!(
+                    log::info!(
                         "🚧 Txn Sent Successfully : {:?}",
                         val.json::<RpcResult<DeclareTransactionResult>>().await.unwrap()
                     );
                 }
                 Err(err) => {
-                    log::debug!("Error : Error sending the transaction using RPC");
-                    log::debug!("{:?}", err);
+                    log::error!("Error : Error sending the transaction using RPC: {:?}", err);
                 }
             }
 
@@ -205,24 +204,24 @@ pub(crate) async fn deploy_account_using_priv_key(
     let chain_id = provider.chain_id().await.unwrap();
 
     let signer = LocalWallet::from(SigningKey::from_secret_scalar(Felt::from_hex(&priv_key).unwrap()));
-    log::trace!("signer : {:?}", signer);
+    log::debug!("signer : {:?}", signer);
     let mut oz_account_factory =
         OpenZeppelinAccountFactory::new(oz_account_class_hash, chain_id, signer, provider).await.unwrap();
     oz_account_factory.set_block_id(BlockId::Tag(BlockTag::Pending));
 
     let deploy_txn = oz_account_factory.deploy_v1(Felt::ZERO).max_fee(Felt::ZERO);
     let account_address = deploy_txn.address();
-    log::trace!("OZ Account Deploy Address: {:?}", account_address);
+    log::debug!("OZ Account Deploy Address: {:?}", account_address);
     save_to_json("account_address", &JsonValueType::StringType(account_address.to_string())).unwrap();
 
     if provider.get_class_at(BlockId::Tag(Pending), account_address).await.is_ok() {
-        log::debug!("ℹ️ Account is already deployed. Skipping....");
+        log::info!("ℹ️ Account is already deployed. Skipping....");
         return account_address;
     }
 
     let sent_txn = deploy_txn.send().await.expect("Error in deploying the OZ account");
 
-    log::trace!("deploy account txn_hash : {:?}", sent_txn.transaction_hash);
+    log::debug!("deploy account txn_hash : {:?}", sent_txn.transaction_hash);
 
     wait_for_transaction(provider, sent_txn.transaction_hash, "deploy_account_using_priv_key").await.unwrap();
 
@@ -247,16 +246,16 @@ pub(crate) async fn deploy_proxy_contract(
         .await
         .expect("Error deploying the contract proxy.");
 
-    log::debug!("txn in proxy contract is: {:?}", txn);
+    log::info!("txn in proxy contract is: {:?}", txn);
 
     wait_for_transaction(account.provider(), txn.transaction_hash, "deploy_proxy_contract : deploy_contract")
         .await
         .unwrap();
 
-    log::trace!("txn hash (proxy deployment) : {:?}", txn.transaction_hash);
+    log::debug!("txn hash (proxy deployment) : {:?}", txn.transaction_hash);
 
     let deployed_address = get_contract_address_from_deploy_tx(account.provider(), &txn).await.unwrap();
-    log::trace!("[IMP] Event : {:?}", deployed_address);
+    log::debug!("[IMP] Event : {:?}", deployed_address);
 
     deployed_address
 }

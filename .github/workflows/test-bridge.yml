@@ -10,7 +10,7 @@ env:
 
 jobs:
   test_bridge:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
@@ -25,15 +25,40 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
 
+      - name: Setup build deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang llvm libudev-dev protobuf-compiler
+      - uses: rui314/setup-mold@v1
+      - uses: software-mansion/setup-scarb@v1
+        with:
+          scarb-version: "2.8.2"
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Checkout Madara
+        uses: actions/checkout@v4
+        with:
+          repository: madara-alliance/madara
+          ref: "346700a1b3cf1dc857ee73c479720ef9c7abcc39"
+          path: madara
+
+      - name: Move Madara Devnet config
+        working-directory: madara
+        run: |
+          mv configs/preset/devnet.yml ./src/tests/devnet.yml
+
+      - name: Build Madara
+        working-directory: madara
+        run: |
+          cargo build
+          mv target/debug/madara ../bin/madara
+          cd ..
+
       - name: Run anvil
         run: |
-          anvil </dev/null &>/dev/null &
-
-      - name: Run madara
-        run: |
-          cd bin
-          echo "Running madara...."
-          ./run_madara.sh
+          anvil &
 
       - uses: taiki-e/install-action@cargo-llvm-cov
       - uses: taiki-e/install-action@nextest

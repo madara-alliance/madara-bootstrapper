@@ -42,6 +42,7 @@ starknet_api = { git = "https://github.com/bidzyyys/starknet-api.git", branch = 
 assert_matches = "1.5.0"
 async-trait = "0.1.74"
 clap = { version = "4.4.11", features = ["derive", "env"] }
+color-eyre = "0.6.2"
 dotenv = "0.15.0"
 env_logger = "0.11.3"
 log = "0.4.21"
@@ -61,4 +62,6 @@ bytes = "1.6.0"
 flate2 = "1.0.30"
 indexmap = "2.2.6"
 inline_colorization = "0.1.6"
+lazy_static = "1.4.0"
 subxt-lightclient = { version = "0.35.3", optional = true, default-features = false }
+tempfile = "3.10.1"
