@@ -48,7 +48,7 @@ jobs:
         working-directory: madara
         run: |
           ls
-          mv ./configs/preset/devnet.yml ./src/tests/devnet.yml
+          mv configs/presets/devnet.yml ./src/tests/devnet.yml
 
       - name: Build Madara
         working-directory: madara
