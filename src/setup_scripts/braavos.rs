@@ -38,7 +38,7 @@ impl<'a> BraavosSetup<'a> {
             self.account.clone(),
         ))
         .await;
-        log::debug!("📣 Braavos Account class hash declared.");
+        log::info!("📣 Braavos Account class hash declared.");
         save_to_json("braavos_class_hash", &JsonValueType::StringType(braavos_class_hash.to_string())).unwrap();
         sleep(Duration::from_secs(10)).await;
 
@@ -48,7 +48,7 @@ impl<'a> BraavosSetup<'a> {
             self.account.clone(),
         ))
         .await;
-        log::debug!("📣 Braavos Base Account class hash declared.");
+        log::info!("📣 Braavos Base Account class hash declared.");
         save_to_json(
             "braavos_base_account_class_hash",
             &JsonValueType::StringType(braavos_base_account_class_hash.to_string()),
@@ -62,7 +62,7 @@ impl<'a> BraavosSetup<'a> {
             self.config.provider_l2(),
         ))
         .await;
-        log::debug!("📣 Braavos Aggregator class hash declared.");
+        log::info!("📣 Braavos Aggregator class hash declared.");
         save_to_json(
             "braavos_aggregator_class_hash",
             &JsonValueType::StringType(braavos_aggregator_class_hash.to_string()),

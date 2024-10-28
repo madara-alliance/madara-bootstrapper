@@ -31,10 +31,13 @@ pub struct Erc20Bridge<'a> {
 #[derive(Serialize)]
 pub struct Erc20BridgeSetupOutput {
     pub erc20_cairo_one_class_hash: Felt,
-    #[serde(skip)]
-    pub token_bridge: StarknetTokenBridge,
+    pub l1_token_bridge_proxy: Address,
+    pub l1_manager_address: Address,
+    pub l1_registry_address: Address,
     pub l2_token_bridge: Felt,
     pub test_erc20_token_address: Felt,
+    #[serde(skip)]
+    pub token_bridge: StarknetTokenBridge,
 }
 
 impl<'a> Erc20Bridge<'a> {
@@ -55,7 +58,7 @@ impl<'a> Erc20Bridge<'a> {
             self.account.clone(),
         ))
         .await;
-        log::debug!("🌗 ERC20 Class Hash declared : {:?}", erc20_cairo_one_class_hash);
+        log::info!("🌗 ERC20 Class Hash declared : {:?}", erc20_cairo_one_class_hash);
         save_to_json("erc20_cairo_one_class_hash", &JsonValueType::StringType(erc20_cairo_one_class_hash.to_string()))
             .unwrap();
         sleep(Duration::from_secs(10)).await;
@@ -140,9 +143,12 @@ impl<'a> Erc20Bridge<'a> {
 
         Erc20BridgeSetupOutput {
             erc20_cairo_one_class_hash,
-            token_bridge,
+            l1_manager_address: token_bridge.manager_address(),
+            l1_registry_address: token_bridge.registry_address(),
+            l1_token_bridge_proxy: token_bridge.bridge_address(),
             l2_token_bridge: l2_bridge_address,
             test_erc20_token_address: l2_erc20_token_address,
+            token_bridge,
         }
     }
 }
