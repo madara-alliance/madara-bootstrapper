@@ -47,7 +47,8 @@ jobs:
       - name: Move Madara Devnet config
         working-directory: madara
         run: |
-          mv configs/preset/devnet.yml ./src/tests/devnet.yml
+          ls
+          mv ./configs/preset/devnet.yml ./src/tests/devnet.yml
 
       - name: Build Madara
         working-directory: madara

@@ -143,7 +143,7 @@ impl MadaraCmdBuilder {
     }
 
     pub fn run(self) -> MadaraCmd {
-        let target_bin = PathBuf::from("/Users/mohit/Desktop/karnot/madara/target/release/madara");
+        let target_bin = PathBuf::from("./bin/madara");
 
         if !target_bin.exists() {
             panic!("No binary to run: {:?}", target_bin)
