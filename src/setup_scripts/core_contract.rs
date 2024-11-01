@@ -41,6 +41,7 @@ impl<'a> CoreContractStarknetL1<'a> {
                 .add_implementation_core_contract(
                     0u64.into(),
                     0u64.into(),
+                    0u64.into(),
                     program_hash,
                     config_hash,
                     core_contract_client.implementation_address(),
@@ -50,6 +51,7 @@ impl<'a> CoreContractStarknetL1<'a> {
                 .await;
             core_contract_client
                 .upgrade_to_core_contract(
+                    0u64.into(),
                     0u64.into(),
                     0u64.into(),
                     program_hash,

@@ -1,5 +1,4 @@
 use std::future::Future;
-use std::str::FromStr;
 use std::sync::Arc;
 
 use async_trait::async_trait;
@@ -28,6 +27,7 @@ pub trait CoreContract {
         &self,
         block_number: Felt,
         state_root: Felt,
+        block_hash: Felt,
         program_hash: Felt,
         config_hash: Felt,
         implementation_address: Address,
@@ -40,6 +40,7 @@ pub trait CoreContract {
         &self,
         block_number: Felt,
         state_root: Felt,
+        block_hash: Felt,
         program_hash: Felt,
         config_hash: Felt,
         implementation_address: Address,
@@ -59,6 +60,7 @@ pub trait CoreContract {
         &self,
         block_number: Felt,
         state_root: Felt,
+        block_hash: Felt,
         program_hash: Felt,
         config_hash: Felt,
         verifer_address: Address,
@@ -70,28 +72,22 @@ pub trait CoreContractDeploy<T> {
 }
 
 pub fn get_init_data_core_contract(
-    _block_number: Felt,
-    _state_root: Felt,
-    _program_hash: Felt,
+    block_number: Felt,
+    state_root: Felt,
+    block_hash: Felt,
+    program_hash: Felt,
     config_hash: Felt,
-    _verifier_address: Address,
+    verifier_address: Address,
 ) -> CoreContractInitData {
     CoreContractInitData {
-        program_hash: U256::from_str_radix("1e324682835e60c4779a683b32713504aed894fd73842f7d05b18e7bd29cd70", 16)
-            .unwrap(), // zero program hash would be deemed invalid
+        program_hash: convert_felt_to_u256(program_hash), // zero program hash would be deemed invalid
         aggregate_program_hash: U256::zero(),
-        verifier_address: Address::from_str("0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512").unwrap(),
+        verifier_address,
         config_hash: convert_felt_to_u256(config_hash),
-        // TODO :
-        // Figure out the exact params for production env
         initial_state: CoreContractState {
-            block_number: I256::from(11),
-            state_root: U256::from_str_radix("5f41b32fadc9d1bd9d2bf2eb8771e1c64b2ad1b6f3334bf6be0b38c408e4746", 16)
-                .unwrap(),
-            // TODO :
-            // Remove hardcoded values.
-            block_hash: U256::from_str_radix("6aeb708c2a47182fd921db56803102eabbd2940c75e0c306012fff144b02186", 16)
-                .unwrap(),
+            block_number: I256::from_raw(convert_felt_to_u256(block_number)),
+            state_root: convert_felt_to_u256(state_root),
+            block_hash: convert_felt_to_u256(block_hash),
         },
     }
 }

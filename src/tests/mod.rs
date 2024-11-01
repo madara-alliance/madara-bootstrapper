@@ -67,8 +67,6 @@ async fn test_setup(config: &CliArgs, clients: &Config) -> (BootstrapperOutput, 
     (output, node)
 }
 
-// setup the account
-
 #[rstest]
 #[tokio::test]
 #[ignore = "ignored because we have a e2e test, and this is for a local test"]

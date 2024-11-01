@@ -68,14 +68,21 @@ impl CoreContract for StarknetSovereignContract {
         &self,
         block_number: Felt,
         state_root: Felt,
+        block_hash: Felt,
         program_hash: Felt,
         config_hash: Felt,
         implementation_address: Address,
         verifier_address: Address,
         finalized: bool,
     ) {
-        let init_data =
-            get_init_data_core_contract(block_number, state_root, program_hash, config_hash, verifier_address);
+        let init_data = get_init_data_core_contract(
+            block_number,
+            state_root,
+            block_hash,
+            program_hash,
+            config_hash,
+            verifier_address,
+        );
         let final_bytes = get_calldata_bytes(init_data.clone());
 
         log::info!("ℹ️  add_implementation : data : {:?} : {:?}", init_data, final_bytes.clone());
@@ -100,14 +107,21 @@ impl CoreContract for StarknetSovereignContract {
         &self,
         block_number: Felt,
         state_root: Felt,
+        block_hash: Felt,
         program_hash: Felt,
         config_hash: Felt,
         implementation_address: Address,
         verifier_address: Address,
         finalized: bool,
     ) {
-        let init_data =
-            get_init_data_core_contract(block_number, state_root, program_hash, config_hash, verifier_address);
+        let init_data = get_init_data_core_contract(
+            block_number,
+            state_root,
+            block_hash,
+            program_hash,
+            config_hash,
+            verifier_address,
+        );
         let final_bytes = get_calldata_bytes(init_data.clone());
 
         log::info!("ℹ️  upgrade_to : data : {:?} : {:?}", init_data, final_bytes.clone());
@@ -168,12 +182,19 @@ impl CoreContract for StarknetSovereignContract {
         &self,
         block_number: Felt,
         state_root: Felt,
+        block_hash: Felt,
         program_hash: Felt,
         config_hash: Felt,
         verifer_address: Address,
     ) {
-        let init_data =
-            get_init_data_core_contract(block_number, state_root, program_hash, config_hash, verifer_address);
+        let init_data = get_init_data_core_contract(
+            block_number,
+            state_root,
+            block_hash,
+            program_hash,
+            config_hash,
+            verifer_address,
+        );
 
         self.initialize_with(init_data).await;
     }

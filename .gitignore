@@ -2,3 +2,5 @@
 .idea
 .env
 addresses.json
+/bin/madara
+/bin/devnet.yaml
