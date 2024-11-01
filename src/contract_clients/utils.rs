@@ -145,21 +145,18 @@ pub async fn declare_contract(input: DeclarationInput<'_>) -> Felt {
             sierra_class_hash
         }
         LegacyDeclarationInputs(artifact_path, url, provider) => {
-            let contract_abi_artifact_temp: LegacyContractClass = serde_json::from_reader(
+            let contract_abi_artifact: LegacyContractClass = serde_json::from_reader(
                 std::fs::File::open(env!("CARGO_MANIFEST_DIR").to_owned() + "/" + &artifact_path).unwrap(),
             )
             .unwrap();
 
-            let class_hash = contract_abi_artifact_temp.class_hash().expect("Failed to get class hash");
+            let class_hash = contract_abi_artifact.class_hash().expect("Failed to get class hash");
             if provider.get_class(BlockId::Tag(Pending), class_hash).await.is_ok() {
                 return class_hash;
             }
 
-            let contract_abi_artifact: CompressedLegacyContractClass = contract_abi_artifact_temp
-                .clone()
-                .compress()
-                .expect("Error : Failed to compress the contract class")
-                .into();
+            let contract_abi_artifact: CompressedLegacyContractClass =
+                contract_abi_artifact.clone().compress().expect("Error : Failed to compress the contract class").into();
 
             let params: BroadcastedDeclareTransactionV0 = BroadcastedDeclareTransactionV0 {
                 sender_address: Felt::from_hex("0x1").unwrap(),
