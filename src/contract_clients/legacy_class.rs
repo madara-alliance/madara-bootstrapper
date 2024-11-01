@@ -1,3 +1,5 @@
+// Note: This code has been taken from the madara code-base.
+
 use starknet_types_core::felt::Felt;
 
 #[derive(Clone, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]

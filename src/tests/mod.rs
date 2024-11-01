@@ -171,7 +171,7 @@ fn get_config() -> CliArgs {
         verifier_address: String::from(VERIFIER_ADDRESS),
         operator_address: String::from(OPERATOR_ADDRESS),
         dev: false,
-        mode: crate::BootstrapMode::Full,
+        mode: crate::BootstrapMode::SetupL1,
         core_contract_address: None,
         core_contract_implementation_address: None,
         output_file: None,

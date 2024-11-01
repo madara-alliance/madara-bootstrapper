@@ -37,7 +37,6 @@ use crate::utils::{save_to_json, JsonValueType};
 
 #[derive(Debug, Clone, Copy, ValueEnum)]
 enum BootstrapMode {
-    Full,
     Core,
     SetupL1,
     SetupL2,
@@ -93,7 +92,7 @@ pub struct CliArgs {
     operator_address: String,
     #[clap(long, env, action=ArgAction::SetTrue)]
     dev: bool,
-    #[clap(long, env, value_enum, default_value_t = BootstrapMode::Full)]
+    #[clap(long, env, value_enum)]
     mode: BootstrapMode,
     #[clap(long, env)]
     core_contract_address: Option<String>,
@@ -115,7 +114,6 @@ pub async fn main() {
     let config = Config::init(&args).await;
 
     let output = match args.mode {
-        BootstrapMode::Full => bootstrap(&args, &config).await,
         BootstrapMode::Core | BootstrapMode::SetupL1 => {
             let output = setup_core_contract(&args, &config).await;
 
