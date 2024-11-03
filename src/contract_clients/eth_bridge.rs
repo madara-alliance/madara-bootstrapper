@@ -228,12 +228,12 @@ impl StarknetLegacyEthBridge {
         )
         .await;
 
-        log::info!("🎡 setup_l2_bridge : l2 bridge initialized //");
+        log::info!("🎡 setup_l2_bridge : l2 bridge initialized {:?}", l2_deployer_address);
         wait_for_transaction(rpc_provider, tx.transaction_hash, "setup_l2_bridge : initialize").await.unwrap();
 
         let tx = invoke_contract(l2_bridge_address, "set_l2_token", vec![erc20_address], account).await;
 
-        log::info!("🎡 setup_l2_bridge : l2 token set //");
+        log::info!("🎡 setup_l2_bridge : l2 token set {:?}", erc20_address);
         wait_for_transaction(rpc_provider, tx.transaction_hash, "setup_l2_bridge : set_l2_token").await.unwrap();
 
         let tx = invoke_contract(
@@ -244,7 +244,7 @@ impl StarknetLegacyEthBridge {
         )
         .await;
 
-        log::info!("🎡 setup_l2_bridge : l1 bridge set //");
+        log::info!("🎡 setup_l2_bridge : l1 bridge set {:?}", self.eth_bridge.address());
         wait_for_transaction(rpc_provider, tx.transaction_hash, "setup_l2_bridge : set_l1_bridge").await.unwrap();
     }
 
