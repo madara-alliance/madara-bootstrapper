@@ -41,7 +41,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: madara-alliance/madara
-          ref: "346700a1b3cf1dc857ee73c479720ef9c7abcc39"
+          ref: "d188aa91efa78bcc54f92aa1035295fd50e068d2"
           path: madara
 
       - name: Move Madara Devnet config
