@@ -2,13 +2,14 @@ use std::str::FromStr;
 use std::time::Duration;
 
 use ethers::abi::Address;
-use starknet_accounts::{Account, ConnectedAccount};
-use starknet_ff::FieldElement;
+use serde::Serialize;
+use starknet::accounts::{Account, ConnectedAccount};
+use starknet::core::types::Felt;
 use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::JsonRpcClient;
 use tokio::time::sleep;
 
-use crate::contract_clients::config::Config;
+use crate::contract_clients::config::Clients;
 use crate::contract_clients::core_contract::CoreContract;
 use crate::contract_clients::eth_bridge::{BridgeDeployable, StarknetLegacyEthBridge};
 use crate::contract_clients::utils::{
@@ -18,32 +19,35 @@ use crate::contract_clients::utils::{
 use crate::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::utils::constants::{ERC20_LEGACY_PATH, LEGACY_BRIDGE_PATH, PROXY_LEGACY_PATH, STARKGATE_PROXY_PATH};
 use crate::utils::{convert_to_hex, invoke_contract, save_to_json, wait_for_transaction, JsonValueType};
-use crate::CliArgs;
+use crate::ConfigFile;
 
 pub struct EthBridge<'a> {
     account: RpcAccount<'a>,
-    account_address: FieldElement,
-    arg_config: &'a CliArgs,
-    clients: &'a Config,
+    account_address: Felt,
+    arg_config: &'a ConfigFile,
+    clients: &'a Clients,
     core_contract: &'a dyn CoreContract,
 }
 
+#[derive(Serialize)]
 pub struct EthBridgeSetupOutput {
-    pub legacy_proxy_class_hash: FieldElement,
-    pub starkgate_proxy_class_hash: FieldElement,
-    pub erc20_legacy_class_hash: FieldElement,
-    pub legacy_eth_bridge_class_hash: FieldElement,
-    pub eth_proxy_address: FieldElement,
-    pub eth_bridge_proxy_address: FieldElement,
-    pub eth_bridge: StarknetLegacyEthBridge,
+    pub l2_legacy_proxy_class_hash: Felt,
+    pub l2_erc20_legacy_class_hash: Felt,
+    pub l2_eth_proxy_address: Felt,
+    pub l2_starkgate_proxy_class_hash: Felt,
+    pub l2_legacy_eth_bridge_class_hash: Felt,
+    pub l2_eth_bridge_proxy_address: Felt,
+    pub l1_bridge_address: Address,
+    #[serde(skip)]
+    pub l1_bridge: StarknetLegacyEthBridge,
 }
 
 impl<'a> EthBridge<'a> {
     pub fn new(
         account: RpcAccount<'a>,
-        account_address: FieldElement,
-        arg_config: &'a CliArgs,
-        clients: &'a Config,
+        account_address: Felt,
+        arg_config: &'a ConfigFile,
+        clients: &'a Clients,
         core_contract: &'a dyn CoreContract,
     ) -> Self {
         Self { account, account_address, arg_config, clients, core_contract }
@@ -53,9 +57,10 @@ impl<'a> EthBridge<'a> {
         let legacy_proxy_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(PROXY_LEGACY_PATH),
             self.arg_config.rollup_seq_url.clone(),
+            self.clients.provider_l2(),
         ))
         .await;
-        log::debug!("🎡 Legacy proxy class hash declared.");
+        log::info!("🎡 Legacy proxy class hash declared.");
         save_to_json("legacy_proxy_class_hash", &JsonValueType::StringType(legacy_proxy_class_hash.to_string()))
             .unwrap();
         sleep(Duration::from_secs(10)).await;
@@ -63,9 +68,10 @@ impl<'a> EthBridge<'a> {
         let starkgate_proxy_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(STARKGATE_PROXY_PATH),
             self.arg_config.rollup_seq_url.clone(),
+            self.clients.provider_l2(),
         ))
         .await;
-        log::debug!("🎡 Starkgate proxy class hash declared.");
+        log::info!("🎡 Starkgate proxy class hash declared.");
         save_to_json("starkgate_proxy_class_hash", &JsonValueType::StringType(starkgate_proxy_class_hash.to_string()))
             .unwrap();
         sleep(Duration::from_secs(10)).await;
@@ -73,9 +79,10 @@ impl<'a> EthBridge<'a> {
         let erc20_legacy_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(ERC20_LEGACY_PATH),
             self.arg_config.rollup_seq_url.clone(),
+            self.clients.provider_l2(),
         ))
         .await;
-        log::debug!("🎡 ERC20 legacy class hash declared.");
+        log::info!("🎡 ERC20 legacy class hash declared.");
         save_to_json("erc20_legacy_class_hash", &JsonValueType::StringType(erc20_legacy_class_hash.to_string()))
             .unwrap();
         sleep(Duration::from_secs(10)).await;
@@ -83,9 +90,10 @@ impl<'a> EthBridge<'a> {
         let legacy_eth_bridge_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(LEGACY_BRIDGE_PATH),
             self.arg_config.rollup_seq_url.clone(),
+            self.clients.provider_l2(),
         ))
         .await;
-        log::debug!("🎡 Legacy ETH Bridge class hash declared");
+        log::info!("🎡 Legacy ETH Bridge class hash declared");
         save_to_json(
             "legacy_eth_bridge_class_hash",
             &JsonValueType::StringType(legacy_eth_bridge_class_hash.to_string()),
@@ -98,8 +106,8 @@ impl<'a> EthBridge<'a> {
             self.account_address,
             legacy_proxy_class_hash,
             // salt taken from : https://sepolia.starkscan.co/tx/0x06a5a493cf33919e58aa4c75777bffdef97c0e39cac968896d7bee8cc67905a1
-            FieldElement::from_str("0x322c2610264639f6b2cee681ac53fa65c37e187ea24292d1b21d859c55e1a78").unwrap(),
-            FieldElement::ONE,
+            Felt::from_str("0x322c2610264639f6b2cee681ac53fa65c37e187ea24292d1b21d859c55e1a78").unwrap(),
+            Felt::ONE,
         )
         .await;
         log::info!("✴️ ETH ERC20 proxy deployed [ETH : {:?}]", eth_proxy_address);
@@ -110,8 +118,8 @@ impl<'a> EthBridge<'a> {
             &self.account,
             self.account_address,
             legacy_proxy_class_hash,
-            FieldElement::from_str("0xabcdabcdabcd").unwrap(),
-            FieldElement::ZERO,
+            Felt::from_str("0xabcdabcdabcd").unwrap(),
+            Felt::ZERO,
         )
         .await;
         log::info!("✴️ ETH Bridge proxy deployed [ETH Bridge : {:?}]", eth_bridge_proxy_address);
@@ -121,6 +129,7 @@ impl<'a> EthBridge<'a> {
 
         init_governance_proxy(&self.account, eth_proxy_address, "eth_proxy_address : init_governance_proxy").await;
         sleep(Duration::from_secs(10)).await;
+
         init_governance_proxy(
             &self.account,
             eth_bridge_proxy_address,
@@ -198,29 +207,30 @@ impl<'a> EthBridge<'a> {
         log::info!("✴️ ETH Bridge setup on L1 completed");
 
         EthBridgeSetupOutput {
-            legacy_proxy_class_hash,
-            starkgate_proxy_class_hash,
-            erc20_legacy_class_hash,
-            legacy_eth_bridge_class_hash,
-            eth_proxy_address,
-            eth_bridge_proxy_address,
-            eth_bridge,
+            l2_legacy_proxy_class_hash: legacy_proxy_class_hash,
+            l2_starkgate_proxy_class_hash: starkgate_proxy_class_hash,
+            l2_erc20_legacy_class_hash: erc20_legacy_class_hash,
+            l2_legacy_eth_bridge_class_hash: legacy_eth_bridge_class_hash,
+            l2_eth_proxy_address: eth_proxy_address,
+            l2_eth_bridge_proxy_address: eth_bridge_proxy_address,
+            l1_bridge_address: eth_bridge.address(),
+            l1_bridge: eth_bridge,
         }
     }
 }
 
 pub async fn deploy_eth_token_on_l2(
     rpc_provider_l2: &JsonRpcClient<HttpTransport>,
-    eth_proxy_address: FieldElement,
-    eth_erc20_class_hash: FieldElement,
+    eth_proxy_address: Felt,
+    eth_erc20_class_hash: Felt,
     account: &RpcAccount<'_>,
-    eth_legacy_bridge_address: FieldElement,
-) -> FieldElement {
+    eth_legacy_bridge_address: Felt,
+) -> Felt {
     let deploy_tx = account
         .invoke_contract(
             account.address(),
             "deploy_contract",
-            vec![eth_erc20_class_hash, FieldElement::ZERO, FieldElement::ZERO, FieldElement::ZERO],
+            vec![eth_erc20_class_hash, Felt::ZERO, Felt::ZERO, Felt::ZERO],
             None,
         )
         .send()
@@ -229,20 +239,20 @@ pub async fn deploy_eth_token_on_l2(
     wait_for_transaction(rpc_provider_l2, deploy_tx.transaction_hash, "deploy_eth_token_on_l2 : deploy").await.unwrap();
     let contract_address = get_contract_address_from_deploy_tx(account.provider(), &deploy_tx).await.unwrap();
 
-    log::debug!("Contract address (eth erc20) : {:?}", contract_address);
+    log::info!("Contract address (eth erc20) : {:?}", contract_address);
 
     let add_implementation_txn = invoke_contract(
         eth_proxy_address,
         "add_implementation",
         vec![
             contract_address,
-            FieldElement::ZERO,
-            FieldElement::from(4u64),
-            FieldElement::from_byte_slice_be("Ether".as_bytes()).unwrap(),
-            FieldElement::from_byte_slice_be("ETH".as_bytes()).unwrap(),
-            FieldElement::from_str("18").unwrap(),
+            Felt::ZERO,
+            Felt::from(4u64),
+            Felt::from_bytes_be_slice("Ether".as_bytes()),
+            Felt::from_bytes_be_slice("ETH".as_bytes()),
+            Felt::from_str("18").unwrap(),
             eth_legacy_bridge_address,
-            FieldElement::ZERO,
+            Felt::ZERO,
         ],
         account,
     )
@@ -261,13 +271,13 @@ pub async fn deploy_eth_token_on_l2(
         "upgrade_to",
         vec![
             contract_address,
-            FieldElement::ZERO,
-            FieldElement::from(4u64),
-            FieldElement::from_byte_slice_be("Ether".as_bytes()).unwrap(),
-            FieldElement::from_byte_slice_be("ETH".as_bytes()).unwrap(),
-            FieldElement::from_str("18").unwrap(),
+            Felt::ZERO,
+            Felt::from(4u64),
+            Felt::from_bytes_be_slice("Ether".as_bytes()),
+            Felt::from_bytes_be_slice("ETH".as_bytes()),
+            Felt::from_str("18").unwrap(),
             eth_legacy_bridge_address,
-            FieldElement::ZERO,
+            Felt::ZERO,
         ],
         account,
     )

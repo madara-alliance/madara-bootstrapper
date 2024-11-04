@@ -5,3 +5,5 @@ pub mod starknet_sovereign;
 pub mod starknet_validity;
 pub mod token_bridge;
 pub mod utils;
+
+pub mod legacy_class;

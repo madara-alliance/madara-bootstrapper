@@ -5,12 +5,11 @@ use async_trait::async_trait;
 use ethers::abi::AbiEncode;
 use ethers::addressbook::Address;
 use ethers::prelude::{Bytes, I256, U256};
-use starknet_api::hash::{StarkFelt, StarkHash};
-use starknet_ff::FieldElement;
+use starknet::core::types::Felt;
 use starknet_proxy_client::interfaces::proxy::{CoreContractInitData, CoreContractState};
 use zaun_utils::LocalWalletSignerMiddleware;
 
-use crate::contract_clients::config::Config;
+use crate::contract_clients::config::Clients;
 use crate::utils::convert_felt_to_u256;
 
 #[async_trait]
@@ -26,10 +25,11 @@ pub trait CoreContract {
     #[allow(clippy::too_many_arguments)]
     async fn add_implementation_core_contract(
         &self,
-        block_number: StarkFelt,
-        state_root: StarkFelt,
-        program_hash: FieldElement,
-        config_hash: StarkHash,
+        block_number: Felt,
+        state_root: Felt,
+        block_hash: Felt,
+        program_hash: Felt,
+        config_hash: Felt,
         implementation_address: Address,
         verifier_address: Address,
         finalized: bool,
@@ -38,10 +38,11 @@ pub trait CoreContract {
     #[allow(clippy::too_many_arguments)]
     async fn upgrade_to_core_contract(
         &self,
-        block_number: StarkFelt,
-        state_root: StarkFelt,
-        program_hash: FieldElement,
-        config_hash: StarkHash,
+        block_number: Felt,
+        state_root: Felt,
+        block_hash: Felt,
+        program_hash: Felt,
+        config_hash: Felt,
         implementation_address: Address,
         verifier_address: Address,
         finalized: bool,
@@ -53,41 +54,40 @@ pub trait CoreContract {
 
     async fn nominate_governor_core_contract_proxy(&self, l1_governor_address: Address);
 
-    async fn initialize(&self, program_hash: StarkFelt, config_hash: StarkFelt);
+    async fn initialize(&self, program_hash: Felt, config_hash: Felt);
 
     async fn initialize_core_contract(
         &self,
-        block_number: StarkFelt,
-        state_root: StarkFelt,
-        program_hash: FieldElement,
-        config_hash: StarkHash,
+        block_number: Felt,
+        state_root: Felt,
+        block_hash: Felt,
+        program_hash: Felt,
+        config_hash: Felt,
         verifer_address: Address,
     );
 }
 
 pub trait CoreContractDeploy<T> {
-    fn deploy(config: &Config) -> impl Future<Output = T> + Send;
+    fn deploy(clients: &Clients) -> impl Future<Output = T> + Send;
 }
 
 pub fn get_init_data_core_contract(
-    block_number: StarkFelt,
-    state_root: StarkFelt,
-    program_hash: StarkFelt,
-    config_hash: StarkHash,
+    block_number: Felt,
+    state_root: Felt,
+    block_hash: Felt,
+    program_hash: Felt,
+    config_hash: Felt,
     verifier_address: Address,
 ) -> CoreContractInitData {
     CoreContractInitData {
         program_hash: convert_felt_to_u256(program_hash), // zero program hash would be deemed invalid
+        aggregate_program_hash: U256::zero(),
         verifier_address,
         config_hash: convert_felt_to_u256(config_hash),
-        // TODO :
-        // Figure out the exact params for production env
         initial_state: CoreContractState {
             block_number: I256::from_raw(convert_felt_to_u256(block_number)),
             state_root: convert_felt_to_u256(state_root),
-            // TODO :
-            // Remove hardcoded values.
-            block_hash: U256::zero(),
+            block_hash: convert_felt_to_u256(block_hash),
         },
     }
 }

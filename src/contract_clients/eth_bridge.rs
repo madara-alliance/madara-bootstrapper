@@ -4,13 +4,13 @@ use async_trait::async_trait;
 use ethers::addressbook::Address;
 use ethers::providers::Middleware;
 use ethers::types::{Bytes, U256};
-use starknet_accounts::{Account, ConnectedAccount};
+use starknet::accounts::{Account, ConnectedAccount};
+use starknet::core::types::Felt;
 use starknet_eth_bridge_client::clients::eth_bridge::StarknetEthBridgeContractClient;
 use starknet_eth_bridge_client::interfaces::eth_bridge::StarknetEthBridgeTrait;
 use starknet_eth_bridge_client::{
     deploy_starknet_eth_bridge_behind_safe_proxy, deploy_starknet_eth_bridge_behind_unsafe_proxy,
 };
-use starknet_ff::FieldElement;
 use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::JsonRpcClient;
 use starknet_proxy_client::interfaces::proxy::ProxySupport3_0_2Trait;
@@ -60,15 +60,15 @@ impl StarknetLegacyEthBridge {
 
     pub async fn deploy_l2_contracts(
         rpc_provider_l2: &JsonRpcClient<HttpTransport>,
-        legacy_eth_bridge_class_hash: FieldElement,
-        legacy_eth_bridge_proxy_address: FieldElement,
+        legacy_eth_bridge_class_hash: Felt,
+        legacy_eth_bridge_proxy_address: Felt,
         account: &RpcAccount<'_>,
-    ) -> FieldElement {
+    ) -> Felt {
         let deploy_tx = account
             .invoke_contract(
                 account.address(),
                 "deploy_contract",
-                vec![legacy_eth_bridge_class_hash, FieldElement::ZERO, FieldElement::ZERO, FieldElement::ZERO],
+                vec![legacy_eth_bridge_class_hash, Felt::ZERO, Felt::ZERO, Felt::ZERO],
                 None,
             )
             .send()
@@ -83,12 +83,12 @@ impl StarknetLegacyEthBridge {
         .unwrap();
         let contract_address = get_contract_address_from_deploy_tx(account.provider(), &deploy_tx).await.unwrap();
 
-        log::debug!("🎡 contract address (eth bridge) : {:?}", contract_address);
+        log::info!("🎡 contract address (eth bridge) : {:?}", contract_address);
 
         let add_implementation_txn = invoke_contract(
             legacy_eth_bridge_proxy_address,
             "add_implementation",
-            vec![contract_address, FieldElement::ZERO, FieldElement::ONE, account.address(), FieldElement::ZERO],
+            vec![contract_address, Felt::ZERO, Felt::ONE, account.address(), Felt::ZERO],
             account,
         )
         .await;
@@ -104,7 +104,7 @@ impl StarknetLegacyEthBridge {
         let upgrade_to_txn = invoke_contract(
             legacy_eth_bridge_proxy_address,
             "upgrade_to",
-            vec![contract_address, FieldElement::ZERO, FieldElement::ONE, account.address(), FieldElement::ZERO],
+            vec![contract_address, Felt::ZERO, Felt::ONE, account.address(), Felt::ZERO],
             account,
         )
         .await;
@@ -158,7 +158,7 @@ impl StarknetLegacyEthBridge {
         calldata.extend(empty_bytes);
         calldata.extend(padded_messaging_bytes);
 
-        log::debug!("🎡 add_implementation_eth_bridge : bytes : {:?}", Bytes::from(calldata.clone()));
+        log::info!("🎡 add_implementation_eth_bridge : bytes : {:?}", Bytes::from(calldata.clone()));
 
         self.eth_bridge
             .add_implementation(Bytes::from(calldata), self.implementation_address(), false)
@@ -185,7 +185,7 @@ impl StarknetLegacyEthBridge {
         calldata.extend(empty_bytes);
         calldata.extend(padded_messaging_bytes);
 
-        log::debug!("🎡 upgrade_to_eth_bridge : bytes : {:?}", Bytes::from(calldata.clone()));
+        log::info!("🎡 upgrade_to_eth_bridge : bytes : {:?}", Bytes::from(calldata.clone()));
 
         self.eth_bridge
             .upgrade_to(Bytes::from(calldata), self.implementation_address(), false)
@@ -198,7 +198,7 @@ impl StarknetLegacyEthBridge {
         &self,
         max_total_balance: &str,
         max_deposit: &str,
-        l2_bridge: FieldElement,
+        l2_bridge: Felt,
         l1_multisig_address: Address,
         is_dev: bool,
     ) {
@@ -215,36 +215,36 @@ impl StarknetLegacyEthBridge {
     pub async fn setup_l2_bridge(
         &self,
         rpc_provider: &JsonRpcClient<HttpTransport>,
-        l2_bridge_address: FieldElement,
-        erc20_address: FieldElement,
+        l2_bridge_address: Felt,
+        erc20_address: Felt,
         l2_deployer_address: &str,
         account: &RpcAccount<'_>,
     ) {
         let tx = invoke_contract(
             l2_bridge_address,
             "initialize",
-            vec![FieldElement::from_dec_str("1").unwrap(), FieldElement::from_hex_be(l2_deployer_address).unwrap()],
+            vec![Felt::from_dec_str("1").unwrap(), Felt::from_hex(l2_deployer_address).unwrap()],
             account,
         )
         .await;
 
-        log::debug!("🎡 setup_l2_bridge : l2 bridge initialized //");
+        log::info!("🎡 setup_l2_bridge : l2 bridge initialized //");
         wait_for_transaction(rpc_provider, tx.transaction_hash, "setup_l2_bridge : initialize").await.unwrap();
 
         let tx = invoke_contract(l2_bridge_address, "set_l2_token", vec![erc20_address], account).await;
 
-        log::debug!("🎡 setup_l2_bridge : l2 token set //");
+        log::info!("🎡 setup_l2_bridge : l2 token set //");
         wait_for_transaction(rpc_provider, tx.transaction_hash, "setup_l2_bridge : set_l2_token").await.unwrap();
 
         let tx = invoke_contract(
             l2_bridge_address,
             "set_l1_bridge",
-            vec![FieldElement::from_byte_slice_be(self.eth_bridge.address().as_bytes()).unwrap()],
+            vec![Felt::from_bytes_be_slice(self.eth_bridge.address().as_bytes())],
             account,
         )
         .await;
 
-        log::debug!("🎡 setup_l2_bridge : l1 bridge set //");
+        log::info!("🎡 setup_l2_bridge : l1 bridge set //");
         wait_for_transaction(rpc_provider, tx.transaction_hash, "setup_l2_bridge : set_l1_bridge").await.unwrap();
     }
 

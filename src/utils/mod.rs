@@ -1,19 +1,15 @@
 use std::path::Path;
-use std::time::Duration;
 use std::{fs, io};
 
 use ethers::addressbook::Address;
 use ethers::types::U256;
 use num_bigint::BigUint;
 use serde_json::{Map, Value};
-use starknet_accounts::ConnectedAccount;
-use starknet_api::hash::StarkFelt;
-use starknet_core::types::InvokeTransactionResult;
-use starknet_core::types::MaybePendingTransactionReceipt::{PendingReceipt, Receipt};
-use starknet_ff::FieldElement;
+use starknet::accounts::ConnectedAccount;
+use starknet::core::types::{Felt, InvokeTransactionResult, TransactionReceipt};
+use starknet_core::types::TransactionReceiptWithBlockInfo;
 use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::JsonRpcClient;
-use tokio::time::sleep;
 
 use crate::contract_clients::utils::RpcAccount;
 use crate::helpers::account_actions::{get_transaction_receipt, AccountActions};
@@ -22,9 +18,9 @@ pub mod banner;
 pub mod constants;
 
 pub async fn invoke_contract<'a>(
-    contract: FieldElement,
+    contract: Felt,
     method: &str,
-    calldata: Vec<FieldElement>,
+    calldata: Vec<Felt>,
     account: &RpcAccount<'a>,
 ) -> InvokeTransactionResult {
     let txn_res =
@@ -45,7 +41,7 @@ pub fn pad_bytes(address: Address) -> Vec<u8> {
 
 pub async fn wait_for_transaction(
     provider_l2: &JsonRpcClient<HttpTransport>,
-    transaction_hash: FieldElement,
+    transaction_hash: Felt,
     tag: &str,
 ) -> Result<(), anyhow::Error> {
     let transaction_receipt = get_transaction_receipt(provider_l2, transaction_hash).await;
@@ -53,20 +49,24 @@ pub async fn wait_for_transaction(
     let transaction_status = transaction_receipt.ok().unwrap();
 
     match transaction_status {
-        Receipt(transaction_receipt) => {
-            log::trace!("txn : {:?} : {:?}", tag, transaction_receipt);
-            Ok(())
+        TransactionReceiptWithBlockInfo { receipt: TransactionReceipt::Invoke(receipt), .. } => {
+            log::trace!("txn : {:?} : {:?}", tag, receipt);
         }
-        PendingReceipt(..) => {
-            log::trace!("⏳ waiting for transaction : {:?}", transaction_hash);
-            sleep(Duration::from_secs(2)).await;
-            Box::pin(wait_for_transaction(provider_l2, transaction_hash, "")).await
+        TransactionReceiptWithBlockInfo { receipt: TransactionReceipt::DeployAccount(receipt), .. } => {
+            let contract_address = receipt.contract_address;
+            log::trace!("txn : {:?} : {:?}", tag, contract_address);
         }
-    }
+        _ => {
+            log::error!("Transaction status: {:?}", transaction_status);
+            panic!("Transaction failed");
+        }
+    };
+
+    Ok(())
 }
 
-pub fn convert_felt_to_u256(felt: StarkFelt) -> U256 {
-    U256::from_big_endian(felt.bytes())
+pub fn convert_felt_to_u256(felt: Felt) -> U256 {
+    U256::from_big_endian(&felt.to_bytes_be())
 }
 
 pub enum JsonValueType {

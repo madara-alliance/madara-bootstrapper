@@ -3,43 +3,49 @@ use std::time::Duration;
 
 use ethers::abi::Address;
 use ethers::prelude::{H160, U256};
+use serde::Serialize;
+use starknet::core::types::Felt;
 use starknet_core::types::{BlockId, BlockTag, FunctionCall};
 use starknet_core::utils::get_selector_from_name;
-use starknet_ff::FieldElement;
 use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::{JsonRpcClient, Provider};
 use tokio::time::sleep;
 
-use crate::contract_clients::config::Config;
+use crate::contract_clients::config::Clients;
 use crate::contract_clients::core_contract::CoreContract;
 use crate::contract_clients::eth_bridge::BridgeDeployable;
 use crate::contract_clients::token_bridge::StarknetTokenBridge;
 use crate::contract_clients::utils::{build_single_owner_account, declare_contract, DeclarationInput, RpcAccount};
 use crate::utils::constants::{ERC20_CASM_PATH, ERC20_SIERRA_PATH};
 use crate::utils::{convert_to_hex, save_to_json, JsonValueType};
-use crate::CliArgs;
+use crate::ConfigFile;
 
 pub struct Erc20Bridge<'a> {
     account: RpcAccount<'a>,
-    account_address: FieldElement,
-    arg_config: &'a CliArgs,
-    clients: &'a Config,
+    account_address: Felt,
+    arg_config: &'a ConfigFile,
+    clients: &'a Clients,
     core_contract: &'a dyn CoreContract,
 }
 
+#[derive(Serialize)]
 pub struct Erc20BridgeSetupOutput {
-    pub erc20_cairo_one_class_hash: FieldElement,
-    pub starknet_token_bridge: StarknetTokenBridge,
-    pub erc20_l2_bridge_address: FieldElement,
-    pub l2_erc20_token_address: FieldElement,
+    pub erc20_cairo_one_class_hash: Felt,
+    pub l1_token_bridge_proxy: Address,
+    pub l1_manager_address: Address,
+    pub l1_registry_address: Address,
+    pub l2_token_bridge: Felt,
+    pub test_erc20_token_address: Felt,
+    #[serde(skip)]
+    pub token_bridge: StarknetTokenBridge,
 }
 
 impl<'a> Erc20Bridge<'a> {
     pub fn new(
         account: RpcAccount<'a>,
-        account_address: FieldElement,
-        arg_config: &'a CliArgs,
-        clients: &'a Config,
+        account_address: Felt,
+        arg_config: &'a ConfigFile,
+        clients: &'a Clients,
         core_contract: &'a dyn CoreContract,
     ) -> Self {
         Self { account, account_address, arg_config, clients, core_contract }
@@ -52,7 +58,7 @@ impl<'a> Erc20Bridge<'a> {
             self.account.clone(),
         ))
         .await;
-        log::debug!("🌗 ERC20 Class Hash declared : {:?}", erc20_cairo_one_class_hash);
+        log::info!("🌗 ERC20 Class Hash declared : {:?}", erc20_cairo_one_class_hash);
         save_to_json("erc20_cairo_one_class_hash", &JsonValueType::StringType(erc20_cairo_one_class_hash.to_string()))
             .unwrap();
         sleep(Duration::from_secs(10)).await;
@@ -137,24 +143,27 @@ impl<'a> Erc20Bridge<'a> {
 
         Erc20BridgeSetupOutput {
             erc20_cairo_one_class_hash,
-            starknet_token_bridge: token_bridge,
-            erc20_l2_bridge_address: l2_bridge_address,
-            l2_erc20_token_address,
+            l1_manager_address: token_bridge.manager_address(),
+            l1_registry_address: token_bridge.registry_address(),
+            l1_token_bridge_proxy: token_bridge.bridge_address(),
+            l2_token_bridge: l2_bridge_address,
+            test_erc20_token_address: l2_erc20_token_address,
+            token_bridge,
         }
     }
 }
 
 async fn get_l2_token_address(
     rpc_provider_l2: &JsonRpcClient<HttpTransport>,
-    l2_bridge_address: &FieldElement,
+    l2_bridge_address: &Felt,
     l1_erc_20_address: &H160,
-) -> FieldElement {
+) -> Felt {
     rpc_provider_l2
         .call(
             FunctionCall {
                 contract_address: *l2_bridge_address,
                 entry_point_selector: get_selector_from_name("get_l2_token").unwrap(),
-                calldata: vec![FieldElement::from_byte_slice_be(l1_erc_20_address.as_bytes()).unwrap()],
+                calldata: vec![Felt::from_bytes_be_slice(l1_erc_20_address.as_bytes())],
             },
             BlockId::Tag(BlockTag::Pending),
         )

@@ -1,6 +1,7 @@
 use std::time::Duration;
 
-use starknet_ff::FieldElement;
+use serde::Serialize;
+use starknet::core::types::Felt;
 use tokio::time::sleep;
 
 use crate::contract_clients::utils::{declare_contract, DeclarationInput, RpcAccount};
@@ -11,8 +12,9 @@ pub struct ArgentSetup<'a> {
     account: RpcAccount<'a>,
 }
 
+#[derive(Debug, Clone, Serialize)]
 pub struct ArgentSetupOutput {
-    pub argent_class_hash: FieldElement,
+    pub argent_class_hash: Felt,
 }
 
 impl<'a> ArgentSetup<'a> {
@@ -27,7 +29,7 @@ impl<'a> ArgentSetup<'a> {
             self.account.clone(),
         ))
         .await;
-        log::debug!("📣 Argent Hash Declared");
+        log::info!("📣 Argent Hash Declared");
         save_to_json("argent_class_hash", &JsonValueType::StringType(argent_class_hash.to_string())).unwrap();
         sleep(Duration::from_secs(10)).await;
 

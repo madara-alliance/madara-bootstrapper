@@ -1,9 +1,11 @@
 use std::time::Duration;
 
-use starknet_accounts::{Account, ConnectedAccount};
-use starknet_ff::FieldElement;
+use serde::Serialize;
+use starknet::accounts::{Account, ConnectedAccount};
+use starknet::core::types::Felt;
 use tokio::time::sleep;
 
+use crate::contract_clients::config::Clients;
 use crate::contract_clients::utils::{declare_contract, DeclarationInput, RpcAccount};
 use crate::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::utils::constants::{
@@ -11,20 +13,22 @@ use crate::utils::constants::{
     BRAAVOS_BASE_ACCOUNT_SIERRA_PATH,
 };
 use crate::utils::{save_to_json, wait_for_transaction, JsonValueType};
-use crate::CliArgs;
+use crate::ConfigFile;
 
 pub struct BraavosSetup<'a> {
     account: RpcAccount<'a>,
-    arg_config: &'a CliArgs,
+    arg_config: &'a ConfigFile,
+    clients: &'a Clients,
 }
 
+#[derive(Debug, Clone, Serialize)]
 pub struct BraavosSetupOutput {
-    pub braavos_class_hash: FieldElement,
+    pub braavos_class_hash: Felt,
 }
 
 impl<'a> BraavosSetup<'a> {
-    pub fn new(account: RpcAccount<'a>, arg_config: &'a CliArgs) -> Self {
-        Self { account, arg_config }
+    pub fn new(account: RpcAccount<'a>, arg_config: &'a ConfigFile, clients: &'a Clients) -> Self {
+        Self { account, arg_config, clients }
     }
 
     pub async fn setup(&self) -> BraavosSetupOutput {
@@ -34,7 +38,7 @@ impl<'a> BraavosSetup<'a> {
             self.account.clone(),
         ))
         .await;
-        log::debug!("📣 Braavos Account class hash declared.");
+        log::info!("📣 Braavos Account class hash declared.");
         save_to_json("braavos_class_hash", &JsonValueType::StringType(braavos_class_hash.to_string())).unwrap();
         sleep(Duration::from_secs(10)).await;
 
@@ -44,7 +48,7 @@ impl<'a> BraavosSetup<'a> {
             self.account.clone(),
         ))
         .await;
-        log::debug!("📣 Braavos Base Account class hash declared.");
+        log::info!("📣 Braavos Base Account class hash declared.");
         save_to_json(
             "braavos_base_account_class_hash",
             &JsonValueType::StringType(braavos_base_account_class_hash.to_string()),
@@ -55,9 +59,10 @@ impl<'a> BraavosSetup<'a> {
         let braavos_aggregator_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(BRAAVOS_AGGREGATOR_PATH),
             self.arg_config.rollup_seq_url.clone(),
+            self.clients.provider_l2(),
         ))
         .await;
-        log::debug!("📣 Braavos Aggregator class hash declared.");
+        log::info!("📣 Braavos Aggregator class hash declared.");
         save_to_json(
             "braavos_aggregator_class_hash",
             &JsonValueType::StringType(braavos_aggregator_class_hash.to_string()),
@@ -70,7 +75,7 @@ impl<'a> BraavosSetup<'a> {
             .invoke_contract(
                 self.account.address(),
                 "deploy_contract",
-                vec![braavos_aggregator_class_hash, FieldElement::ZERO, FieldElement::ZERO, FieldElement::ZERO],
+                vec![braavos_aggregator_class_hash, Felt::ZERO, Felt::ZERO, Felt::ZERO],
                 None,
             )
             .send()

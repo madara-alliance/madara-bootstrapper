@@ -2,28 +2,29 @@ use std::time::Duration;
 
 use tokio::time::sleep;
 
-use crate::contract_clients::config::Config;
+use crate::contract_clients::config::Clients;
 use crate::contract_clients::utils::{
     build_single_owner_account, declare_contract, deploy_account_using_priv_key, DeclarationInput, RpcAccount,
     TEMP_ACCOUNT_PRIV_KEY,
 };
 use crate::utils::constants::{OZ_ACCOUNT_CASM_PATH, OZ_ACCOUNT_PATH, OZ_ACCOUNT_SIERRA_PATH};
 use crate::utils::{convert_to_hex, save_to_json, JsonValueType};
-use crate::CliArgs;
+use crate::ConfigFile;
 
-pub async fn account_init<'a>(clients: &'a Config, arg_config: &'a CliArgs) -> RpcAccount<'a> {
+pub async fn account_init<'a>(clients: &'a Clients, arg_config: &'a ConfigFile) -> RpcAccount<'a> {
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     // Making temp account for declaration of OZ account Cairo 1 contract
     let oz_account_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
         String::from(OZ_ACCOUNT_PATH),
         arg_config.rollup_seq_url.clone(),
+        clients.provider_l2(),
     ))
     .await;
-    log::debug!("OZ Account Class Hash Declared");
+    log::info!("OZ Account Class Hash Declared");
     save_to_json("oz_account_class_hash", &JsonValueType::StringType(oz_account_class_hash.to_string())).unwrap();
     sleep(Duration::from_secs(10)).await;
 
-    log::debug!("Waiting for block to be mined [/]");
+    log::info!("Waiting for block to be mined [/]");
     sleep(Duration::from_secs(10)).await;
 
     let account_address_temp =
