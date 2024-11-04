@@ -2,17 +2,17 @@ use std::str::FromStr;
 
 use ethers::abi::Address;
 
-use crate::contract_clients::config::Config;
+use crate::contract_clients::config::Clients;
 use crate::contract_clients::core_contract::{CoreContract, CoreContractDeploy};
 use crate::contract_clients::starknet_sovereign::StarknetSovereignContract;
 use crate::contract_clients::starknet_validity::StarknetValidityContract;
 use crate::contract_clients::utils::get_bridge_init_configs;
 use crate::utils::{save_to_json, JsonValueType};
-use crate::CliArgs;
+use crate::ConfigFile;
 
 pub struct CoreContractStarknetL1<'a> {
-    arg_config: &'a CliArgs,
-    clients: &'a Config,
+    arg_config: &'a ConfigFile,
+    clients: &'a Clients,
 }
 
 pub struct CoreContractStarknetL1Output {
@@ -20,7 +20,7 @@ pub struct CoreContractStarknetL1Output {
 }
 
 impl<'a> CoreContractStarknetL1<'a> {
-    pub fn new(arg_config: &'a CliArgs, clients: &'a Config) -> Self {
+    pub fn new(arg_config: &'a ConfigFile, clients: &'a Clients) -> Self {
         Self { arg_config, clients }
     }
 

@@ -5,16 +5,16 @@ use ethers::prelude::U256;
 use starknet::core::types::Felt;
 use tokio::time::sleep;
 
-use crate::contract_clients::config::Config;
+use crate::contract_clients::config::Clients;
 use crate::contract_clients::eth_bridge::StarknetLegacyEthBridge;
 use crate::contract_clients::utils::read_erc20_balance;
 use crate::tests::constants::L2_DEPLOYER_ADDRESS;
-use crate::CliArgs;
+use crate::ConfigFile;
 // TODO : Uncomment L2 --> L1 part after this part is added in the madara-orchestrator.
 
 pub async fn eth_bridge_test_helper(
-    clients: &Config,
-    arg_config: &CliArgs,
+    clients: &Clients,
+    arg_config: &ConfigFile,
     l2_eth_address: Felt,
     _l2_bridge_address: Felt,
     eth_bridge: StarknetLegacyEthBridge,

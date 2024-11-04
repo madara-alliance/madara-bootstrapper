@@ -9,7 +9,7 @@ use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::JsonRpcClient;
 use tokio::time::sleep;
 
-use crate::contract_clients::config::Config;
+use crate::contract_clients::config::Clients;
 use crate::contract_clients::core_contract::CoreContract;
 use crate::contract_clients::eth_bridge::{BridgeDeployable, StarknetLegacyEthBridge};
 use crate::contract_clients::utils::{
@@ -19,13 +19,13 @@ use crate::contract_clients::utils::{
 use crate::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::utils::constants::{ERC20_LEGACY_PATH, LEGACY_BRIDGE_PATH, PROXY_LEGACY_PATH, STARKGATE_PROXY_PATH};
 use crate::utils::{convert_to_hex, invoke_contract, save_to_json, wait_for_transaction, JsonValueType};
-use crate::CliArgs;
+use crate::ConfigFile;
 
 pub struct EthBridge<'a> {
     account: RpcAccount<'a>,
     account_address: Felt,
-    arg_config: &'a CliArgs,
-    clients: &'a Config,
+    arg_config: &'a ConfigFile,
+    clients: &'a Clients,
     core_contract: &'a dyn CoreContract,
 }
 
@@ -46,8 +46,8 @@ impl<'a> EthBridge<'a> {
     pub fn new(
         account: RpcAccount<'a>,
         account_address: Felt,
-        arg_config: &'a CliArgs,
-        clients: &'a Config,
+        arg_config: &'a ConfigFile,
+        clients: &'a Clients,
         core_contract: &'a dyn CoreContract,
     ) -> Self {
         Self { account, account_address, arg_config, clients, core_contract }

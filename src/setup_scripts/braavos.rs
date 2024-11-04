@@ -5,7 +5,7 @@ use starknet::accounts::{Account, ConnectedAccount};
 use starknet::core::types::Felt;
 use tokio::time::sleep;
 
-use crate::contract_clients::config::Config;
+use crate::contract_clients::config::Clients;
 use crate::contract_clients::utils::{declare_contract, DeclarationInput, RpcAccount};
 use crate::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::utils::constants::{
@@ -13,12 +13,12 @@ use crate::utils::constants::{
     BRAAVOS_BASE_ACCOUNT_SIERRA_PATH,
 };
 use crate::utils::{save_to_json, wait_for_transaction, JsonValueType};
-use crate::CliArgs;
+use crate::ConfigFile;
 
 pub struct BraavosSetup<'a> {
     account: RpcAccount<'a>,
-    arg_config: &'a CliArgs,
-    config: &'a Config,
+    arg_config: &'a ConfigFile,
+    clients: &'a Clients,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -27,8 +27,8 @@ pub struct BraavosSetupOutput {
 }
 
 impl<'a> BraavosSetup<'a> {
-    pub fn new(account: RpcAccount<'a>, arg_config: &'a CliArgs, config: &'a Config) -> Self {
-        Self { account, arg_config, config }
+    pub fn new(account: RpcAccount<'a>, arg_config: &'a ConfigFile, clients: &'a Clients) -> Self {
+        Self { account, arg_config, clients }
     }
 
     pub async fn setup(&self) -> BraavosSetupOutput {
@@ -59,7 +59,7 @@ impl<'a> BraavosSetup<'a> {
         let braavos_aggregator_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(BRAAVOS_AGGREGATOR_PATH),
             self.arg_config.rollup_seq_url.clone(),
-            self.config.provider_l2(),
+            self.clients.provider_l2(),
         ))
         .await;
         log::info!("📣 Braavos Aggregator class hash declared.");

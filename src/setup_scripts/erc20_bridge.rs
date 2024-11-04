@@ -11,20 +11,20 @@ use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::{JsonRpcClient, Provider};
 use tokio::time::sleep;
 
-use crate::contract_clients::config::Config;
+use crate::contract_clients::config::Clients;
 use crate::contract_clients::core_contract::CoreContract;
 use crate::contract_clients::eth_bridge::BridgeDeployable;
 use crate::contract_clients::token_bridge::StarknetTokenBridge;
 use crate::contract_clients::utils::{build_single_owner_account, declare_contract, DeclarationInput, RpcAccount};
 use crate::utils::constants::{ERC20_CASM_PATH, ERC20_SIERRA_PATH};
 use crate::utils::{convert_to_hex, save_to_json, JsonValueType};
-use crate::CliArgs;
+use crate::ConfigFile;
 
 pub struct Erc20Bridge<'a> {
     account: RpcAccount<'a>,
     account_address: Felt,
-    arg_config: &'a CliArgs,
-    clients: &'a Config,
+    arg_config: &'a ConfigFile,
+    clients: &'a Clients,
     core_contract: &'a dyn CoreContract,
 }
 
@@ -44,8 +44,8 @@ impl<'a> Erc20Bridge<'a> {
     pub fn new(
         account: RpcAccount<'a>,
         account_address: Felt,
-        arg_config: &'a CliArgs,
-        clients: &'a Config,
+        arg_config: &'a ConfigFile,
+        clients: &'a Clients,
         core_contract: &'a dyn CoreContract,
     ) -> Self {
         Self { account, account_address, arg_config, clients, core_contract }

@@ -21,7 +21,7 @@ use crate::contract_clients::legacy_class::CompressedLegacyContractClass;
 use crate::contract_clients::utils::DeclarationInput::{DeclarationInputs, LegacyDeclarationInputs};
 use crate::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::utils::{invoke_contract, save_to_json, wait_for_transaction, JsonValueType};
-use crate::CliArgs;
+use crate::ConfigFile;
 
 pub type RpcAccount<'a> = SingleOwnerAccount<&'a JsonRpcClient<HttpTransport>, LocalWallet>;
 pub async fn build_single_owner_account<'a>(
@@ -75,7 +75,7 @@ pub fn generate_config_hash(
     Pedersen::hash_array(&[config_hash_version, chain_id, fee_token_address, native_fee_token_address])
 }
 
-pub fn get_bridge_init_configs(config: &CliArgs) -> (Felt, Felt) {
+pub fn get_bridge_init_configs(config: &ConfigFile) -> (Felt, Felt) {
     let program_hash = Felt::from_hex(config.sn_os_program_hash.as_str()).unwrap();
 
     let config_hash = generate_config_hash(

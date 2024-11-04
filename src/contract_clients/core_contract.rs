@@ -9,7 +9,7 @@ use starknet::core::types::Felt;
 use starknet_proxy_client::interfaces::proxy::{CoreContractInitData, CoreContractState};
 use zaun_utils::LocalWalletSignerMiddleware;
 
-use crate::contract_clients::config::Config;
+use crate::contract_clients::config::Clients;
 use crate::utils::convert_felt_to_u256;
 
 #[async_trait]
@@ -68,7 +68,7 @@ pub trait CoreContract {
 }
 
 pub trait CoreContractDeploy<T> {
-    fn deploy(config: &Config) -> impl Future<Output = T> + Send;
+    fn deploy(clients: &Clients) -> impl Future<Output = T> + Send;
 }
 
 pub fn get_init_data_core_contract(

@@ -9,7 +9,7 @@ use starknet_core_contract_client::interfaces::{OperatorTrait, StarknetGovernanc
 use starknet_proxy_client::interfaces::proxy::{CoreContractInitData, ProxyInitializeData, ProxySupport3_0_2Trait};
 use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
 
-use crate::contract_clients::config::Config;
+use crate::contract_clients::config::Clients;
 use crate::contract_clients::core_contract::{
     get_calldata_bytes, get_init_data_core_contract, CoreContract, CoreContractDeploy,
 };
@@ -20,8 +20,8 @@ pub struct StarknetSovereignContract {
 }
 
 impl CoreContractDeploy<StarknetSovereignContract> for StarknetSovereignContract {
-    async fn deploy(config: &Config) -> Self {
-        let client = deploy_starknet_sovereign_behind_unsafe_proxy(config.eth_client().signer().clone())
+    async fn deploy(clients: &Clients) -> Self {
+        let client = deploy_starknet_sovereign_behind_unsafe_proxy(clients.eth_client().signer().clone())
             .await
             .expect("Failed to deploy the starknet contact");
 
