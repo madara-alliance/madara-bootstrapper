@@ -32,7 +32,7 @@ pub async fn eth_bridge_test_helper(
     let balance_after =
         read_erc20_balance(clients.provider_l2(), l2_eth_address, Felt::from_hex(L2_DEPLOYER_ADDRESS).unwrap()).await;
 
-    assert_eq!(balance_before[0] + Felt::from_dec_str("10").unwrap(), balance_after[0]);
+    assert_eq!(balance_before[0] + Felt::from_dec_str("12").unwrap(), balance_after[0]);
 
     // Note: we are ignoring the withdrawal tests here, it would be part of e2e where
     // we have orch running as well

@@ -93,7 +93,7 @@ impl Default for ConfigFile {
             eth_chain_id: 31337,
             l1_deployer_address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266".to_string(),
             l1_wait_time: "15".to_string(),
-            sn_os_program_hash: "0x41fc2a467ef8649580631912517edcab7674173f1dbfa2e9b64fbcd82bc4d79".to_string(),
+            sn_os_program_hash: "0x1e324682835e60c4779a683b32713504aed894fd73842f7d05b18e7bd29cd70".to_string(),
             config_hash_version: "StarknetOsConfig2".to_string(),
             app_chain_id: "MADARA_DEVNET".to_string(),
             fee_token_address: "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7".to_string(),
@@ -104,8 +104,8 @@ impl Default for ConfigFile {
             verifier_address: "0x000000000000000000000000000000000000abcd".to_string(),
             operator_address: "0x000000000000000000000000000000000000abcd".to_string(),
             dev: false,
-            core_contract_address: None,
-            core_contract_implementation_address: None,
+            core_contract_address: Some("0xe7f1725e7734ce288f8367e1bb143e90bb3f0512".to_string()),
+            core_contract_implementation_address: Some("0x5fbdb2315678afecb367f032d93f642f64180aa3".to_string()),
         }
     }
 }
