@@ -66,7 +66,7 @@ pub async fn wait_for_transaction(
 }
 
 pub fn convert_felt_to_u256(felt: Felt) -> U256 {
-    U256::from_big_endian(&felt.to_bytes_le())
+    U256::from_big_endian(&felt.to_bytes_be())
 }
 
 pub enum JsonValueType {
