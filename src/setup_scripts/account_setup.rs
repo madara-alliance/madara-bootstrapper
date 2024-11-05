@@ -9,9 +9,9 @@ use crate::contract_clients::utils::{
 };
 use crate::utils::constants::{OZ_ACCOUNT_CASM_PATH, OZ_ACCOUNT_PATH, OZ_ACCOUNT_SIERRA_PATH};
 use crate::utils::{convert_to_hex, save_to_json, JsonValueType};
-use crate::ConfigFile;
+use crate::Config;
 
-pub async fn account_init<'a>(clients: &'a Clients, arg_config: &'a ConfigFile) -> RpcAccount<'a> {
+pub async fn account_init<'a>(clients: &'a Clients, arg_config: &'a Config) -> RpcAccount<'a> {
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     // Making temp account for declaration of OZ account Cairo 1 contract
     let oz_account_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(

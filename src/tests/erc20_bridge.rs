@@ -9,12 +9,12 @@ use crate::contract_clients::config::Clients;
 use crate::contract_clients::token_bridge::StarknetTokenBridge;
 use crate::contract_clients::utils::read_erc20_balance;
 use crate::tests::constants::L2_DEPLOYER_ADDRESS;
-use crate::ConfigFile;
+use crate::Config;
 // TODO : Uncomment L2 --> L1 part after this part is added in the madara-orchestrator.
 
 pub async fn erc20_bridge_test_helper(
     clients: &Clients,
-    arg_config: &ConfigFile,
+    arg_config: &Config,
     l2_erc20_token_address: Felt,
     token_bridge: StarknetTokenBridge,
     _l2_bridge_address: Felt,

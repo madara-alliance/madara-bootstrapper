@@ -10,12 +10,12 @@ use crate::contract_clients::utils::{declare_contract, DeclarationInput, RpcAcco
 use crate::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::utils::constants::UDC_PATH;
 use crate::utils::{save_to_json, wait_for_transaction, JsonValueType};
-use crate::ConfigFile;
+use crate::Config;
 
 pub struct UdcSetup<'a> {
     account: RpcAccount<'a>,
     account_address: Felt,
-    arg_config: &'a ConfigFile,
+    arg_config: &'a Config,
     clients: &'a Clients,
 }
 
@@ -26,12 +26,7 @@ pub struct UdcSetupOutput {
 }
 
 impl<'a> UdcSetup<'a> {
-    pub fn new(
-        account: RpcAccount<'a>,
-        account_address: Felt,
-        arg_config: &'a ConfigFile,
-        clients: &'a Clients,
-    ) -> Self {
+    pub fn new(account: RpcAccount<'a>, account_address: Felt, arg_config: &'a Config, clients: &'a Clients) -> Self {
         Self { account, account_address, arg_config, clients }
     }
 

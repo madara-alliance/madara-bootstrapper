@@ -19,12 +19,12 @@ use crate::contract_clients::utils::{
 use crate::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::utils::constants::{ERC20_LEGACY_PATH, LEGACY_BRIDGE_PATH, PROXY_LEGACY_PATH, STARKGATE_PROXY_PATH};
 use crate::utils::{convert_to_hex, invoke_contract, save_to_json, wait_for_transaction, JsonValueType};
-use crate::ConfigFile;
+use crate::Config;
 
 pub struct EthBridge<'a> {
     account: RpcAccount<'a>,
     account_address: Felt,
-    arg_config: &'a ConfigFile,
+    arg_config: &'a Config,
     clients: &'a Clients,
     core_contract: &'a dyn CoreContract,
 }
@@ -46,7 +46,7 @@ impl<'a> EthBridge<'a> {
     pub fn new(
         account: RpcAccount<'a>,
         account_address: Felt,
-        arg_config: &'a ConfigFile,
+        arg_config: &'a Config,
         clients: &'a Clients,
         core_contract: &'a dyn CoreContract,
     ) -> Self {
