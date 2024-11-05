@@ -13,11 +13,11 @@ use crate::utils::constants::{
     BRAAVOS_BASE_ACCOUNT_SIERRA_PATH,
 };
 use crate::utils::{save_to_json, wait_for_transaction, JsonValueType};
-use crate::ConfigFile;
+use crate::Config;
 
 pub struct BraavosSetup<'a> {
     account: RpcAccount<'a>,
-    arg_config: &'a ConfigFile,
+    arg_config: &'a Config,
     clients: &'a Clients,
 }
 
@@ -27,7 +27,7 @@ pub struct BraavosSetupOutput {
 }
 
 impl<'a> BraavosSetup<'a> {
-    pub fn new(account: RpcAccount<'a>, arg_config: &'a ConfigFile, clients: &'a Clients) -> Self {
+    pub fn new(account: RpcAccount<'a>, arg_config: &'a Config, clients: &'a Clients) -> Self {
         Self { account, arg_config, clients }
     }
 

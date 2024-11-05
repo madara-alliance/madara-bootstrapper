@@ -9,9 +9,9 @@ use crate::contract_clients::config::Clients;
 use crate::tests::erc20_bridge::erc20_bridge_test_helper;
 use crate::tests::eth_bridge::eth_bridge_test_helper;
 use crate::tests::madara::{MadaraCmd, MadaraCmdBuilder};
-use crate::{bootstrap, setup_core_contract, setup_l2, BootstrapperOutput, ConfigFile};
+use crate::{bootstrap, setup_core_contract, setup_l2, BootstrapperOutput, Config};
 
-async fn test_setup(args: &ConfigFile, clients: &Clients) -> (BootstrapperOutput, MadaraCmd) {
+async fn test_setup(args: &Config, clients: &Clients) -> (BootstrapperOutput, MadaraCmd) {
     // Setup L1 (core contract)
     let core_contract_client = setup_core_contract(args, clients).await;
 
@@ -19,7 +19,7 @@ async fn test_setup(args: &ConfigFile, clients: &Clients) -> (BootstrapperOutput
     let core_contract_implementation_address = core_contract_client.core_contract_client.implementation_address();
 
     // Create a new config with the core contract addresses
-    let mut config = get_test_config_file();
+    let mut config = get_test_config();
     config.core_contract_address = Some(format!("{:?}", core_contract_address));
     config.core_contract_implementation_address = Some(format!("{:?}", core_contract_implementation_address));
 
@@ -67,7 +67,7 @@ async fn test_setup(args: &ConfigFile, clients: &Clients) -> (BootstrapperOutput
 #[ignore = "ignored because we have a e2e test, and this is for a local test"]
 async fn deploy_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
-    let config = get_test_config_file();
+    let config = get_test_config();
     let clients = Clients::init_from_config(&config).await;
     bootstrap(&config, &clients).await;
 
@@ -79,7 +79,7 @@ async fn deploy_bridge() -> Result<(), anyhow::Error> {
 #[ignore = "ignored because we have a e2e test, and this is for a local test"]
 async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
-    let config = get_test_config_file();
+    let config = get_test_config();
     let clients = Clients::init_from_config(&config).await;
     let out = bootstrap(&config, &clients).await;
     let eth_bridge_setup = out.eth_bridge_setup_outputs.unwrap();
@@ -101,7 +101,7 @@ async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
 #[ignore = "ignored because we have a e2e test, and this is for a local test"]
 async fn deposit_and_withdraw_erc20_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
-    let config = get_test_config_file();
+    let config = get_test_config();
     let clients = Clients::init_from_config(&config).await;
     let out = bootstrap(&config, &clients).await;
     let eth_token_setup = out.erc20_bridge_setup_outputs.unwrap();
@@ -122,7 +122,7 @@ async fn deposit_and_withdraw_erc20_bridge() -> Result<(), anyhow::Error> {
 #[tokio::test]
 async fn deposit_tests_both_bridges() -> Result<(), anyhow::Error> {
     env_logger::init();
-    let config = get_test_config_file();
+    let config = get_test_config();
     let clients = Clients::init_from_config(&config).await;
     let (out, _madara) = test_setup(&config, &clients).await;
 
@@ -150,6 +150,6 @@ async fn deposit_tests_both_bridges() -> Result<(), anyhow::Error> {
     Ok(())
 }
 
-fn get_test_config_file() -> ConfigFile {
-    ConfigFile::default()
+fn get_test_config() -> Config {
+    Config::default()
 }

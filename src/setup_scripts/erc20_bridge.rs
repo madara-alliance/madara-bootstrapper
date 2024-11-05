@@ -18,12 +18,12 @@ use crate::contract_clients::token_bridge::StarknetTokenBridge;
 use crate::contract_clients::utils::{build_single_owner_account, declare_contract, DeclarationInput, RpcAccount};
 use crate::utils::constants::{ERC20_CASM_PATH, ERC20_SIERRA_PATH};
 use crate::utils::{convert_to_hex, save_to_json, JsonValueType};
-use crate::ConfigFile;
+use crate::Config;
 
 pub struct Erc20Bridge<'a> {
     account: RpcAccount<'a>,
     account_address: Felt,
-    arg_config: &'a ConfigFile,
+    arg_config: &'a Config,
     clients: &'a Clients,
     core_contract: &'a dyn CoreContract,
 }
@@ -44,7 +44,7 @@ impl<'a> Erc20Bridge<'a> {
     pub fn new(
         account: RpcAccount<'a>,
         account_address: Felt,
-        arg_config: &'a ConfigFile,
+        arg_config: &'a Config,
         clients: &'a Clients,
         core_contract: &'a dyn CoreContract,
     ) -> Self {
