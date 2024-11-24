@@ -37,6 +37,23 @@ jobs:
         with:
           version: nightly
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install Ganache
+        run: |
+          npm install -g ganache@7.9.0
+          ganache --version
+
+      - name: Install Solc
+        run: |
+          pip install solc-select
+          solc-select install 0.8.19
+          solc-select use 0.8.19
+          solc --version
+
       - name: Checkout Madara
         uses: actions/checkout@v4
         with:
@@ -70,6 +87,7 @@ jobs:
 
       - name: Run llvm-cov
         run: |
+          make artifacts-linux
           cargo llvm-cov nextest --release --lcov --output-path lcov.info
 
       - name: Coveralls

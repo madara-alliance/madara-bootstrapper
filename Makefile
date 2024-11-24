@@ -1,4 +1,4 @@
-.PHONY: starkgate-contracts-old
+.PHONY: setup setup-linux starkgate-contracts-latest starkgate-contracts-old braavos-account-cairo argent-contracts-starknet artifacts
 
 STARKGATE_CONTRACTS_COMMIT_HASH="45941888479663ac93e898cd7f8504fa9066c54c"
 ARGENT_CONTRACTS_COMMIT_HASH="1352198956f36fb35fa544c4e46a3507a3ec20e3"
@@ -52,3 +52,9 @@ argent-contracts-starknet:
 	# Copying Contracts
 	cp ./lib/argent-contracts-starknet/target/dev/argent_ArgentAccount.contract_class.json ./artifacts/ArgentAccount.sierra.json
 	cp ./lib/argent-contracts-starknet/target/dev/argent_ArgentAccount.compiled_contract_class.json ./artifacts/ArgentAccount.casm.json
+
+make artifacts-linux:
+	make setup-linux
+	make starkgate-contracts-latest
+	make braavos-account-cairo
+	make argent-contracts-starknet

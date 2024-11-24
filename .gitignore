@@ -5,3 +5,4 @@ addresses.json
 /bin/madara
 /bin/devnet.yaml
 .cairo
+./artifacts
