@@ -38,7 +38,9 @@ starkgate-contracts-latest:
 braavos-account-cairo:
 	# Building
 	asdf install scarb 2.8.4 && asdf global scarb 2.8.4
-	cd ./lib/braavos-account-cairo && git checkout $(BRAAVOS_CONTRACTS_COMMIT_HASH) && scarb build
+	cd ./lib/braavos-account-cairo && \
+ 	git checkout $(BRAAVOS_CONTRACTS_COMMIT_HASH) && \
+ 	~/.asdf/installs/scarb/2.8.4/bin/scarb build
 	# Copying Contracts
 	cp ./lib/braavos-account-cairo/target/dev/braavos_account_BraavosAccount.contract_class.json ./artifacts/BraavosAccount.sierra.json
 	cp ./lib/braavos-account-cairo/target/dev/braavos_account_BraavosAccount.compiled_contract_class.json ./artifacts/BraavosAccount.casm.json
@@ -48,7 +50,9 @@ braavos-account-cairo:
 argent-contracts-starknet:
 	# Building
 	asdf install scarb 2.6.3 && asdf global scarb 2.6.3
-	cd ./lib/argent-contracts-starknet && git checkout $(ARGENT_CONTRACTS_COMMIT_HASH) && scarb build
+	cd ./lib/argent-contracts-starknet && \
+ 	git checkout $(ARGENT_CONTRACTS_COMMIT_HASH) && \
+ 	~/.asdf/installs/scarb/2.6.3/bin/scarb build
 	# Copying Contracts
 	cp ./lib/argent-contracts-starknet/target/dev/argent_ArgentAccount.contract_class.json ./artifacts/ArgentAccount.sierra.json
 	cp ./lib/argent-contracts-starknet/target/dev/argent_ArgentAccount.compiled_contract_class.json ./artifacts/ArgentAccount.casm.json
