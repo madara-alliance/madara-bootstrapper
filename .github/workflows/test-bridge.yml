@@ -25,8 +25,21 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
 
-      - name: Install asdf & tools
-        uses: asdf-vm/actions/install@v3
+      # ---------------------------------------------------
+      # workaround : https://github.com/asdf-vm/actions/issues/562
+      # asdf installation
+      - name: Detect ASDF .tool-versions file in repo
+        shell: bash
+        id: detect_tool_versions_file
+        run: |
+          if [ -s .tool-versions ]; then
+          echo "exists=1" >> $GITHUB_OUTPUT
+          fi
+
+      - name: ASDF install tools
+        if: ${{ steps.detect_tool_versions_file.outputs.exists == '1' }}
+        uses: asdf-vm/actions/install@6a442392015fbbdd8b48696d41e0051b2698b2e4
+      # ---------------------------------------------------
 
       - name: Setup build deps
         run: |
