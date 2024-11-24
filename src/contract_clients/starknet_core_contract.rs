@@ -3,9 +3,12 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use ethers::types::Address;
 use starknet::core::types::Felt;
-use starknet_core_contract_client::clients::StarknetSovereignContractClient;
-use starknet_core_contract_client::deploy_starknet_sovereign_behind_unsafe_proxy;
+use starknet_core_contract_client::clients::StarknetCoreContractClient;
 use starknet_core_contract_client::interfaces::{OperatorTrait, StarknetGovernanceTrait};
+use starknet_core_contract_client::{
+    deploy_starknet_core_contract_behind_proxy, CoreContractClientType, CoreContractType,
+};
+use starknet_proxy_client::deploy::ProxyVersion;
 use starknet_proxy_client::interfaces::proxy::{CoreContractInitData, ProxyInitializeData, ProxySupport3_0_2Trait};
 use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
 
@@ -15,22 +18,31 @@ use crate::contract_clients::core_contract::{
 };
 use crate::utils::convert_felt_to_u256;
 
-pub struct StarknetSovereignContract {
-    core_contract_client: StarknetSovereignContractClient,
+pub struct StarknetCoreContract {
+    pub(crate) core_contract_client: StarknetCoreContractClient,
 }
 
-impl CoreContractDeploy<StarknetSovereignContract> for StarknetSovereignContract {
+impl CoreContractDeploy<StarknetCoreContract> for StarknetCoreContract {
     async fn deploy(clients: &Clients) -> Self {
-        let client = deploy_starknet_sovereign_behind_unsafe_proxy(clients.eth_client().signer().clone())
-            .await
-            .expect("Failed to deploy the starknet contact");
+        let client = deploy_starknet_core_contract_behind_proxy(
+            clients.eth_client().signer().clone(),
+            ProxyVersion::SafeProxy3_0_2,
+            CoreContractType::Production,
+        )
+        .await
+        .expect("Failed to deploy the starknet contact");
 
-        Self { core_contract_client: client }
+        match client {
+            CoreContractClientType::Production(c) => Self { core_contract_client: c },
+            _ => {
+                panic!("Unsupported client.")
+            }
+        }
     }
 }
 
 #[async_trait]
-impl CoreContract for StarknetSovereignContract {
+impl CoreContract for StarknetCoreContract {
     fn address(&self) -> Address {
         self.core_contract_client.address()
     }

@@ -384,11 +384,8 @@ impl StarknetTokenBridge {
         self.token_bridge.deposit(token, amount, l2address, fee).await.expect("Failed to bridge funds from l1 to l2");
     }
 
-    pub async fn withdraw(&self, l1_token: Address, amount: U256, l1_recipient: Address) {
-        self.token_bridge
-            .withdraw(l1_token, amount, l1_recipient)
-            .await
-            .expect("Failed to withdraw from starknet token bridge");
+    pub async fn withdraw(&self, l1_token: Address, amount: U256) {
+        self.token_bridge.withdraw(l1_token, amount).await.expect("Failed to withdraw from starknet token bridge");
     }
 
     pub async fn enroll_token_bridge(&self, address: Address, fee: U256) {

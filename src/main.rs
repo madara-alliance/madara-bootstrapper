@@ -22,10 +22,10 @@ use setup_scripts::erc20_bridge::Erc20BridgeSetupOutput;
 use setup_scripts::eth_bridge::EthBridgeSetupOutput;
 use setup_scripts::udc::UdcSetupOutput;
 use starknet::accounts::Account;
-use starknet_core_contract_client::clients::StarknetValidityContractClient;
+use starknet_core_contract_client::clients::StarknetCoreContractClient;
 
 use crate::contract_clients::config::Clients;
-use crate::contract_clients::starknet_validity::StarknetValidityContract;
+use crate::contract_clients::starknet_core_contract::StarknetCoreContract;
 use crate::setup_scripts::account_setup::account_init;
 use crate::setup_scripts::argent::ArgentSetup;
 use crate::setup_scripts::braavos::BraavosSetup;
@@ -60,6 +60,12 @@ pub struct CliArgs {
 }
 
 #[derive(Serialize, Deserialize)]
+pub enum CoreContractMode {
+    Production,
+    Dev,
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct ConfigFile {
     pub eth_rpc: String,
     pub eth_priv_key: String,
@@ -79,6 +85,7 @@ pub struct ConfigFile {
     pub verifier_address: String,
     pub operator_address: String,
     pub dev: bool,
+    pub core_contract_mode: CoreContractMode,
     pub core_contract_address: Option<String>,
     pub core_contract_implementation_address: Option<String>,
 }
@@ -103,7 +110,8 @@ impl Default for ConfigFile {
             l2_multisig_address: "0x556455b8ac8bc00e0ad061d7df5458fa3c372304877663fa21d492a8d5e9435".to_string(),
             verifier_address: "0x000000000000000000000000000000000000abcd".to_string(),
             operator_address: "0x000000000000000000000000000000000000abcd".to_string(),
-            dev: false,
+            dev: true,
+            core_contract_mode: CoreContractMode::Dev,
             core_contract_address: Some("0xe7f1725e7734ce288f8367e1bb143e90bb3f0512".to_string()),
             core_contract_implementation_address: Some("0x5fbdb2315678afecb367f032d93f642f64180aa3".to_string()),
         }
@@ -186,12 +194,12 @@ fn get_core_contract_client(config_file: &ConfigFile, clients: &Clients) -> Core
     let Some(core_contract_implementation_address) = config_file.core_contract_implementation_address.clone() else {
         panic!("Core contract implementation address is required for ETH bridge setup");
     };
-    let core_contract_client = StarknetValidityContractClient::new(
+    let core_contract_client = StarknetCoreContractClient::new(
         Address::from_str(&core_contract_address).unwrap(),
         clients.eth_client().signer().clone(),
         Address::from_str(&core_contract_implementation_address).unwrap(),
     );
-    CoreContractStarknetL1Output { core_contract_client: Box::new(StarknetValidityContract { core_contract_client }) }
+    CoreContractStarknetL1Output { core_contract_client: Box::new(StarknetCoreContract { core_contract_client }) }
 }
 
 async fn get_account<'a>(clients: &'a Clients, config_file: &'a ConfigFile) -> RpcAccount<'a> {

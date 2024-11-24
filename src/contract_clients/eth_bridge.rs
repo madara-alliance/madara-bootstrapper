@@ -263,8 +263,8 @@ impl StarknetLegacyEthBridge {
         self.eth_bridge.set_l2_token_bridge(l2_bridge).await.expect("Failed to set l2 bridge in eth bridge");
     }
 
-    pub async fn deposit(&self, amount: U256, l2_address: U256, fee: U256) {
-        self.eth_bridge.deposit(amount, l2_address, fee).await.expect("Failed to deposit in eth bridge");
+    pub async fn deposit(&self, l2_address: U256, fee: U256) {
+        self.eth_bridge.deposit(l2_address, fee).await.expect("Failed to deposit in eth bridge");
     }
 
     pub async fn withdraw(&self, amount: U256, l1_recipient: Address) {
