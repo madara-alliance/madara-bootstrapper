@@ -87,6 +87,7 @@ jobs:
 
       - name: Run llvm-cov
         run: |
+          git submodule update --init --recursive
           make artifacts-linux
           cargo llvm-cov nextest --release --lcov --output-path lcov.info
 

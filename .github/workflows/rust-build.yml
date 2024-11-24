@@ -41,5 +41,6 @@ jobs:
 
       - name: Build the project
         run: |
+          git submodule update --init --recursive
           make artifacts-linux
           cargo build --release --workspace
