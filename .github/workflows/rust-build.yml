@@ -39,6 +39,9 @@ jobs:
         with:
           version: nightly
 
+      - name: Install asdf & tools
+        uses: asdf-vm/actions/install@v3
+
       - name: Build the project
         run: |
           git submodule update --init --recursive
