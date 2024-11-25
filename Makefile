@@ -62,3 +62,9 @@ make artifacts-linux:
 	make starkgate-contracts-latest
 	make braavos-account-cairo
 	make argent-contracts-starknet
+
+make artifacts:
+	make setup
+	make starkgate-contracts-latest
+	make braavos-account-cairo
+	make argent-contracts-starknet
