@@ -20,9 +20,9 @@ pub async fn eth_bridge_test_helper(
     eth_bridge: StarknetLegacyEthBridge,
 ) -> Result<(), anyhow::Error> {
     let balance_before =
-        read_erc20_balance(clients.provider_l2(), l2_eth_address, Felt::from_hex(L2_DEPLOYER_ADDRESS).unwrap()).await;
+        read_erc20_balance(clients.provider_l2(), l2_eth_address, Felt::from_hex(L2_DEPLOYER_ADDRESS)?).await;
 
-    eth_bridge.deposit(U256::from_str(L2_DEPLOYER_ADDRESS)?, 1000.into()).await;
+    eth_bridge.deposit(10.into(), U256::from_str(L2_DEPLOYER_ADDRESS)?, 1000.into()).await;
 
     log::info!("ETH deposited on l1 [💰]");
     sleep(Duration::from_secs(arg_config.cross_chain_wait_time)).await;
@@ -30,9 +30,9 @@ pub async fn eth_bridge_test_helper(
     log::info!("L1 message executed on L2 [🔁]");
 
     let balance_after =
-        read_erc20_balance(clients.provider_l2(), l2_eth_address, Felt::from_hex(L2_DEPLOYER_ADDRESS).unwrap()).await;
+        read_erc20_balance(clients.provider_l2(), l2_eth_address, Felt::from_hex(L2_DEPLOYER_ADDRESS)?).await;
 
-    assert_eq!(balance_before[0] + Felt::from_dec_str("10").unwrap(), balance_after[0]);
+    assert_eq!(balance_before[0] + Felt::from_dec_str("10")?, balance_after[0]);
 
     // Note: we are ignoring the withdrawal tests here, it would be part of e2e where
     // we have orch running as well

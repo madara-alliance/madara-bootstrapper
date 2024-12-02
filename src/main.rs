@@ -26,6 +26,7 @@ use starknet_core_contract_client::clients::StarknetCoreContractClient;
 
 use crate::contract_clients::config::Clients;
 use crate::contract_clients::starknet_core_contract::StarknetCoreContract;
+use crate::contract_clients::utils::build_single_owner_account;
 use crate::setup_scripts::account_setup::account_init;
 use crate::setup_scripts::argent::ArgentSetup;
 use crate::setup_scripts::braavos::BraavosSetup;
@@ -33,6 +34,9 @@ use crate::setup_scripts::core_contract::CoreContractStarknetL1;
 use crate::setup_scripts::erc20_bridge::Erc20Bridge;
 use crate::setup_scripts::eth_bridge::EthBridge;
 use crate::setup_scripts::udc::UdcSetup;
+use crate::setup_scripts::upgrade_eth_token::upgrade_eth_token_to_cairo_1;
+use crate::setup_scripts::upgrade_l1_bridge::upgrade_l1_bridge;
+use crate::setup_scripts::upgrade_l2_bridge::upgrade_eth_bridge_to_cairo_1;
 use crate::utils::banner::BANNER;
 use crate::utils::{save_to_json, JsonValueType};
 
@@ -95,7 +99,7 @@ impl Default for ConfigFile {
         Self {
             eth_rpc: "http://127.0.0.1:8545".to_string(),
             eth_priv_key: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80".to_string(),
-            rollup_seq_url: "http://127.0.0.1:19944".to_string(),
+            rollup_seq_url: "http://127.0.0.1:9944".to_string(),
             rollup_priv_key: "0xabcd".to_string(),
             eth_chain_id: 31337,
             l1_deployer_address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266".to_string(),
@@ -109,8 +113,8 @@ impl Default for ConfigFile {
             l1_multisig_address: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8".to_string(),
             l2_multisig_address: "0x556455b8ac8bc00e0ad061d7df5458fa3c372304877663fa21d492a8d5e9435".to_string(),
             verifier_address: "0x000000000000000000000000000000000000abcd".to_string(),
-            operator_address: "0x000000000000000000000000000000000000abcd".to_string(),
-            dev: true,
+            operator_address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266".to_string(),
+            dev: false,
             core_contract_mode: CoreContractMode::Dev,
             core_contract_address: Some("0xe7f1725e7734ce288f8367e1bb143e90bb3f0512".to_string()),
             core_contract_implementation_address: Some("0x5fbdb2315678afecb367f032d93f642f64180aa3".to_string()),
@@ -209,7 +213,7 @@ async fn get_account<'a>(clients: &'a Clients, config_file: &'a ConfigFile) -> R
     account
 }
 
-#[derive(Serialize, Default)]
+#[derive(Serialize, Clone, Default)]
 pub struct BootstrapperOutput {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub starknet_contract_address: Option<Address>,
@@ -233,6 +237,31 @@ pub async fn bootstrap(config_file: &ConfigFile, clients: &Clients) -> Bootstrap
 
     // setup L2
     let l2_output = setup_l2(config_file, clients).await;
+
+    // upgrading the bridge :
+    // TODO : remove this hardcoded value
+    let account = build_single_owner_account(
+        clients.provider_l2(),
+        &config_file.rollup_priv_key,
+        "0x4fe5eea46caa0a1f344fafce82b39d66b552f00d3cd12e89073ef4b4ab37860",
+        false,
+    )
+    .await;
+    upgrade_eth_token_to_cairo_1(
+        &account,
+        clients.provider_l2(),
+        l2_output.eth_bridge_setup_outputs.clone().unwrap().l2_eth_proxy_address,
+    )
+    .await;
+    upgrade_eth_bridge_to_cairo_1(
+        &account,
+        clients.provider_l2(),
+        l2_output.eth_bridge_setup_outputs.clone().unwrap().l2_eth_bridge_proxy_address,
+    )
+    .await;
+    upgrade_l1_bridge(l2_output.eth_bridge_setup_outputs.clone().unwrap().l1_bridge_address, config_file)
+        .await
+        .unwrap();
 
     BootstrapperOutput {
         starknet_contract_address: Some(core_contract_client.core_contract_client.address()),

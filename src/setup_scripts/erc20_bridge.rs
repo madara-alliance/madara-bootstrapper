@@ -28,7 +28,7 @@ pub struct Erc20Bridge<'a> {
     core_contract: &'a dyn CoreContract,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Clone)]
 pub struct Erc20BridgeSetupOutput {
     pub erc20_cairo_one_class_hash: Felt,
     pub l1_token_bridge_proxy: Address,
@@ -100,14 +100,14 @@ impl<'a> Erc20Bridge<'a> {
                 .initialize(self.core_contract.address(), H160::from_str(&self.arg_config.l1_deployer_address).unwrap())
                 .await;
         } else {
-            token_bridge.add_implementation_token_bridge(self.core_contract.address()).await;
-            token_bridge.upgrade_to_token_bridge(self.core_contract.address()).await;
             token_bridge
                 .setup_permissions_with_bridge_l1(
                     H160::from_str(&self.arg_config.l1_deployer_address).unwrap(),
                     Address::from_str(&self.arg_config.l1_multisig_address.to_string()).unwrap(),
                 )
                 .await;
+            token_bridge.add_implementation_token_bridge(self.core_contract.address()).await;
+            token_bridge.upgrade_to_token_bridge(self.core_contract.address()).await;
         }
 
         token_bridge

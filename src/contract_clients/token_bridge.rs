@@ -17,7 +17,7 @@ use starkgate_registry_client::{
 use starknet::accounts::{Account, ConnectedAccount};
 use starknet_core::types::Felt;
 use starknet_erc20_client::clients::erc20::ERC20ContractClient;
-use starknet_erc20_client::deploy_dai_erc20_behind_unsafe_proxy;
+use starknet_erc20_client::deploy_dai_test_erc20_behind_unsafe_proxy;
 use starknet_erc20_client::interfaces::erc20::ERC20TokenTrait;
 use starknet_providers::jsonrpc::HttpTransport;
 use starknet_providers::JsonRpcClient;
@@ -38,6 +38,7 @@ use crate::helpers::account_actions::{get_contract_address_from_deploy_tx, Accou
 use crate::utils::constants::{TOKEN_BRIDGE_CASM_PATH, TOKEN_BRIDGE_SIERRA_PATH};
 use crate::utils::{invoke_contract, pad_bytes, save_to_json, wait_for_transaction, JsonValueType};
 
+#[derive(Clone)]
 pub struct StarknetTokenBridge {
     manager: StarkgateManagerContractClient,
     registry: StarkgateRegistryContractClient,
@@ -73,8 +74,9 @@ impl BridgeDeployable for StarknetTokenBridge {
                 .expect("Failed to deploy starknet contract"),
         };
 
-        let erc20 =
-            deploy_dai_erc20_behind_unsafe_proxy(client.clone()).await.expect("Failed to deploy dai erc20 contract");
+        let erc20 = deploy_dai_test_erc20_behind_unsafe_proxy(client.clone())
+            .await
+            .expect("Failed to deploy dai erc20 contract");
 
         Self { manager, registry, token_bridge, erc20 }
     }
@@ -259,19 +261,49 @@ impl StarknetTokenBridge {
 
     /// Sets up the Token bridge with the specified data
     pub async fn setup_permissions_with_bridge_l1(&self, governor: Address, l1_multisig_address: Address) {
+        self.token_bridge.register_upgrade_governor(governor).await.unwrap();
+        log::debug!("token_bridge : register_upgrade_governor ✅");
+        self.manager.register_upgrade_governor(governor).await.unwrap();
+        log::debug!("manager : register_upgrade_governor ✅");
+        self.registry.register_upgrade_governor(governor).await.unwrap();
+        log::debug!("registry : register_upgrade_governor ✅");
+
         // Register roles
-        self.token_bridge.register_app_governor(governor).await.unwrap();
         self.token_bridge.register_app_role_admin(governor).await.unwrap();
+        log::debug!("setup_permissions_with_bridge_l1 : token_bridge : register_app_role_admin ✅");
+        self.token_bridge.register_app_governor(governor).await.unwrap();
+        log::debug!("setup_permissions_with_bridge_l1 : token_bridge : register_app_governor ✅");
         self.token_bridge.register_security_admin(governor).await.unwrap();
+        log::debug!("setup_permissions_with_bridge_l1 : token_bridge : register_security_admin ✅");
         self.token_bridge.register_security_agent(governor).await.unwrap();
+        log::debug!("setup_permissions_with_bridge_l1 : token_bridge : register_security_agent ✅");
+
+        self.manager.register_app_role_admin(governor).await.unwrap();
+        log::debug!("setup_permissions_with_bridge_l1 : manager : register_app_role_admin ✅");
+        self.manager.register_app_governor(governor).await.unwrap();
+        log::debug!("setup_permissions_with_bridge_l1 : manager : register_app_governor ✅");
+
+        self.registry.register_app_role_admin(governor).await.unwrap();
+        log::debug!("setup_permissions_with_bridge_l1 : registry : register_app_role_admin ✅");
+        self.registry.register_app_governor(governor).await.unwrap();
+        log::debug!("setup_permissions_with_bridge_l1 : registry : register_app_governor ✅");
 
         // Nominating a new governor with l1_multisig_address
         self.token_bridge.register_app_governor(l1_multisig_address).await.unwrap();
+        log::debug!("setup_permissions_with_bridge_l1 : token_bridge : register_app_governor : l1_multisig_address ✅");
         self.manager.register_app_governor(l1_multisig_address).await.unwrap();
+        log::debug!("setup_permissions_with_bridge_l1 : manager : register_app_governor : l1_multisig_address ✅");
         self.registry.register_app_governor(l1_multisig_address).await.unwrap();
+        log::debug!("setup_permissions_with_bridge_l1 : registry : register_app_governor : l1_multisig_address ✅");
+
         self.token_bridge.register_app_role_admin(l1_multisig_address).await.unwrap();
+        log::debug!(
+            "setup_permissions_with_bridge_l1 : token_bridge : register_app_role_admin : l1_multisig_address ✅"
+        );
         self.manager.register_app_role_admin(l1_multisig_address).await.unwrap();
+        log::debug!("setup_permissions_with_bridge_l1 : manager : register_app_role_admin : l1_multisig_address ✅");
         self.registry.register_app_role_admin(l1_multisig_address).await.unwrap();
+        log::debug!("setup_permissions_with_bridge_l1 : registry : register_app_role_admin : l1_multisig_address ✅");
     }
 
     /// Deploys a test ERC20 token from L1 to L2
@@ -384,8 +416,11 @@ impl StarknetTokenBridge {
         self.token_bridge.deposit(token, amount, l2address, fee).await.expect("Failed to bridge funds from l1 to l2");
     }
 
-    pub async fn withdraw(&self, l1_token: Address, amount: U256) {
-        self.token_bridge.withdraw(l1_token, amount).await.expect("Failed to withdraw from starknet token bridge");
+    pub async fn withdraw(&self, l1_token: Address, amount: U256, l1_recipient: Address) {
+        self.token_bridge
+            .withdraw(l1_token, amount, l1_recipient)
+            .await
+            .expect("Failed to withdraw from starknet token bridge");
     }
 
     pub async fn enroll_token_bridge(&self, address: Address, fee: U256) {

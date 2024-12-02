@@ -11,3 +11,6 @@
 [submodule "lib/starkgate-contracts-latest"]
 	path = lib/starkgate-contracts-latest
 	url = https://github.com/starknet-io/starkgate-contracts
+[submodule "lib/starkgate-contracts-82e651f"]
+	path = lib/starkgate-contracts-82e651f
+	url = https://github.com/starknet-io/starkgate-contracts.git
