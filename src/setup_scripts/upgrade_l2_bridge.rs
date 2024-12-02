@@ -56,7 +56,7 @@ pub async fn upgrade_eth_bridge_to_cairo_1(
         .invoke_contract(
             account.address(),
             "deploy_contract",
-            vec![new_eth_bridge_class_hash, Felt::ZERO, Felt::ZERO, Felt::from(1u64), Felt::from(0)],
+            vec![new_eth_bridge_class_hash, Felt::ONE, Felt::ZERO, Felt::from(1u64), Felt::from(0)],
             None,
         )
         .send()

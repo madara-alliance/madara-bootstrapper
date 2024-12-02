@@ -3,10 +3,7 @@ mod erc20_bridge;
 mod eth_bridge;
 mod madara;
 
-use std::time::Duration;
-
 use rstest::rstest;
-use tokio::time::sleep;
 
 use crate::contract_clients::config::Clients;
 use crate::contract_clients::utils::build_single_owner_account;
@@ -15,9 +12,10 @@ use crate::setup_scripts::upgrade_l1_bridge::upgrade_l1_bridge;
 use crate::setup_scripts::upgrade_l2_bridge::upgrade_eth_bridge_to_cairo_1;
 use crate::tests::erc20_bridge::erc20_bridge_test_helper;
 use crate::tests::eth_bridge::eth_bridge_test_helper;
+use crate::tests::madara::MadaraCmdBuilder;
 use crate::{bootstrap, setup_core_contract, setup_l2, BootstrapperOutput, ConfigFile};
 
-async fn test_setup(args: &ConfigFile, clients: &Clients) -> (BootstrapperOutput) {
+async fn test_setup(args: &ConfigFile, clients: &Clients) -> BootstrapperOutput {
     // Setup L1 (core contract)
     let core_contract_client = setup_core_contract(args, clients).await;
 
@@ -29,36 +27,32 @@ async fn test_setup(args: &ConfigFile, clients: &Clients) -> (BootstrapperOutput
     config.core_contract_address = Some(format!("{:?}", core_contract_address));
     config.core_contract_implementation_address = Some(format!("{:?}", core_contract_implementation_address));
 
-    println!(">>>> waiting.....");
-    sleep(Duration::from_secs(10)).await;
-    println!(">>>> continuing");
-
-    // let mut node = MadaraCmdBuilder::new()
-    //     .args([
-    //         "--no-sync-polling",
-    //         "--l1-endpoint",
-    //         "http://localhost:8545",
-    //         "--chain-config-path=./bin/devnet.yaml",
-    //         "--rpc-cors",
-    //         "*",
-    //         "--rpc-external",
-    //         "--sequencer",
-    //         "--feeder-gateway-enable",
-    //         "--gateway-enable",
-    //         "--gateway-external",
-    //         "--rpc-methods",
-    //         "unsafe",
-    //         "--gas-price",
-    //         "0",
-    //         "--blob-gas-price",
-    //         "0",
-    //         "--strk-gas-price",
-    //         "0",
-    //         "--strk-blob-gas-price",
-    //         "0",
-    //     ])
-    //     .run();
-    // node.wait_for_ready().await;
+    let mut node = MadaraCmdBuilder::new()
+        .args([
+            "--no-sync-polling",
+            "--l1-endpoint",
+            "http://localhost:8545",
+            "--chain-config-path=./bin/devnet.yaml",
+            "--rpc-cors",
+            "*",
+            "--rpc-external",
+            "--sequencer",
+            "--feeder-gateway-enable",
+            "--gateway-enable",
+            "--gateway-external",
+            "--rpc-methods",
+            "unsafe",
+            "--gas-price",
+            "0",
+            "--blob-gas-price",
+            "0",
+            "--strk-gas-price",
+            "0",
+            "--strk-blob-gas-price",
+            "0",
+        ])
+        .run();
+    node.wait_for_ready().await;
 
     // Setup L2 with the updated config
     let l2_output = setup_l2(&config, clients).await;
@@ -86,13 +80,11 @@ async fn test_setup(args: &ConfigFile, clients: &Clients) -> (BootstrapperOutput
     .await;
     upgrade_l1_bridge(l2_output.eth_bridge_setup_outputs.clone().unwrap().l1_bridge_address, &config).await.unwrap();
 
-    let output = BootstrapperOutput {
+    BootstrapperOutput {
         starknet_contract_address: Some(core_contract_address),
         starknet_contract_implementation_address: Some(core_contract_implementation_address),
         ..l2_output
-    };
-
-    (output)
+    }
 }
 
 #[rstest]
@@ -157,7 +149,7 @@ async fn deposit_tests_both_bridges() -> Result<(), anyhow::Error> {
     env_logger::init();
     let config = get_test_config_file();
     let clients = Clients::init_from_config(&config).await;
-    let (out) = test_setup(&config, &clients).await;
+    let out = test_setup(&config, &clients).await;
 
     let eth_bridge_setup = out.eth_bridge_setup_outputs.unwrap();
     let eth_token_setup = out.erc20_bridge_setup_outputs.unwrap();

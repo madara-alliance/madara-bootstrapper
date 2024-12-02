@@ -17,8 +17,8 @@ abigen!(
     ]",
 );
 
-abigen!(EthereumNewBridge, "src/upgrade-artifacts/eth_bridge_upgraded.json");
-abigen!(EthereumNewBridgeEIC, "src/upgrade-artifacts/eic_eth_bridge.json");
+abigen!(EthereumNewBridge, "artifacts/upgrade-contracts/eth_bridge_upgraded.json");
+abigen!(EthereumNewBridgeEIC, "artifacts/upgrade-contracts/eic_eth_bridge.json");
 
 pub async fn upgrade_l1_bridge(ethereum_bridge_address: Address, config_file: &ConfigFile) -> color_eyre::Result<()> {
     let config_file = Arc::from(config_file);
@@ -54,6 +54,18 @@ pub async fn upgrade_l1_bridge(ethereum_bridge_address: Address, config_file: &C
     log::debug!("New ETH bridge add_implementation ✅");
     eth_bridge_proxy_client.upgrade_to(new_eth_bridge_client.address(), call_data, false).send().await?;
     log::debug!("New ETH bridge upgrade_to ✅");
+    new_eth_bridge_client
+        .register_app_role_admin(Address::from_str(&config_file.l1_deployer_address.clone())?)
+        .send()
+        .await?;
+    new_eth_bridge_client
+        .register_governance_admin(Address::from_str(&config_file.l1_deployer_address.clone())?)
+        .send()
+        .await?;
+    new_eth_bridge_client
+        .register_app_governor(Address::from_str(&config_file.l1_deployer_address.clone())?)
+        .send()
+        .await?;
     new_eth_bridge_client
         .set_max_total_balance(
             Address::from_str("0x0000000000000000000000000000000000455448").unwrap(),
