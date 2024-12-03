@@ -3,13 +3,12 @@ mod erc20_bridge;
 mod eth_bridge;
 mod madara;
 
+use std::time::Duration;
+
 use rstest::rstest;
+use tokio::time::sleep;
 
 use crate::contract_clients::config::Clients;
-use crate::contract_clients::utils::build_single_owner_account;
-use crate::setup_scripts::upgrade_eth_token::upgrade_eth_token_to_cairo_1;
-use crate::setup_scripts::upgrade_l1_bridge::upgrade_l1_bridge;
-use crate::setup_scripts::upgrade_l2_bridge::upgrade_eth_bridge_to_cairo_1;
 use crate::tests::erc20_bridge::erc20_bridge_test_helper;
 use crate::tests::eth_bridge::eth_bridge_test_helper;
 use crate::tests::madara::MadaraCmdBuilder;
@@ -54,31 +53,10 @@ async fn test_setup(args: &ConfigFile, clients: &Clients) -> BootstrapperOutput 
         .run();
     node.wait_for_ready().await;
 
+    sleep(Duration::from_secs(5)).await;
+
     // Setup L2 with the updated config
     let l2_output = setup_l2(&config, clients).await;
-
-    // upgrading the bridge :
-    // TODO : remove this hardcoded account address value
-    let account = build_single_owner_account(
-        clients.provider_l2(),
-        &config.rollup_priv_key,
-        "0x4fe5eea46caa0a1f344fafce82b39d66b552f00d3cd12e89073ef4b4ab37860",
-        false,
-    )
-    .await;
-    upgrade_eth_token_to_cairo_1(
-        &account,
-        clients.provider_l2(),
-        l2_output.eth_bridge_setup_outputs.clone().unwrap().l2_eth_proxy_address,
-    )
-    .await;
-    upgrade_eth_bridge_to_cairo_1(
-        &account,
-        clients.provider_l2(),
-        l2_output.eth_bridge_setup_outputs.clone().unwrap().l2_eth_bridge_proxy_address,
-    )
-    .await;
-    upgrade_l1_bridge(l2_output.eth_bridge_setup_outputs.clone().unwrap().l1_bridge_address, &config).await.unwrap();
 
     BootstrapperOutput {
         starknet_contract_address: Some(core_contract_address),

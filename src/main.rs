@@ -238,31 +238,6 @@ pub async fn bootstrap(config_file: &ConfigFile, clients: &Clients) -> Bootstrap
     // setup L2
     let l2_output = setup_l2(config_file, clients).await;
 
-    // upgrading the bridge :
-    // TODO : remove this hardcoded value
-    let account = build_single_owner_account(
-        clients.provider_l2(),
-        &config_file.rollup_priv_key,
-        "0x4fe5eea46caa0a1f344fafce82b39d66b552f00d3cd12e89073ef4b4ab37860",
-        false,
-    )
-    .await;
-    upgrade_eth_token_to_cairo_1(
-        &account,
-        clients.provider_l2(),
-        l2_output.eth_bridge_setup_outputs.clone().unwrap().l2_eth_proxy_address,
-    )
-    .await;
-    upgrade_eth_bridge_to_cairo_1(
-        &account,
-        clients.provider_l2(),
-        l2_output.eth_bridge_setup_outputs.clone().unwrap().l2_eth_bridge_proxy_address,
-    )
-    .await;
-    upgrade_l1_bridge(l2_output.eth_bridge_setup_outputs.clone().unwrap().l1_bridge_address, config_file)
-        .await
-        .unwrap();
-
     BootstrapperOutput {
         starknet_contract_address: Some(core_contract_client.core_contract_client.address()),
         starknet_contract_implementation_address: Some(
@@ -410,6 +385,29 @@ pub async fn setup_l2(config_file: &ConfigFile, clients: &Clients) -> Bootstrapp
 
     // setup braavos account
     let braavos_setup_outputs = setup_braavos(Some(account.clone()), config_file, clients).await;
+
+    // upgrading the bridge :
+    // TODO : remove this hardcoded value
+    let account = build_single_owner_account(
+        clients.provider_l2(),
+        &config_file.rollup_priv_key,
+        "0x4fe5eea46caa0a1f344fafce82b39d66b552f00d3cd12e89073ef4b4ab37860",
+        false,
+    )
+    .await;
+    upgrade_eth_token_to_cairo_1(
+        &account,
+        clients.provider_l2(),
+        eth_bridge_setup_outputs.clone().l2_eth_proxy_address,
+    )
+    .await;
+    upgrade_eth_bridge_to_cairo_1(
+        &account,
+        clients.provider_l2(),
+        eth_bridge_setup_outputs.clone().l2_eth_bridge_proxy_address,
+    )
+    .await;
+    upgrade_l1_bridge(eth_bridge_setup_outputs.clone().l1_bridge_address, config_file).await.unwrap();
 
     BootstrapperOutput {
         eth_bridge_setup_outputs: Some(eth_bridge_setup_outputs),
