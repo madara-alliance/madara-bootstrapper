@@ -24,8 +24,8 @@ pub const BRAAVOS_AGGREGATOR_PATH: &str = "src/contracts/BraavosCallAggregator.j
 // Upgrade Artifacts Paths
 pub const EIC_ETH_TOKEN_SIERRA_PATH: &str = "artifacts/eth_token_eic.sierra.json";
 pub const EIC_ETH_TOKEN_CASM_PATH: &str = "artifacts/eth_token_eic.casm.json";
-pub const NEW_ETH_TOKEN_SIERRA_PATH: &str = "artifacts/erc20.sierra.json";
-pub const NEW_ETH_TOKEN_CASM_PATH: &str = "artifacts/erc20.casm.json";
+pub const NEW_ETH_TOKEN_SIERRA_PATH: &str = "artifacts/ERC20_070.sierra.json";
+pub const NEW_ETH_TOKEN_CASM_PATH: &str = "artifacts/ERC20_070.casm.json";
 pub const EIC_ETH_BRIDGE_SIERRA_PATH: &str = "artifacts/token_bridge_eic.sierra.json";
 pub const EIC_ETH_BRIDGE_CASM_PATH: &str = "artifacts/token_bridge_eic.casm.json";
 pub const NEW_ETH_BRIDGE_SIERRA_PATH: &str = "artifacts/token_bridge.sierra.json";

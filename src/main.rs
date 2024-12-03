@@ -23,6 +23,7 @@ use setup_scripts::eth_bridge::EthBridgeSetupOutput;
 use setup_scripts::udc::UdcSetupOutput;
 use starknet::accounts::Account;
 use starknet_core_contract_client::clients::StarknetCoreContractClient;
+use starknet_types_core::felt::Felt;
 
 use crate::contract_clients::config::Clients;
 use crate::contract_clients::starknet_core_contract::StarknetCoreContract;
@@ -50,6 +51,7 @@ enum BootstrapMode {
     Udc,
     Argent,
     Braavos,
+    UpgradeEthBridge,
 }
 
 #[derive(Parser, Debug)]
@@ -90,8 +92,13 @@ pub struct ConfigFile {
     pub operator_address: String,
     pub dev: bool,
     pub core_contract_mode: CoreContractMode,
+    pub l2_deployer_address: Option<String>,
     pub core_contract_address: Option<String>,
     pub core_contract_implementation_address: Option<String>,
+    pub udc_address: Option<String>,
+    pub l1_eth_bridge_address: Option<String>,
+    pub l2_eth_token_proxy_address: Option<String>,
+    pub l2_eth_bridge_proxy_address: Option<String>,
 }
 
 impl Default for ConfigFile {
@@ -99,7 +106,7 @@ impl Default for ConfigFile {
         Self {
             eth_rpc: "http://127.0.0.1:8545".to_string(),
             eth_priv_key: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80".to_string(),
-            rollup_seq_url: "http://127.0.0.1:9944".to_string(),
+            rollup_seq_url: "http://127.0.0.1:19944".to_string(),
             rollup_priv_key: "0xabcd".to_string(),
             eth_chain_id: 31337,
             l1_deployer_address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266".to_string(),
@@ -118,6 +125,11 @@ impl Default for ConfigFile {
             core_contract_mode: CoreContractMode::Dev,
             core_contract_address: Some("0xe7f1725e7734ce288f8367e1bb143e90bb3f0512".to_string()),
             core_contract_implementation_address: Some("0x5fbdb2315678afecb367f032d93f642f64180aa3".to_string()),
+            l2_deployer_address: None,
+            udc_address: None,
+            l1_eth_bridge_address: None,
+            l2_eth_token_proxy_address: None,
+            l2_eth_bridge_proxy_address: None,
         }
     }
 }
@@ -142,6 +154,14 @@ pub async fn main() {
 
     let clients = Clients::init_from_config(&config_file).await;
 
+    let account = match config_file.l2_deployer_address {
+        Some(ref addr) => Some(
+            build_single_owner_account(clients.provider_l2(), &config_file.rollup_priv_key, &addr.to_string(), false)
+                .await,
+        ),
+        None => None,
+    };
+
     let output = match args.mode {
         BootstrapMode::Core | BootstrapMode::SetupL1 => {
             let output = setup_core_contract(&config_file, &clients).await;
@@ -155,25 +175,38 @@ pub async fn main() {
         BootstrapMode::SetupL2 => setup_l2(&config_file, &clients).await,
         BootstrapMode::EthBridge => {
             let core_contract_client = get_core_contract_client(&config_file, &clients);
-            let output = setup_eth_bridge(None, &core_contract_client, &config_file, &clients).await;
+            let output = setup_eth_bridge(account, &core_contract_client, &config_file, &clients).await;
             BootstrapperOutput { eth_bridge_setup_outputs: Some(output), ..Default::default() }
         }
         BootstrapMode::Erc20Bridge => {
             let core_contract_client = get_core_contract_client(&config_file, &clients);
-            let output = setup_erc20_bridge(None, &core_contract_client, &config_file, &clients).await;
+            let output = setup_erc20_bridge(account, &core_contract_client, &config_file, &clients).await;
             BootstrapperOutput { erc20_bridge_setup_outputs: Some(output), ..Default::default() }
         }
         BootstrapMode::Udc => {
-            let output = setup_udc(None, &config_file, &clients).await;
+            let output = setup_udc(account, &config_file, &clients).await;
             BootstrapperOutput { udc_setup_outputs: Some(output), ..Default::default() }
         }
         BootstrapMode::Argent => {
-            let output = setup_argent(None, &config_file, &clients).await;
+            let output = setup_argent(account, &config_file, &clients).await;
             BootstrapperOutput { argent_setup_outputs: Some(output), ..Default::default() }
         }
         BootstrapMode::Braavos => {
-            let output = setup_braavos(None, &config_file, &clients).await;
+            let output = setup_braavos(
+                account,
+                &config_file,
+                &clients,
+                Felt::from_str(
+                    &config_file.udc_address.clone().expect("UDC Address not available in config. Run with SetupL2"),
+                )
+                .expect("Unable to get UDC address"),
+            )
+            .await;
             BootstrapperOutput { braavos_setup_outputs: Some(output), ..Default::default() }
+        }
+        BootstrapMode::UpgradeEthBridge => {
+            upgrade_eth_bridge(account, &config_file, &clients).await.expect("Unable to upgrade Eth bridge");
+            BootstrapperOutput { ..Default::default() }
         }
     };
 
@@ -287,6 +320,43 @@ async fn setup_eth_bridge<'a>(
     eth_bridge_setup_outputs
 }
 
+async fn upgrade_eth_bridge<'a>(
+    account: Option<RpcAccount<'a>>,
+    config_file: &ConfigFile,
+    clients: &Clients,
+) -> color_eyre::Result<()> {
+    let account = match account {
+        Some(account) => account,
+        None => get_account(clients, config_file).await,
+    };
+    upgrade_eth_token_to_cairo_1(
+        &account,
+        clients.provider_l2(),
+        Felt::from_str(
+            &config_file.l2_eth_token_proxy_address.clone().expect("l2_eth_token_proxy_address not in config."),
+        )?,
+    )
+    .await;
+    upgrade_eth_bridge_to_cairo_1(
+        &account,
+        clients.provider_l2(),
+        Felt::from_str(
+            &config_file.l2_eth_bridge_proxy_address.clone().expect("l2_eth_bridge_proxy_address not in config."),
+        )?,
+        Felt::from_str(
+            &config_file.l2_eth_token_proxy_address.clone().expect("l2_eth_token_proxy_address not in config."),
+        )?,
+    )
+    .await;
+    upgrade_l1_bridge(
+        Address::from_str(&config_file.l1_eth_bridge_address.clone().expect("l1_eth_bridge_address not in config."))?,
+        config_file,
+    )
+    .await?;
+
+    Ok(())
+}
+
 async fn setup_erc20_bridge<'a>(
     account: Option<RpcAccount<'a>>,
     core_contract_client: &CoreContractStarknetL1Output,
@@ -348,13 +418,14 @@ async fn setup_braavos<'a>(
     account: Option<RpcAccount<'a>>,
     config_file: &ConfigFile,
     clients: &Clients,
+    udc_address: Felt,
 ) -> BraavosSetupOutput {
     let account = match account {
         Some(account) => account,
         None => get_account(clients, config_file).await,
     };
     log::info!("⏳ Starting Braavos Account deployment");
-    let braavos = BraavosSetup::new(account.clone(), config_file, clients);
+    let braavos = BraavosSetup::new(account.clone(), config_file, clients, udc_address);
     let braavos_setup_outputs = braavos.setup().await;
     log::info!(
         "*️⃣ Braavos setup completed. [Braavos account class hash : {:?}]",
@@ -384,14 +455,14 @@ pub async fn setup_l2(config_file: &ConfigFile, clients: &Clients) -> Bootstrapp
     let argent_setup_outputs = setup_argent(Some(account.clone()), config_file, clients).await;
 
     // setup braavos account
-    let braavos_setup_outputs = setup_braavos(Some(account.clone()), config_file, clients).await;
+    let braavos_setup_outputs =
+        setup_braavos(Some(account.clone()), config_file, clients, udc_setup_outputs.udc_address).await;
 
     // upgrading the bridge :
-    // TODO : remove this hardcoded value
     let account = build_single_owner_account(
         clients.provider_l2(),
         &config_file.rollup_priv_key,
-        "0x4fe5eea46caa0a1f344fafce82b39d66b552f00d3cd12e89073ef4b4ab37860",
+        &account.address().to_hex_string(),
         false,
     )
     .await;
@@ -405,6 +476,7 @@ pub async fn setup_l2(config_file: &ConfigFile, clients: &Clients) -> Bootstrapp
         &account,
         clients.provider_l2(),
         eth_bridge_setup_outputs.clone().l2_eth_bridge_proxy_address,
+        eth_bridge_setup_outputs.clone().l2_eth_proxy_address,
     )
     .await;
     upgrade_l1_bridge(eth_bridge_setup_outputs.clone().l1_bridge_address, config_file).await.unwrap();

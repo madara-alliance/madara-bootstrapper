@@ -17,6 +17,7 @@ pub async fn upgrade_eth_bridge_to_cairo_1(
     account: &RpcAccount<'_>,
     rpc_provider_l2: &JsonRpcClient<HttpTransport>,
     l2_eth_bridge_address: Felt,
+    l2_eth_token_address: Felt,
 ) {
     let eth_bridge_eic_class_hash = declare_contract(DeclarationInput::DeclarationInputs(
         String::from(EIC_ETH_BRIDGE_SIERRA_PATH),
@@ -77,7 +78,7 @@ pub async fn upgrade_eth_bridge_to_cairo_1(
                 eth_bridge_eic_contract_address,
                 Felt::TWO,
                 Felt::from_hex("455448").unwrap(),
-                Felt::from_hex("49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7").unwrap(),
+                l2_eth_token_address,
                 Felt::ZERO,
             ],
             None,
@@ -100,7 +101,7 @@ pub async fn upgrade_eth_bridge_to_cairo_1(
                 eth_bridge_eic_contract_address,
                 Felt::TWO,
                 Felt::from_hex("455448").unwrap(),
-                Felt::from_hex("49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7").unwrap(),
+                l2_eth_token_address,
                 Felt::ZERO,
             ],
             None,
