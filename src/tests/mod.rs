@@ -26,45 +26,8 @@ async fn test_setup(args: &ConfigFile, clients: &Clients) -> BootstrapperOutput 
     config.core_contract_address = Some(format!("{:?}", core_contract_address));
     config.core_contract_implementation_address = Some(format!("{:?}", core_contract_implementation_address));
 
-    env::set_current_dir("madara").expect("madara folder doesn't exist.");
-    fs::create_dir_all("../madara-dbs").expect("unable to create folders");
-    env::set_var("RUST_LOG", "info");
-
-    // Running madara
-    Command::new("cargo")
-        .arg("+1.81")
-        .arg("run")
-        .arg("--release")
-        .arg("--")
-        .arg("--name")
-        .arg("madara")
-        .arg("--base-path")
-        .arg("../madara-dbs/madara_pathfinder_test_11")
-        .arg("--rpc-port")
-        .arg("19944")
-        .arg("--rpc-cors")
-        .arg("*")
-        .arg("--rpc-external")
-        .arg("--sequencer")
-        .arg("--chain-config-path")
-        .arg("configs/presets/devnet.yaml")
-        .arg("--feeder-gateway-enable")
-        .arg("--gateway-enable")
-        .arg("--gateway-external")
-        .arg("--gas-price")
-        .arg("0")
-        .arg("--blob-gas-price")
-        .arg("0")
-        .arg("--rpc-methods")
-        .arg("unsafe")
-        .arg("--l1-endpoint")
-        .arg("http://localhost:8545")
-        .spawn()
-        .unwrap();
-
-    sleep(Duration::from_secs(5)).await;
-
-    env::set_current_dir("../").expect("Navigate back failed.");
+    ensure_toolchain().expect("Not able to ensure toolchain exists.");
+    wait_for_madara().await.expect("Failed to start madara!");
 
     // Setup L2 with the updated config
     let l2_output = setup_l2(&config, clients).await;
@@ -186,4 +149,56 @@ fn kill_process_on_port(port: u16) {
 
 fn get_test_config_file() -> ConfigFile {
     ConfigFile::default()
+}
+
+async fn wait_for_madara() -> color_eyre::Result<()> {
+    env::set_current_dir("madara").expect("madara folder doesn't exist.");
+    fs::create_dir_all("../madara-dbs").expect("unable to create folders");
+    env::set_var("RUST_LOG", "info");
+
+    Command::new("cargo")
+        .arg("+1.81")
+        .arg("run")
+        .arg("--release")
+        .arg("--")
+        .arg("--name")
+        .arg("madara")
+        .arg("--base-path")
+        .arg("../madara-dbs/madara_pathfinder_test_11")
+        .arg("--rpc-port")
+        .arg("19944")
+        .arg("--rpc-cors")
+        .arg("*")
+        .arg("--rpc-external")
+        .arg("--sequencer")
+        .arg("--chain-config-path")
+        .arg("configs/presets/devnet.yaml")
+        .arg("--feeder-gateway-enable")
+        .arg("--gateway-enable")
+        .arg("--gateway-external")
+        .arg("--gas-price")
+        .arg("0")
+        .arg("--blob-gas-price")
+        .arg("0")
+        .arg("--rpc-methods")
+        .arg("unsafe")
+        .arg("--l1-endpoint")
+        .arg("http://localhost:8545")
+        .spawn()?;
+
+    env::set_current_dir("../").expect("Navigate back failed.");
+
+    sleep(Duration::from_secs(10)).await;
+
+    Ok(())
+}
+
+fn ensure_toolchain() -> color_eyre::Result<()> {
+    let output = Command::new("rustup").arg("toolchain").arg("list").output()?;
+
+    let output_str = String::from_utf8_lossy(&output.stdout);
+    if !output_str.contains("1.81") {
+        Command::new("rustup").arg("install").arg("1.81").status()?;
+    }
+    Ok(())
 }
