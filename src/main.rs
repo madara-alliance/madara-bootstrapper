@@ -439,7 +439,7 @@ pub async fn setup_l2(config_file: &ConfigFile, clients: &Clients) -> Bootstrapp
     let account = get_account(clients, config_file).await;
 
     let core_contract_client = get_core_contract_client(config_file, clients);
-
+    println!(">>> get core contract client done");
     // setup eth bridge
     let eth_bridge_setup_outputs =
         setup_eth_bridge(Some(account.clone()), &core_contract_client, config_file, clients).await;
