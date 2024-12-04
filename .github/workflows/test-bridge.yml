@@ -77,11 +77,6 @@ jobs:
           ref: "d188aa91efa78bcc54f92aa1035295fd50e068d2"
           path: madara
 
-      - name: Build Madara
-        working-directory: madara
-        run: |
-          cargo build --release
-
       - name: Run anvil
         run: |
           anvil &

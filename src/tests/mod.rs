@@ -188,7 +188,8 @@ async fn wait_for_madara() -> color_eyre::Result<()> {
 
     env::set_current_dir("../").expect("Navigate back failed.");
 
-    sleep(Duration::from_secs(10)).await;
+    // Madara build time (approx : 20 mins.)
+    sleep(Duration::from_secs(1200)).await;
 
     Ok(())
 }
