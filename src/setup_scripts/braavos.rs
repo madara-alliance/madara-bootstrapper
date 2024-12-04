@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use serde::Serialize;
-use starknet::accounts::{Account, ConnectedAccount};
+use starknet::accounts::ConnectedAccount;
 use starknet::core::types::Felt;
 use tokio::time::sleep;
 
@@ -19,6 +19,7 @@ pub struct BraavosSetup<'a> {
     account: RpcAccount<'a>,
     arg_config: &'a ConfigFile,
     clients: &'a Clients,
+    udc_address: Felt,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -27,8 +28,8 @@ pub struct BraavosSetupOutput {
 }
 
 impl<'a> BraavosSetup<'a> {
-    pub fn new(account: RpcAccount<'a>, arg_config: &'a ConfigFile, clients: &'a Clients) -> Self {
-        Self { account, arg_config, clients }
+    pub fn new(account: RpcAccount<'a>, arg_config: &'a ConfigFile, clients: &'a Clients, udc_address: Felt) -> Self {
+        Self { account, arg_config, clients, udc_address }
     }
 
     pub async fn setup(&self) -> BraavosSetupOutput {
@@ -73,8 +74,8 @@ impl<'a> BraavosSetup<'a> {
         let deploy_tx = self
             .account
             .invoke_contract(
-                self.account.address(),
-                "deploy_contract",
+                self.udc_address,
+                "deployContract",
                 vec![braavos_aggregator_class_hash, Felt::ZERO, Felt::ZERO, Felt::ZERO],
                 None,
             )
