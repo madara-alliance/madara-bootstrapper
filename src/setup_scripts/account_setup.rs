@@ -26,14 +26,11 @@ pub async fn account_init<'a>(clients: &'a Clients, arg_config: &'a ConfigFile) 
 
     log::info!("Waiting for block to be mined [/]");
     sleep(Duration::from_secs(10)).await;
-    println!(">>> wait done");
 
     let account_address_temp =
         deploy_account_using_priv_key(TEMP_ACCOUNT_PRIV_KEY.to_string(), clients.provider_l2(), oz_account_class_hash)
             .await;
-    println!(">>> account address temp deployed");
     sleep(Duration::from_secs(10)).await;
-    println!(">>> wait done");
 
     let user_account_temp = build_single_owner_account(
         clients.provider_l2(),
@@ -42,18 +39,15 @@ pub async fn account_init<'a>(clients: &'a Clients, arg_config: &'a ConfigFile) 
         false,
     )
     .await;
-    println!(">>> temp account built");
     let oz_account_caio_1_class_hash = declare_contract(DeclarationInput::DeclarationInputs(
         String::from(OZ_ACCOUNT_SIERRA_PATH),
         String::from(OZ_ACCOUNT_CASM_PATH),
         user_account_temp.clone(),
     ))
     .await;
-    println!(">>> oz_account_caio_1_class_hash declared");
     save_to_json("oz_account_caio_1_class_hash", &JsonValueType::StringType(oz_account_caio_1_class_hash.to_string()))
         .unwrap();
     sleep(Duration::from_secs(10)).await;
-    println!(">>> wait done");
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     // Using Account Cairo 1 contract
@@ -64,9 +58,7 @@ pub async fn account_init<'a>(clients: &'a Clients, arg_config: &'a ConfigFile) 
         oz_account_caio_1_class_hash,
     )
     .await;
-    println!(">>> cairo 1 account declared");
     save_to_json("account_address", &JsonValueType::StringType(account_address.to_string())).unwrap();
-    println!(">>> account init done.");
     build_single_owner_account(
         clients.provider_l2(),
         &arg_config.rollup_priv_key,

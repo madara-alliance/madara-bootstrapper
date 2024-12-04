@@ -75,7 +75,7 @@ impl<'a> BraavosSetup<'a> {
             .account
             .invoke_contract(
                 self.udc_address,
-                "deploy_contract",
+                "deployContract",
                 vec![braavos_aggregator_class_hash, Felt::ZERO, Felt::ZERO, Felt::ZERO],
                 None,
             )

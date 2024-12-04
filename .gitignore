@@ -6,3 +6,5 @@ addresses.json
 /bin/devnet.yaml
 .cairo
 /artifacts
+madara-dbs
+madara/

@@ -77,19 +77,6 @@ jobs:
           ref: "d188aa91efa78bcc54f92aa1035295fd50e068d2"
           path: madara
 
-      - name: Move Madara Devnet config
-        working-directory: madara
-        run: |
-          ls
-          mv configs/presets/devnet.yaml ../bin/devnet.yaml
-
-      - name: Build Madara
-        working-directory: madara
-        run: |
-          cargo build
-          mv target/debug/madara ../bin/madara
-          cd ..
-
       - name: Run anvil
         run: |
           anvil &
@@ -105,7 +92,7 @@ jobs:
         run: |
           git submodule update --init --recursive
           make artifacts-linux
-          RUST_BACKTRACE=1 RUST_LOG=debug cargo test -- deposit_tests_both_bridges --nocapture
+          cargo llvm-cov nextest --release --lcov --output-path lcov.info
 
       - name: Coveralls
         uses: coverallsapp/github-action@v2

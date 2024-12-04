@@ -1,9 +1,10 @@
 pub mod constants;
 mod erc20_bridge;
 mod eth_bridge;
-mod madara;
 
+use std::process::Command;
 use std::time::Duration;
+use std::{env, fs};
 
 use rstest::rstest;
 use tokio::time::sleep;
@@ -11,7 +12,6 @@ use tokio::time::sleep;
 use crate::contract_clients::config::Clients;
 use crate::tests::erc20_bridge::erc20_bridge_test_helper;
 use crate::tests::eth_bridge::eth_bridge_test_helper;
-use crate::tests::madara::MadaraCmdBuilder;
 use crate::{bootstrap, setup_core_contract, setup_l2, BootstrapperOutput, ConfigFile};
 
 async fn test_setup(args: &ConfigFile, clients: &Clients) -> BootstrapperOutput {
@@ -26,34 +26,45 @@ async fn test_setup(args: &ConfigFile, clients: &Clients) -> BootstrapperOutput 
     config.core_contract_address = Some(format!("{:?}", core_contract_address));
     config.core_contract_implementation_address = Some(format!("{:?}", core_contract_implementation_address));
 
-    let mut node = MadaraCmdBuilder::new()
-        .args([
-            "--no-sync-polling",
-            "--l1-endpoint",
-            "http://localhost:8545",
-            "--chain-config-path=./bin/devnet.yaml",
-            "--rpc-cors",
-            "*",
-            "--rpc-external",
-            "--sequencer",
-            "--feeder-gateway-enable",
-            "--gateway-enable",
-            "--gateway-external",
-            "--rpc-methods",
-            "unsafe",
-            "--gas-price",
-            "0",
-            "--blob-gas-price",
-            "0",
-            "--strk-gas-price",
-            "0",
-            "--strk-blob-gas-price",
-            "0",
-        ])
-        .run();
-    node.wait_for_ready().await;
+    env::set_current_dir("madara").expect("madara folder doesn't exist.");
+    fs::create_dir_all("../madara-dbs").expect("unable to create folders");
+    env::set_var("RUST_LOG", "info");
+
+    // Running madara
+    Command::new("cargo")
+        .arg("+1.81")
+        .arg("run")
+        .arg("--release")
+        .arg("--")
+        .arg("--name")
+        .arg("madara")
+        .arg("--base-path")
+        .arg("../madara-dbs/madara_pathfinder_test_11")
+        .arg("--rpc-port")
+        .arg("19944")
+        .arg("--rpc-cors")
+        .arg("*")
+        .arg("--rpc-external")
+        .arg("--sequencer")
+        .arg("--chain-config-path")
+        .arg("configs/presets/devnet.yaml")
+        .arg("--feeder-gateway-enable")
+        .arg("--gateway-enable")
+        .arg("--gateway-external")
+        .arg("--gas-price")
+        .arg("0")
+        .arg("--blob-gas-price")
+        .arg("0")
+        .arg("--rpc-methods")
+        .arg("unsafe")
+        .arg("--l1-endpoint")
+        .arg("http://localhost:8545")
+        .spawn()
+        .unwrap();
 
     sleep(Duration::from_secs(5)).await;
+
+    env::set_current_dir("../").expect("Navigate back failed.");
 
     // Setup L2 with the updated config
     let l2_output = setup_l2(&config, clients).await;
@@ -126,6 +137,10 @@ async fn deposit_and_withdraw_erc20_bridge() -> Result<(), anyhow::Error> {
 async fn deposit_tests_both_bridges() -> Result<(), anyhow::Error> {
     env_logger::init();
     let config = get_test_config_file();
+
+    // This will kill the madara when this test fails/passes
+    let _port_killer = PortKiller;
+
     let clients = Clients::init_from_config(&config).await;
     let out = test_setup(&config, &clients).await;
 
@@ -151,6 +166,22 @@ async fn deposit_tests_both_bridges() -> Result<(), anyhow::Error> {
     .await;
 
     Ok(())
+}
+
+// Create a struct that will kill the process on port when dropped
+struct PortKiller;
+impl Drop for PortKiller {
+    fn drop(&mut self) {
+        kill_process_on_port(19944);
+    }
+}
+
+fn kill_process_on_port(port: u16) {
+    Command::new("sh")
+        .arg("-c")
+        .arg(format!("lsof -i :{} | grep LISTEN | awk '{{print $2}}' | xargs kill -9", port))
+        .output()
+        .expect("Failed to execute command");
 }
 
 fn get_test_config_file() -> ConfigFile {
