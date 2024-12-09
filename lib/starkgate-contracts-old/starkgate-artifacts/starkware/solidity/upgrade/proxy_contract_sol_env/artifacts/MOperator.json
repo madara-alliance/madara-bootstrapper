@@ -1,0 +1,77 @@
+{
+    "contractName": "MOperator",
+    "abi": [
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "address",
+                    "name": "operator",
+                    "type": "address"
+                }
+            ],
+            "name": "LogOperatorAdded",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "address",
+                    "name": "operator",
+                    "type": "address"
+                }
+            ],
+            "name": "LogOperatorRemoved",
+            "type": "event"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "user",
+                    "type": "address"
+                }
+            ],
+            "name": "isOperator",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "newOperator",
+                    "type": "address"
+                }
+            ],
+            "name": "registerOperator",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "removedOperator",
+                    "type": "address"
+                }
+            ],
+            "name": "unregisterOperator",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        }
+    ],
+    "bytecode": null
+}

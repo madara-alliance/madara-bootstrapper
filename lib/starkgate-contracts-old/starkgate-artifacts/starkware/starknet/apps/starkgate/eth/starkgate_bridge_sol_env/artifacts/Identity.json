@@ -1,0 +1,19 @@
+{
+    "contractName": "Identity",
+    "abi": [
+        {
+            "inputs": [],
+            "name": "identify",
+            "outputs": [
+                {
+                    "internalType": "string",
+                    "name": "",
+                    "type": "string"
+                }
+            ],
+            "stateMutability": "pure",
+            "type": "function"
+        }
+    ],
+    "bytecode": null
+}

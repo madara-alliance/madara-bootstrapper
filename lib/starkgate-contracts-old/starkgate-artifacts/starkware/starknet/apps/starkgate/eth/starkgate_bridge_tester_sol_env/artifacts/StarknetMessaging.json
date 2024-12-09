@@ -1,0 +1,413 @@
+{
+    "contractName": "StarknetMessaging",
+    "abi": [
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "uint256",
+                    "name": "fromAddress",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "toAddress",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256[]",
+                    "name": "payload",
+                    "type": "uint256[]"
+                }
+            ],
+            "name": "ConsumedMessageToL1",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "fromAddress",
+                    "type": "address"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "uint256",
+                    "name": "toAddress",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "uint256",
+                    "name": "selector",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256[]",
+                    "name": "payload",
+                    "type": "uint256[]"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "nonce",
+                    "type": "uint256"
+                }
+            ],
+            "name": "ConsumedMessageToL2",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "uint256",
+                    "name": "fromAddress",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "toAddress",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256[]",
+                    "name": "payload",
+                    "type": "uint256[]"
+                }
+            ],
+            "name": "LogMessageToL1",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "fromAddress",
+                    "type": "address"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "uint256",
+                    "name": "toAddress",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "uint256",
+                    "name": "selector",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256[]",
+                    "name": "payload",
+                    "type": "uint256[]"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "nonce",
+                    "type": "uint256"
+                }
+            ],
+            "name": "LogMessageToL2",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "fromAddress",
+                    "type": "address"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "uint256",
+                    "name": "toAddress",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "uint256",
+                    "name": "selector",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256[]",
+                    "name": "payload",
+                    "type": "uint256[]"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "nonce",
+                    "type": "uint256"
+                }
+            ],
+            "name": "MessageToL2Canceled",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "fromAddress",
+                    "type": "address"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "uint256",
+                    "name": "toAddress",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "uint256",
+                    "name": "selector",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256[]",
+                    "name": "payload",
+                    "type": "uint256[]"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "nonce",
+                    "type": "uint256"
+                }
+            ],
+            "name": "MessageToL2CancellationStarted",
+            "type": "event"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "toAddress",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "selector",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256[]",
+                    "name": "payload",
+                    "type": "uint256[]"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "nonce",
+                    "type": "uint256"
+                }
+            ],
+            "name": "cancelL1ToL2Message",
+            "outputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "",
+                    "type": "bytes32"
+                }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "fromAddress",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256[]",
+                    "name": "payload",
+                    "type": "uint256[]"
+                }
+            ],
+            "name": "consumeMessageFromL2",
+            "outputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "",
+                    "type": "bytes32"
+                }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "msgHash",
+                    "type": "bytes32"
+                }
+            ],
+            "name": "l1ToL2MessageCancellations",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "l1ToL2MessageNonce",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "msgHash",
+                    "type": "bytes32"
+                }
+            ],
+            "name": "l1ToL2Messages",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "msgHash",
+                    "type": "bytes32"
+                }
+            ],
+            "name": "l2ToL1Messages",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "messageCancellationDelay",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "toAddress",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "selector",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256[]",
+                    "name": "payload",
+                    "type": "uint256[]"
+                }
+            ],
+            "name": "sendMessageToL2",
+            "outputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "",
+                    "type": "bytes32"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "toAddress",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "selector",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256[]",
+                    "name": "payload",
+                    "type": "uint256[]"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "nonce",
+                    "type": "uint256"
+                }
+            ],
+            "name": "startL1ToL2MessageCancellation",
+            "outputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "",
+                    "type": "bytes32"
+                }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        }
+    ],
+    "bytecode": "0x608060405234801561001057600080fd5b50610c9d806100206000396000f3fe608060405234801561001057600080fd5b50600436106100935760003560e01c806377c7d7a91161006657806377c7d7a9146102345780637a98660b146102515780638303bd8a146102cb5780639be446bf146102d3578063a46efaf3146102f057610093565b8063018cccdf146100985780632c9dd5c0146100b25780633e3aa6c5146101275780636170ff1b146101ba575b600080fd5b6100a061030d565b60408051918252519081900360200190f35b6100a0600480360360408110156100c857600080fd5b81359190810190604081016020820135600160201b8111156100e957600080fd5b8201836020820111156100fb57600080fd5b803590602001918460208302840111600160201b8311171561011c57600080fd5b509092509050610352565b6101a16004803603606081101561013d57600080fd5b813591602081013591810190606081016040820135600160201b81111561016357600080fd5b82018360208201111561017557600080fd5b803590602001918460208302840111600160201b8311171561019657600080fd5b5090925090506104b1565b6040805192835260208301919091528051918290030190f35b6100a0600480360360808110156101d057600080fd5b813591602081013591810190606081016040820135600160201b8111156101f657600080fd5b82018360208201111561020857600080fd5b803590602001918460208302840111600160201b8311171561022957600080fd5b9193509150356105b7565b6100a06004803603602081101561024a57600080fd5b50356107ca565b6100a06004803603608081101561026757600080fd5b813591602081013591810190606081016040820135600160201b81111561028d57600080fd5b82018360208201111561029f57600080fd5b803590602001918460208302840111600160201b831117156102c057600080fd5b9193509150356107e5565b6100a06108f8565b6100a0600480360360208110156102e957600080fd5b503561091b565b6100a06004803603602081101561030657600080fd5b5035610925565b600061034d6040518060400160405280602081526020017f535441524b4e45545f312e305f4d5347494e475f4c31544f4c325f4e4f4e434581525061092f565b905090565b60008084336001600160a01b031685859050868660405160200180868152602001858152602001848152602001838360200280828437808301925050509550505050505060405160208183030381529060405280519060200120905060006103b86109ac565b600083815260209190915260409020541161041a576040805162461bcd60e51b815260206004820152601a60248201527f494e56414c49445f4d4553534147455f544f5f434f4e53554d45000000000000604482015290519081900360640190fd5b336001600160a01b0316857f7a06c571aa77f34d9706c51e5d8122b5595aebeaa34233bfe866f22befb973b1868660405180806020018281038252848482818152602001925060200280828437600083820152604051601f909101601f19169092018290039550909350505050a360016104926109ac565b6000838152602091909152604090208054919091039055949350505050565b60008060006104be61030d565b90506105026040518060400160405280602081526020017f535441524b4e45545f312e305f4d5347494e475f4c31544f4c325f4e4f4e4345815250826001016109cf565b8587336001600160a01b03167f7d3450d4f5138e54dcb21a322312d50846ead7856426fb38778f8ef33aeccc0188888660405180806020018381526020018281038252858582818152602001925060200280828437600083820152604051601f909101601f1916909201829003965090945050505050a460006105888888888886610a49565b90506001610594610abd565b600083815260209190915260409020805490910190559250905094509492505050565b60008486336001600160a01b03167f8abd2ec2e0a10c82f5b60ea00455fa96c41fd144f225fcc52b8d83d94f803ed887878760405180806020018381526020018281038252858582818152602001925060200280828437600083820152604051601f909101601f1916909201829003965090945050505050a4600061063f8787878787610a49565b9050600061064b610abd565b600083815260209190915260409020549050806106a6576040805162461bcd60e51b81526020600482015260146024820152731393d7d35154d4d051d157d513d7d0d05390d15360621b604482015290519081900360640190fd5b60006106b0610ae0565b600084815260209190915260409020549050806106fe5760405162461bcd60e51b8152600401808060200182810382526022815260200180610c466022913960400191505060405180910390fd5b60006107086108f8565b8201905081811015610761576040805162461bcd60e51b815260206004820152601c60248201527f43414e43454c5f414c4c4f5745445f54494d455f4f564552464c4f5700000000604482015290519081900360640190fd5b804210156107a05760405162461bcd60e51b8152600401808060200182810382526024815260200180610b7c6024913960400191505060405180910390fd5b600183036107ac610abd565b60008681526020919091526040902055509198975050505050505050565b60006107d4610abd565b600092835260205250604090205490565b60008486336001600160a01b03167f2e00dccd686fd6823ec7dc3e125582aa82881b6ff5f6b5a73856e1ea8338a3be87878760405180806020018381526020018281038252858582818152602001925060200280828437600083820152604051601f909101601f1916909201829003965090945050505050a4600061086d8787878787610a49565b90506000610879610abd565b600083815260209190915260409020549050806108d4576040805162461bcd60e51b81526020600482015260146024820152731393d7d35154d4d051d157d513d7d0d05390d15360621b604482015290519081900360640190fd5b426108dd610ae0565b60008481526020919091526040902055509695505050505050565b600061034d6040518060600160405280602d8152602001610bd0602d913961092f565b60006107d4610ae0565b60006107d46109ac565b600080826040516020018082805190602001908083835b602083106109655780518252601f199092019160209182019101610946565b6001836020036101000a0380198251168184511680821785525050505050509050019150506040516020818303038152906040528051906020012090508054915050919050565b600061034d604051806060016040528060238152602001610bfd60239139610aff565b6000826040516020018082805190602001908083835b60208310610a045780518252601f1990920191602091820191016109e5565b6001836020036101000a038019825116818451168082178552505050505050905001915050604051602081830303815290604052805190602001209050818155505050565b6000336001600160a01b0316868387878790508888604051602001808881526020018781526020018681526020018581526020018481526020018383602002808284378083019250505097505050505050505060405160208183030381529060405280519060200120905095945050505050565b600061034d604051806060016040528060268152602001610c2060269139610aff565b600061034d604051806060016040528060308152602001610ba0603091395b600080826040516020018082805190602001908083835b60208310610b355780518252601f199092019160209182019101610b16565b6001836020036101000a0380198251168184511680821785525050505050509050019150506040516020818303038152906040528051906020012090508091505091905056fe4d4553534147455f43414e43454c4c4154494f4e5f4e4f545f414c4c4f5745445f594554535441524b4e45545f312e305f4d5347494e475f4c31544f4c325f43414e43454c4c4154494f4e5f4d41505050494e47535441524b4e45545f312e305f4d5347494e475f4c31544f4c325f43414e43454c4c4154494f4e5f44454c4159535441524b4e45545f312e305f4d5347494e475f4c32544f4c315f4d41505050494e47535441524b4e45545f312e305f4d5347494e475f4c31544f4c325f4d41505050494e475f56324d4553534147455f43414e43454c4c4154494f4e5f4e4f545f524551554553544544a2646970667358221220c0e30ae584d4cb07e8fd2adf85a25b2763bf25a14b6e266751953a750f8c190464736f6c634300060c0033"
+}

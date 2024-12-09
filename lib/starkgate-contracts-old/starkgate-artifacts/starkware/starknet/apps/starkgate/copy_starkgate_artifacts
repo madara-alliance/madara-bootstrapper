@@ -1,0 +1,8 @@
+#!/bin/bash
+# Find the directory of the executable using $(dirname $0), convert it to absolute path using
+# realpath, and use it to find build directory (e.g., .../build/Debug or /app/).
+export BUILD_ROOT=$(realpath $(dirname $0)/../../../../..)
+
+
+source ${BUILD_ROOT}/src/starkware/starknet/apps/starkgate/copy_starkgate_artifacts_venv/bin/activate
+ CMAKE_TARGET_NAME=copy_starkgate_artifacts ${BUILD_ROOT}/src/starkware/starknet/apps/starkgate/copy_starkgate_artifacts_venv/bin/python -u -m starkware.starknet.apps.starkgate.copy_starkgate_artifacts  "$@"

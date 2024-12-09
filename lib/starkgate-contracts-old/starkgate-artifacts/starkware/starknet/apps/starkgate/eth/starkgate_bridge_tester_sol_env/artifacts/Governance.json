@@ -1,0 +1,51 @@
+{
+    "contractName": "Governance",
+    "abi": [
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "address",
+                    "name": "acceptedGovernor",
+                    "type": "address"
+                }
+            ],
+            "name": "LogNewGovernorAccepted",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "address",
+                    "name": "nominatedGovernor",
+                    "type": "address"
+                }
+            ],
+            "name": "LogNominatedGovernor",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [],
+            "name": "LogNominationCancelled",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "address",
+                    "name": "removedGovernor",
+                    "type": "address"
+                }
+            ],
+            "name": "LogRemovedGovernor",
+            "type": "event"
+        }
+    ],
+    "bytecode": null
+}

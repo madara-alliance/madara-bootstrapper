@@ -1,0 +1,19 @@
+{
+    "contractName": "StorageSlots",
+    "abi": [
+        {
+            "inputs": [],
+            "name": "UPGRADE_DELAY_SLOT",
+            "outputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "",
+                    "type": "bytes32"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        }
+    ],
+    "bytecode": "0x6080604052348015600f57600080fd5b50609f8061001e6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c806320cea94d14602d575b600080fd5b60336045565b60408051918252519081900360200190f35b7fc21dbb3089fcb2c4f4c6a67854ab4db2b0f233ea4b21b21f912d52d18fc5db1f8156fea2646970667358221220c1a15d7eb27dfa6ee7e4713a62b6eda15303e5f01ab54f909e1f994e42a2203164736f6c634300060c0033"
+}

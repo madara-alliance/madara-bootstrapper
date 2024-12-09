@@ -1,0 +1,8 @@
+#!/bin/bash
+# Find the directory of the executable using $(dirname $0), convert it to absolute path using
+# realpath, and use it to find build directory (e.g., .../build/Debug or /app/).
+export BUILD_ROOT=$(realpath $(dirname $0)/../../../../..)
+
+cd /app/build/Release
+source ${BUILD_ROOT}/src/starkware/starknet/std_contracts/ERC20/cairo_erc20_test_venv/bin/activate
+ CMAKE_TARGET_NAME=cairo_erc20_test ${BUILD_ROOT}/src/starkware/starknet/std_contracts/ERC20/cairo_erc20_test_venv/bin/python -u -m pytest  ${BUILD_ROOT}/src/starkware/starknet/std_contracts/ERC20/cairo_erc20_test_venv-site/starkware/starknet/std_contracts/ERC20  "$@"
