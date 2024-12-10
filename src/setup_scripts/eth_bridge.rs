@@ -56,7 +56,7 @@ impl<'a> EthBridge<'a> {
     pub async fn setup(&self) -> EthBridgeSetupOutput {
         let legacy_proxy_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(PROXY_LEGACY_PATH),
-            self.arg_config.rollup_seq_url.clone(),
+            self.arg_config.rollup_declare_v0_seq_url.clone(),
             self.clients.provider_l2(),
         ))
         .await;
@@ -67,7 +67,7 @@ impl<'a> EthBridge<'a> {
 
         let starkgate_proxy_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(STARKGATE_PROXY_PATH),
-            self.arg_config.rollup_seq_url.clone(),
+            self.arg_config.rollup_declare_v0_seq_url.clone(),
             self.clients.provider_l2(),
         ))
         .await;
@@ -78,7 +78,7 @@ impl<'a> EthBridge<'a> {
 
         let erc20_legacy_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(ERC20_LEGACY_PATH),
-            self.arg_config.rollup_seq_url.clone(),
+            self.arg_config.rollup_declare_v0_seq_url.clone(),
             self.clients.provider_l2(),
         ))
         .await;
@@ -89,7 +89,7 @@ impl<'a> EthBridge<'a> {
 
         let legacy_eth_bridge_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(LEGACY_BRIDGE_PATH),
-            self.arg_config.rollup_seq_url.clone(),
+            self.arg_config.rollup_declare_v0_seq_url.clone(),
             self.clients.provider_l2(),
         ))
         .await;
