@@ -2,12 +2,13 @@ pub mod constants;
 mod erc20_bridge;
 mod eth_bridge;
 
+use std::future::Future;
 use std::process::Command;
 use std::time::Duration;
 use std::{env, fs};
 
 use rstest::rstest;
-use tokio::time::sleep;
+use url::Url;
 
 use crate::contract_clients::config::Clients;
 use crate::tests::erc20_bridge::erc20_bridge_test_helper;
@@ -188,8 +189,7 @@ async fn wait_for_madara() -> color_eyre::Result<()> {
 
     env::set_current_dir("../").expect("Navigate back failed.");
 
-    // Madara build time (approx : 20 mins.)
-    sleep(Duration::from_secs(1200)).await;
+    wait_for_madara_to_be_ready(Url::parse("http://localhost:19944")?).await?;
 
     Ok(())
 }
@@ -202,4 +202,44 @@ fn ensure_toolchain() -> color_eyre::Result<()> {
         Command::new("rustup").arg("install").arg("1.81").status()?;
     }
     Ok(())
+}
+
+pub async fn wait_for_madara_to_be_ready(rpc_url: Url) -> color_eyre::Result<()> {
+    // We are fine with `expect` here as this function is called in the intial phases of the
+    // program execution
+    let endpoint = rpc_url.join("/health").expect("Request to health endpoint failed");
+    // We would wait for about 20-25 mins for madara to be ready
+    wait_for_cond(
+        || async {
+            let res = reqwest::get(endpoint.clone()).await?;
+            res.error_for_status()?;
+            Ok(true)
+        },
+        Duration::from_secs(5),
+        250,
+    )
+    .await
+    .expect("Could not get health of Madara");
+    Ok(())
+}
+
+pub async fn wait_for_cond<F: Future<Output = color_eyre::Result<bool>>>(
+    mut cond: impl FnMut() -> F,
+    duration: Duration,
+    attempt_number: usize,
+) -> color_eyre::Result<bool> {
+    let mut attempt = 0;
+    loop {
+        let err = match cond().await {
+            Ok(result) => return Ok(result),
+            Err(err) => err,
+        };
+
+        attempt += 1;
+        if attempt >= attempt_number {
+            panic!("No answer from the node after {attempt} attempts: {:#}", err)
+        }
+
+        tokio::time::sleep(duration).await;
+    }
 }

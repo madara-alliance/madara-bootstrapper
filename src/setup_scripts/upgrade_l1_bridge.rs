@@ -20,6 +20,25 @@ abigen!(
 abigen!(EthereumNewBridge, "artifacts/upgrade-contracts/eth_bridge_upgraded.json");
 abigen!(EthereumNewBridgeEIC, "artifacts/upgrade-contracts/eic_eth_bridge.json");
 
+/// Upgrades the L1 Ethereum bridge implementation with a new version, including deployment of new
+/// contracts and configuration of administrative roles.
+///
+/// # Arguments
+/// * `ethereum_bridge_address` - The address of the existing Ethereum bridge contract on L1
+/// * `config_file` - Configuration file containing network and wallet settings
+///
+/// # Returns
+/// * `Result<()>` - Result indicating success or failure of the upgrade process
+///
+/// # Steps
+/// 1. Initializes provider and wallet connections using config settings
+/// 2. Deploys new bridge implementation and EIC (External Implementation Contract)
+/// 3. Sets up proxy connection to existing bridge
+/// 4. Performs upgrade sequence:
+///    - Adds new implementation to proxy
+///    - Upgrades to new implementation
+///    - Registers administrative roles (app role admin, governance admin, app governor)
+///    - Sets maximum total balance for ETH
 pub async fn upgrade_l1_bridge(ethereum_bridge_address: Address, config_file: &ConfigFile) -> color_eyre::Result<()> {
     let config_file = Arc::from(config_file);
 

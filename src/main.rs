@@ -71,6 +71,8 @@ pub enum CoreContractMode {
     Dev,
 }
 
+// TODO :                 There is a lot of optional stuff in the config which is needed if we run
+// TODO : (continued.)    individual commands. We need to think of a better design.
 #[derive(Serialize, Deserialize)]
 pub struct ConfigFile {
     pub eth_rpc: String,
@@ -197,7 +199,7 @@ pub async fn main() {
                 &config_file,
                 &clients,
                 Felt::from_str(
-                    &config_file.udc_address.clone().expect("UDC Address not available in config. Run with SetupL2"),
+                    &config_file.udc_address.clone().expect("UDC Address not available in config. Run with mode UDC"),
                 )
                 .expect("Unable to get UDC address"),
             )
@@ -439,7 +441,7 @@ pub async fn setup_l2(config_file: &ConfigFile, clients: &Clients) -> Bootstrapp
     let account = get_account(clients, config_file).await;
 
     let core_contract_client = get_core_contract_client(config_file, clients);
-    println!(">>> get core contract client done");
+
     // setup eth bridge
     let eth_bridge_setup_outputs =
         setup_eth_bridge(Some(account.clone()), &core_contract_client, config_file, clients).await;
@@ -458,28 +460,8 @@ pub async fn setup_l2(config_file: &ConfigFile, clients: &Clients) -> Bootstrapp
     let braavos_setup_outputs =
         setup_braavos(Some(account.clone()), config_file, clients, udc_setup_outputs.udc_address).await;
 
-    // upgrading the bridge :
-    let account = build_single_owner_account(
-        clients.provider_l2(),
-        &config_file.rollup_priv_key,
-        &account.address().to_hex_string(),
-        false,
-    )
-    .await;
-    upgrade_eth_token_to_cairo_1(
-        &account,
-        clients.provider_l2(),
-        eth_bridge_setup_outputs.clone().l2_eth_proxy_address,
-    )
-    .await;
-    upgrade_eth_bridge_to_cairo_1(
-        &account,
-        clients.provider_l2(),
-        eth_bridge_setup_outputs.clone().l2_eth_bridge_proxy_address,
-        eth_bridge_setup_outputs.clone().l2_eth_proxy_address,
-    )
-    .await;
-    upgrade_l1_bridge(eth_bridge_setup_outputs.clone().l1_bridge_address, config_file).await.unwrap();
+    // upgrading the eth bridge
+    upgrade_eth_bridge(Some(account), config_file, clients).await.expect("Unable to upgrade ETH bridge.");
 
     BootstrapperOutput {
         eth_bridge_setup_outputs: Some(eth_bridge_setup_outputs),

@@ -38,6 +38,10 @@ There are three test in the repository :
 - You need to comment/remove the #[ignore] tags in [src/tests/mod.rs](src/tests/mod.rs) file
 - Only one test can be run at one time as all the tests are e2e tests.
 - You also would need to restart both the chains after running each test.
+- You would need to clone [Madara](https://github.com/madara-alliance/madara.git) repo by running :
+    ```shell
+    git clone --branch d188aa91efa78bcc54f92aa1035295fd50e068d2 https://github.com/madara-alliance/madara.git
+  ```
 
 ```shell
 # 1. Run madara instance with eth as settlement layer :
@@ -100,25 +104,19 @@ RUST_LOG=info cargo run -- --dev
 
 ### Contract Descriptions 🗒️
 
-| Contract                                      | Source Link                                                                                                                                 | Local Path                                                                                                       |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| ERC20 (starkgate)                             | <https://github.com/starknet-io/starkgate-contracts/blob/cairo-1/src/cairo/strk/erc20_lockable.cairo>                                       | [src/contracts/erc20.sierra.json](./src/contracts/erc20.sierra.json)                                             |
-| ERC20 (legacy : starknet)                     | <https://sepolia.starkscan.co/class/0x01b661756bf7d16210fc611626e1af4569baa1781ffc964bd018f4585ae241c1>                                     | [src/contracts/erc20.json](./src/contracts/erc20.json)                                                           |
-| OpenZeppelinAccount (legacy : starknet)       | <https://sepolia.starkscan.co/class/0x05c478ee27f2112411f86f207605b2e2c58cdb647bac0df27f660ef2252359c6>                                     | [src/contracts/OpenZeppelinAccount.json](./src/contracts/OpenZeppelinAccount.json)                               |
-| OpenZeppelinAccount (modified : openzeppelin) | [src/contracts/OpenZeppelinAccountCairoOne.sierra.json](src/contracts/OpenZeppelinAccountCairoOne.sierra.json)                              | [src/contracts/OpenZeppelinAccountCairoOne.sierra.json](./src/contracts/OpenZeppelinAccountCairoOne.sierra.json) |
-| Proxy (legacy : starknet)                     | <https://sepolia.starkscan.co/class/0x00d0e183745e9dae3e4e78a8ffedcce0903fc4900beace4e0abf192d4c202da3>                                     | [src/contracts/proxy_legacy.json](./src/contracts/proxy_legacy.json)                                             |
-| ETH token bridge (legacy : starkgate)         | <https://github.com/starknet-io/starkgate-contracts/blob/update-cairo-0.9.0/src/starkware/starknet/apps/starkgate/cairo/token_bridge.cairo> | [src/contracts/legacy_token_bridge.json](./src/contracts/legacy_token_bridge.json)                               |
-| UDC (Universal Deployer Contract)             | <https://sepolia.starkscan.co/class/0x07b3e05f48f0c69e4a65ce5e076a66271a527aff2c34ce1083ec6e1526997a69>                                     | [src/contracts/udc.json](./src/contracts/udc.json)                                                               |
+| Contract                                      | Source Link                                                                                             | Local Path                                                                                                       |
+| --------------------------------------------- |---------------------------------------------------------------------------------------------------------| ---------------------------------------------------------------------------------------------------------------- |
+| OpenZeppelinAccount (legacy : starknet)       | <https://sepolia.starkscan.co/class/0x05c478ee27f2112411f86f207605b2e2c58cdb647bac0df27f660ef2252359c6> | [src/contracts/OpenZeppelinAccount.json](./src/contracts/OpenZeppelinAccount.json)                               |
+| OpenZeppelinAccount (modified : openzeppelin) | [src/contracts/account.cairo](src/contracts/account.cairo)                                              | [src/contracts/OpenZeppelinAccountCairoOne.sierra.json](./src/contracts/OpenZeppelinAccountCairoOne.sierra.json) |
+| UDC (Universal Deployer Contract)             | <https://sepolia.starkscan.co/class/0x07b3e05f48f0c69e4a65ce5e076a66271a527aff2c34ce1083ec6e1526997a69> | [src/contracts/udc.json](./src/contracts/udc.json)                                                               |
 
 Here are some contract descriptions on why they are used
 in our context.
 
-- `ERC20 (starkgate)` : This ERC20 contracts works without a proxy and is used by erc20 token bridge in
-  order to deploy the token on L2.
-- `ERC20 (legacy : starknet)` : This contract is used for deploying the implementation of ETH token on L2.
-- `ERC20 token bridge (starkgate)` : Contract for Token bridge.
 - `OpenZeppelinAccount (legacy : starknet)` : Contract used for declaring a temp account for declaring V1
   contract that will be used to deploy the user account with provided private key in env.
+- `OpenZeppelinAccount (modified : openzeppelin)` : OZ account contract modified to include `deploy_contract`
+  function as we deploy the UDC towards the end of the bootstrapper setup.
 
 > [!IMPORTANT]
 > For testing in Github CI we are using the madara binary build with

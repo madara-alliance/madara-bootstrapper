@@ -97,16 +97,16 @@ argent-contracts-starknet:
 	cp ./lib/argent-contracts-starknet/target/dev/argent_ArgentAccount.contract_class.json ./artifacts/ArgentAccount.sierra.json
 	cp ./lib/argent-contracts-starknet/target/dev/argent_ArgentAccount.compiled_contract_class.json ./artifacts/ArgentAccount.casm.json
 
-make artifacts-linux:
-	make setup-linux
+make build-contracts:
 	make starkgate-contracts-legacy
 	make starkgate-contracts-latest
 	make braavos-account-cairo
 	make argent-contracts-starknet
 
+make artifacts-linux:
+	make setup-linux
+	make build-contracts
+
 make artifacts:
 	make setup
-	make starkgate-contracts-legacy
-	make starkgate-contracts-latest
-	make braavos-account-cairo
-	make argent-contracts-starknet
+	make build-contracts
