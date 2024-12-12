@@ -438,9 +438,6 @@ async fn setup_braavos<'a>(
 }
 
 pub async fn setup_l2(config_file: &mut ConfigFile, clients: &Clients) -> BootstrapperOutput {
-    let address = Address::from_str("0xe7f1725e7734ce288f8367e1bb143e90bb3f0512").unwrap();
-    println!(">>> address : {:?}", address.encode_hex());
-
     // Had to create a temporary clone otherwise the `ConfigFile`
     // will be dropped after passing into `get_account` function.
     let config_file_clone = &config_file.clone();
@@ -469,11 +466,7 @@ pub async fn setup_l2(config_file: &mut ConfigFile, clients: &Clients) -> Bootst
     // upgrading the eth bridge
     config_file.l1_eth_bridge_address = Some(format!(
         "0x{}",
-        eth_bridge_setup_outputs
-            .l1_bridge_address
-            .encode_hex()
-            .trim_start_matches("0x")
-            .trim_start_matches('0')
+        eth_bridge_setup_outputs.l1_bridge_address.encode_hex().trim_start_matches("0x").trim_start_matches('0')
     ));
     config_file.l2_eth_token_proxy_address = Some(eth_bridge_setup_outputs.l2_eth_proxy_address.to_hex_string());
     config_file.l2_eth_bridge_proxy_address =
