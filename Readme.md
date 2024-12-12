@@ -39,8 +39,9 @@ There are three test in the repository :
 - Only one test can be run at one time as all the tests are e2e tests.
 - You also would need to restart both the chains after running each test.
 - You would need to clone [Madara](https://github.com/madara-alliance/madara.git) repo by running :
-    ```shell
-    git clone --branch d188aa91efa78bcc54f92aa1035295fd50e068d2 https://github.com/madara-alliance/madara.git
+
+  ```shell
+  git clone --branch d188aa91efa78bcc54f92aa1035295fd50e068d2 https://github.com/madara-alliance/madara.git
   ```
 
 ```shell
@@ -105,7 +106,7 @@ RUST_LOG=info cargo run -- --dev
 ### Contract Descriptions 🗒️
 
 | Contract                                      | Source Link                                                                                             | Local Path                                                                                                       |
-| --------------------------------------------- |---------------------------------------------------------------------------------------------------------| ---------------------------------------------------------------------------------------------------------------- |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | OpenZeppelinAccount (legacy : starknet)       | <https://sepolia.starkscan.co/class/0x05c478ee27f2112411f86f207605b2e2c58cdb647bac0df27f660ef2252359c6> | [src/contracts/OpenZeppelinAccount.json](./src/contracts/OpenZeppelinAccount.json)                               |
 | OpenZeppelinAccount (modified : openzeppelin) | [src/contracts/account.cairo](src/contracts/account.cairo)                                              | [src/contracts/OpenZeppelinAccountCairoOne.sierra.json](./src/contracts/OpenZeppelinAccountCairoOne.sierra.json) |
 | UDC (Universal Deployer Contract)             | <https://sepolia.starkscan.co/class/0x07b3e05f48f0c69e4a65ce5e076a66271a527aff2c34ce1083ec6e1526997a69> | [src/contracts/udc.json](./src/contracts/udc.json)                                                               |

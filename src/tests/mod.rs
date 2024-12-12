@@ -31,7 +31,7 @@ async fn test_setup(args: &ConfigFile, clients: &Clients) -> BootstrapperOutput 
     wait_for_madara().await.expect("Failed to start madara!");
 
     // Setup L2 with the updated config
-    let l2_output = setup_l2(&config, clients).await;
+    let l2_output = setup_l2(&mut config, clients).await;
 
     BootstrapperOutput {
         starknet_contract_address: Some(core_contract_address),
@@ -45,9 +45,9 @@ async fn test_setup(args: &ConfigFile, clients: &Clients) -> BootstrapperOutput 
 #[ignore = "ignored because we have a e2e test, and this is for a local test"]
 async fn deploy_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
-    let config = get_test_config_file();
+    let mut config = get_test_config_file();
     let clients = Clients::init_from_config(&config).await;
-    bootstrap(&config, &clients).await;
+    bootstrap(&mut config, &clients).await;
 
     Ok(())
 }
@@ -57,9 +57,9 @@ async fn deploy_bridge() -> Result<(), anyhow::Error> {
 #[ignore = "ignored because we have a e2e test, and this is for a local test"]
 async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
-    let config = get_test_config_file();
+    let mut config = get_test_config_file();
     let clients = Clients::init_from_config(&config).await;
-    let out = bootstrap(&config, &clients).await;
+    let out = bootstrap(&mut config, &clients).await;
     let eth_bridge_setup = out.eth_bridge_setup_outputs.unwrap();
 
     let _ = eth_bridge_test_helper(
@@ -79,9 +79,9 @@ async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
 #[ignore = "ignored because we have a e2e test, and this is for a local test"]
 async fn deposit_and_withdraw_erc20_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
-    let config = get_test_config_file();
+    let mut config = get_test_config_file();
     let clients = Clients::init_from_config(&config).await;
-    let out = bootstrap(&config, &clients).await;
+    let out = bootstrap(&mut config, &clients).await;
     let eth_token_setup = out.erc20_bridge_setup_outputs.unwrap();
 
     let _ = erc20_bridge_test_helper(
