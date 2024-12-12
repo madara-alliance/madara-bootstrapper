@@ -3,9 +3,12 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use ethers::types::Address;
 use starknet::core::types::Felt;
-use starknet_core_contract_client::clients::StarknetValidityContractClient;
-use starknet_core_contract_client::deploy_starknet_validity_behind_safe_proxy;
+use starknet_core_contract_client::clients::StarknetDevCoreContractClient;
 use starknet_core_contract_client::interfaces::{OperatorTrait, StarknetGovernanceTrait};
+use starknet_core_contract_client::{
+    deploy_starknet_core_contract_behind_proxy, CoreContractClientType, CoreContractType,
+};
+use starknet_proxy_client::deploy::ProxyVersion;
 use starknet_proxy_client::interfaces::proxy::{CoreContractInitData, ProxyInitializeData, ProxySupport3_0_2Trait};
 use zaun_utils::{LocalWalletSignerMiddleware, StarknetContractClient};
 
@@ -15,22 +18,31 @@ use crate::contract_clients::core_contract::{
 };
 use crate::utils::convert_felt_to_u256;
 
-pub struct StarknetValidityContract {
-    pub core_contract_client: StarknetValidityContractClient,
+pub struct StarknetDevCoreContract {
+    pub core_contract_client: StarknetDevCoreContractClient,
 }
 
-impl CoreContractDeploy<StarknetValidityContract> for StarknetValidityContract {
+impl CoreContractDeploy<StarknetDevCoreContract> for StarknetDevCoreContract {
     async fn deploy(clients: &Clients) -> Self {
-        let client = deploy_starknet_validity_behind_safe_proxy(clients.eth_client().signer().clone())
-            .await
-            .expect("Failed to deploy the starknet contact");
+        let client = deploy_starknet_core_contract_behind_proxy(
+            clients.eth_client().signer().clone(),
+            ProxyVersion::SafeProxy3_0_2,
+            CoreContractType::Dev,
+        )
+        .await
+        .expect("Failed to deploy the starknet contact");
 
-        Self { core_contract_client: client }
+        match client {
+            CoreContractClientType::Dev(c) => Self { core_contract_client: c },
+            _ => {
+                panic!("Unsupported client.")
+            }
+        }
     }
 }
 
 #[async_trait]
-impl CoreContract for StarknetValidityContract {
+impl CoreContract for StarknetDevCoreContract {
     fn address(&self) -> Address {
         self.core_contract_client.address()
     }
