@@ -137,16 +137,49 @@ RUN cd lib/starkgate-contracts-old && \
     # Kill ganache after build
     kill $GANACHE_PID || true
 
-RUN npm install -g --unsafe-perm ganache@7.9.0
+# Remove existing Node.js and related packages
+RUN apt-get purge -y nodejs nodejs-doc node-gyp libnode-dev && \
+    apt-get autoremove -y && \
+    rm -rf /etc/apt/sources.list.d/nodesource.list && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Node.js 18.x
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get update && \
+    apt-get install -y nodejs && \
+    # Install a specific compatible version of npm
+    npm install -g npm@9.8.1
+
+# Install and verify ganache with explicit path and shell
+RUN npm install -g --unsafe-perm ganache@7.9.0 && \
+    # Verify ganache installation and keep trying if it fails
+    (for i in {1..5}; do \
+        if which ganache && ganache --version; then \
+            echo "Ganache installation verified" && \
+            break; \
+        else \
+            echo "Attempt $i: Ganache not found, trying again..." && \
+            echo "Searching for ganache in PATH..." && \
+            find / -name ganache 2>/dev/null && \
+            # Clear npm cache and reinstall
+            npm cache clean --force && \
+            npm install -g --unsafe-perm ganache@7.9.0 && \
+            # Add environment variables
+            export PATH="/usr/local/lib/node_modules/.bin:$PATH" && \
+            # Add a small delay to let npm finish
+            sleep 5; \
+        fi; \
+        if [ $i -eq 5 ]; then \
+            echo "Failed to install ganache after 5 attempts" && \
+            exit 1; \
+        fi \
+    done)
 
 # Generate other artifacts
 RUN . "$HOME/.asdf/asdf.sh" && \
     make starkgate-contracts-latest && \
     make braavos-account-cairo && \
     make argent-contracts-starknet
-
-# Make sure Ganache is installed right before build
-# RUN npm install -g ganache
 
 # Build the Rust project with specific binary name
 RUN cargo build --release --workspace --bin karnot-bridge-deploy
