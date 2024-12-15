@@ -13,7 +13,7 @@ setup:
 setup-linux:
 	mkdir -p .cairo
 	cd .cairo && \
-  	wget -c https://github.com/starkware-libs/cairo/releases/download/v2.3.0/release-x86_64-unknown-linux-musl.tar.gz -O - | tar -xz
+	wget -c https://github.com/starkware-libs/cairo/releases/download/v2.3.0/release-x86_64-unknown-linux-gnu.tar.gz -O - | tar -xz
 
 starkgate-contracts-latest:
 	# Building L2 contracts
