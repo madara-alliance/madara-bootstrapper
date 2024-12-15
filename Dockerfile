@@ -177,6 +177,10 @@ RUN npm install -g --unsafe-perm ganache@7.9.0 && \
 
 # Generate other artifacts
 RUN . "$HOME/.asdf/asdf.sh" && \
+    ls -la /app/.cairo && \
+    export PATH="/app/.cairo/release/bin:$PATH" && \
+    echo $PATH && \
+    which starknet-compile && \
     make starkgate-contracts-latest && \
     make braavos-account-cairo && \
     make argent-contracts-starknet
