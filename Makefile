@@ -1,8 +1,38 @@
-.PHONY: setup setup-linux starkgate-contracts-latest braavos-account-cairo argent-contracts-starknet artifacts starkgate-contracts-legacy
+.PHONY: setup setup-linux ensure-asdf  starkgate-contracts-latest braavos-account-cairo argent-contracts-starknet artifacts starkgate-contracts-legacy
 
 STARKGATE_CONTRACTS_VERSION_TAG="v2.0.1"
 ARGENT_CONTRACTS_COMMIT_HASH="1352198956f36fb35fa544c4e46a3507a3ec20e3"
 BRAAVOS_CONTRACTS_COMMIT_HASH="12b82a87b93ba9bfdf2cbbde2566437df2e0c6c8"
+
+SHELL := /bin/bash
+HOME_DIR := /home/ubuntu
+
+VENV_DIR := $(PWD)/.venv
+VENV_BIN := $(VENV_DIR)/bin
+PYTHON := $(VENV_BIN)/python
+PIP := $(VENV_BIN)/pip
+SOLC_SELECT := $(VENV_BIN)/solc-select
+SOLC := $(VENV_BIN)/solc
+# Add a target to create and setup virtual environment
+setup-venv:
+	python3 -m venv $(VENV_DIR)
+	$(PIP) install --upgrade pip
+	$(PIP) install solc-select
+	$(SOLC_SELECT) install 0.8.24
+	$(SOLC_SELECT) use 0.8.24
+	$(VENV_BIN)/solc --version
+ensure-asdf:
+	@if [ ! -f "$(HOME_DIR)/.asdf/asdf.sh" ]; then \
+		echo "Error: ASDF not found in $(HOME_DIR)/.asdf/"; \
+		echo "Please install ASDF first:"; \
+		echo "git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.14.1"; \
+		exit 1; \
+	fi
+	# Add scarb plugin if not already added
+	. $(HOME_DIR)/.asdf/asdf.sh && \
+	if ! asdf plugin list | grep -q scarb; then \
+		asdf plugin add scarb https://github.com/software-mansion/asdf-scarb.git; \
+	fi
 
 # Setup cairo for mac os
 setup:
@@ -15,7 +45,7 @@ setup-linux:
 	cd .cairo && \
   	wget -c https://github.com/starkware-libs/cairo/releases/download/v2.3.0/release-x86_64-unknown-linux-musl.tar.gz -O - | tar -xz
 
-starkgate-contracts-latest:
+starkgate-contracts-latest: setup-venv
 	# Building L2 contracts
 	# =====================
 	cd lib/starkgate-contracts-latest && \
@@ -49,13 +79,12 @@ starkgate-contracts-latest:
 	# Building L1 contracts
 	# =====================
 	# Configure solidity version
-	solc-select install 0.8.24 && solc-select use 0.8.24
-	# Building
+	$(SOLC_SELECT) install 0.8.24 && $(SOLC_SELECT) use 0.8.24 && \
 	cd lib/starkgate-contracts-latest && \
 	./scripts/setup.sh && \
 	FILES=$$(cat src/solidity/files_to_compile.txt) && \
-	solc $$FILES --allow-paths .=., --optimize --optimize-runs 200 --overwrite --combined-json abi,bin -o artifacts && \
-	./scripts/extract_artifacts.py
+	$(SOLC) $$FILES --allow-paths .=., --optimize --optimize-runs 200 --overwrite --combined-json abi,bin -o artifacts && \
+	./scripts/extract_artifacts.py	
 	# Copying Contracts
 	mkdir -p artifacts/upgrade-contracts
 	cp lib/starkgate-contracts-latest/artifacts/StarknetEthBridge.json artifacts/upgrade-contracts/eth_bridge_upgraded.json
@@ -75,38 +104,44 @@ starkgate-contracts-legacy:
 	cp ./lib/starkgate-contracts-old/starkgate-artifacts/starkware/starknet/std_contracts/upgradability_proxy/proxy.json ./artifacts/proxy_starkgate.json
 	cp ./lib/starkgate-contracts-old/starkgate-artifacts/starkware/starknet/std_contracts/ERC20/ERC20.json ./artifacts/ERC20.json
 
-braavos-account-cairo:
+
+braavos-account-cairo: ensure-asdf
 	# Building
-	asdf install scarb 2.8.4 && asdf global scarb 2.8.4
+	. $(HOME_DIR)/.asdf/asdf.sh && \
 	cd ./lib/braavos-account-cairo && \
- 	git checkout $(BRAAVOS_CONTRACTS_COMMIT_HASH) && \
- 	~/.asdf/installs/scarb/2.8.4/bin/scarb build
+	git checkout $(BRAAVOS_CONTRACTS_COMMIT_HASH) && \
+	asdf install scarb 2.8.4 && \
+	asdf local scarb 2.8.4 && \
+	scarb build
 	# Copying Contracts
 	cp ./lib/braavos-account-cairo/target/dev/braavos_account_BraavosAccount.contract_class.json ./artifacts/BraavosAccount.sierra.json
 	cp ./lib/braavos-account-cairo/target/dev/braavos_account_BraavosAccount.compiled_contract_class.json ./artifacts/BraavosAccount.casm.json
 	cp ./lib/braavos-account-cairo/target/dev/braavos_account_BraavosBaseAccount.contract_class.json ./artifacts/BraavosBaseAccount.sierra.json
 	cp ./lib/braavos-account-cairo/target/dev/braavos_account_BraavosBaseAccount.compiled_contract_class.json ./artifacts/BraavosBaseAccount.casm.json
 
-argent-contracts-starknet:
+
+argent-contracts-starknet: ensure-asdf
 	# Building
-	asdf install scarb 2.6.3 && asdf global scarb 2.6.3
+	. $(HOME_DIR)/.asdf/asdf.sh && \
 	cd ./lib/argent-contracts-starknet && \
- 	git checkout $(ARGENT_CONTRACTS_COMMIT_HASH) && \
- 	~/.asdf/installs/scarb/2.6.3/bin/scarb build
+	git checkout $(ARGENT_CONTRACTS_COMMIT_HASH) && \
+	asdf install scarb 2.6.3 && \
+	asdf local scarb 2.6.3 && \
+	scarb build
 	# Copying Contracts
 	cp ./lib/argent-contracts-starknet/target/dev/argent_ArgentAccount.contract_class.json ./artifacts/ArgentAccount.sierra.json
 	cp ./lib/argent-contracts-starknet/target/dev/argent_ArgentAccount.compiled_contract_class.json ./artifacts/ArgentAccount.casm.json
 
-make artifacts-linux:
-	make setup-linux
+build-contracts:
 	make starkgate-contracts-legacy
 	make starkgate-contracts-latest
 	make braavos-account-cairo
 	make argent-contracts-starknet
 
-make artifacts:
+artifacts-linux:
+	make setup-linux
+	make build-contracts
+
+artifacts:
 	make setup
-	make starkgate-contracts-legacy
-	make starkgate-contracts-latest
-	make braavos-account-cairo
-	make argent-contracts-starknet
+	make build-contracts
