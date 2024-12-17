@@ -68,5 +68,5 @@ jobs:
         with:
           name: build-artifacts
           path: |
-            target/release/
-            target/artifacts/
+            target/release/karnot-bridge-deploy
+            artifacts/
