@@ -12,7 +12,7 @@ use std::str::FromStr;
 use clap::{Parser, ValueEnum};
 use contract_clients::utils::RpcAccount;
 use dotenv::dotenv;
-use ethers::abi::Address;
+use ethers::abi::{AbiEncode, Address};
 use inline_colorization::*;
 use serde::{Deserialize, Serialize};
 use setup_scripts::argent::ArgentSetupOutput;
@@ -65,13 +65,15 @@ pub struct CliArgs {
     output_file: Option<String>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub enum CoreContractMode {
     Production,
     Dev,
 }
 
-#[derive(Serialize, Deserialize)]
+// TODO :                 There is a lot of optional stuff in the config which is needed if we run
+// TODO : (continued.)    individual commands. We need to think of a better design.
+#[derive(Serialize, Deserialize, Clone)]
 pub struct ConfigFile {
     pub eth_rpc: String,
     pub eth_priv_key: String,
@@ -146,7 +148,7 @@ pub async fn main() {
     println!("{color_red}{}{color_reset}", BANNER);
 
     // Load config from file or use defaults
-    let config_file = match args.config {
+    let mut config_file = match args.config {
         Some(path) => {
             let file = File::open(path).expect("Failed to open config file");
             serde_json::from_reader(file).expect("Failed to parse config file")
@@ -174,7 +176,7 @@ pub async fn main() {
                 ..Default::default()
             }
         }
-        BootstrapMode::SetupL2 => setup_l2(&config_file, &clients).await,
+        BootstrapMode::SetupL2 => setup_l2(&mut config_file, &clients).await,
         BootstrapMode::EthBridge => {
             let core_contract_client = get_core_contract_client(&config_file, &clients);
             let output = setup_eth_bridge(account, &core_contract_client, &config_file, &clients).await;
@@ -199,7 +201,7 @@ pub async fn main() {
                 &config_file,
                 &clients,
                 Felt::from_str(
-                    &config_file.udc_address.clone().expect("UDC Address not available in config. Run with SetupL2"),
+                    &config_file.udc_address.clone().expect("UDC Address not available in config. Run with mode UDC"),
                 )
                 .expect("Unable to get UDC address"),
             )
@@ -266,7 +268,7 @@ pub struct BootstrapperOutput {
     pub braavos_setup_outputs: Option<BraavosSetupOutput>,
 }
 
-pub async fn bootstrap(config_file: &ConfigFile, clients: &Clients) -> BootstrapperOutput {
+pub async fn bootstrap(config_file: &mut ConfigFile, clients: &Clients) -> BootstrapperOutput {
     // setup core contract (L1)
     let core_contract_client = setup_core_contract(config_file, clients).await;
 
@@ -437,11 +439,14 @@ async fn setup_braavos<'a>(
     braavos_setup_outputs
 }
 
-pub async fn setup_l2(config_file: &ConfigFile, clients: &Clients) -> BootstrapperOutput {
-    let account = get_account(clients, config_file).await;
+pub async fn setup_l2(config_file: &mut ConfigFile, clients: &Clients) -> BootstrapperOutput {
+    // Had to create a temporary clone otherwise the `ConfigFile`
+    // will be dropped after passing into `get_account` function.
+    let config_file_clone = &config_file.clone();
+    let account = get_account(clients, config_file_clone).await;
 
     let core_contract_client = get_core_contract_client(config_file, clients);
-    println!(">>> get core contract client done");
+
     // setup eth bridge
     let eth_bridge_setup_outputs =
         setup_eth_bridge(Some(account.clone()), &core_contract_client, config_file, clients).await;
@@ -460,28 +465,15 @@ pub async fn setup_l2(config_file: &ConfigFile, clients: &Clients) -> Bootstrapp
     let braavos_setup_outputs =
         setup_braavos(Some(account.clone()), config_file, clients, udc_setup_outputs.udc_address).await;
 
-    // upgrading the bridge :
-    let account = build_single_owner_account(
-        clients.provider_l2(),
-        &config_file.rollup_priv_key,
-        &account.address().to_hex_string(),
-        false,
-    )
-    .await;
-    upgrade_eth_token_to_cairo_1(
-        &account,
-        clients.provider_l2(),
-        eth_bridge_setup_outputs.clone().l2_eth_proxy_address,
-    )
-    .await;
-    upgrade_eth_bridge_to_cairo_1(
-        &account,
-        clients.provider_l2(),
-        eth_bridge_setup_outputs.clone().l2_eth_bridge_proxy_address,
-        eth_bridge_setup_outputs.clone().l2_eth_proxy_address,
-    )
-    .await;
-    upgrade_l1_bridge(eth_bridge_setup_outputs.clone().l1_bridge_address, config_file).await.unwrap();
+    // upgrading the eth bridge
+    config_file.l1_eth_bridge_address = Some(format!(
+        "0x{}",
+        eth_bridge_setup_outputs.l1_bridge_address.encode_hex().trim_start_matches("0x").trim_start_matches('0')
+    ));
+    config_file.l2_eth_token_proxy_address = Some(eth_bridge_setup_outputs.l2_eth_proxy_address.to_hex_string());
+    config_file.l2_eth_bridge_proxy_address =
+        Some(eth_bridge_setup_outputs.l2_eth_bridge_proxy_address.to_hex_string());
+    upgrade_eth_bridge(Some(account), config_file, clients).await.expect("Unable to upgrade ETH bridge.");
 
     BootstrapperOutput {
         eth_bridge_setup_outputs: Some(eth_bridge_setup_outputs),
