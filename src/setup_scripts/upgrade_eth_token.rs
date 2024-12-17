@@ -13,6 +13,19 @@ use crate::utils::constants::{
 };
 use crate::utils::wait_for_transaction;
 
+/// Upgrades the Ethereum token contract implementation to Cairo 1 through a series of steps:
+/// 1. Declares and deploys an ETH EIC (External Implementation Contract)
+/// 2. Declares and deploys a new ETH token implementation
+/// 3. Performs the upgrade process by:
+///    - Adding the new implementation to the proxy
+///    - Upgrading to the new implementation
+///    - Registering governance and upgrade administrators
+///    - Adding and replacing the new implementation class hash
+///
+/// # Arguments
+/// * `account` - The RPC account used to perform the transactions
+/// * `rpc_provider_l2` - JSON-RPC client for L2 network communication
+/// * `l2_eth_token_address` - The address of the existing ETH token contract on L2
 pub async fn upgrade_eth_token_to_cairo_1(
     account: &RpcAccount<'_>,
     rpc_provider_l2: &JsonRpcClient<HttpTransport>,

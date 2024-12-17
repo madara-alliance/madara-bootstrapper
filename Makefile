@@ -138,6 +138,7 @@ build-contracts:
 	make braavos-account-cairo
 	make argent-contracts-starknet
 
+
 artifacts-linux:
 	make setup-linux
 	make build-contracts

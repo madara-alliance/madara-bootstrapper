@@ -13,6 +13,23 @@ use crate::utils::constants::{
 };
 use crate::utils::wait_for_transaction;
 
+/// Upgrades the L2 Ethereum bridge implementation to Cairo 1 through a sequence of contract
+/// declarations, deployments, and configuration steps.
+///
+/// # Arguments
+/// * `account` - The RPC account used to perform the transactions
+/// * `rpc_provider_l2` - JSON-RPC client for L2 network communication
+/// * `l2_eth_bridge_address` - The address of the existing ETH bridge contract on L2
+/// * `l2_eth_token_address` - The address of the ETH token contract on L2
+///
+/// # Steps
+/// 1. Declares and deploys bridge EIC (External Implementation Contract)
+/// 2. Declares and deploys new bridge implementation
+/// 3. Executes upgrade sequence:
+///    - Adds new implementation to proxy with ETH token configuration
+///    - Upgrades to new implementation
+///    - Registers governance and upgrade administrators
+///    - Adds and replaces implementation class hash
 pub async fn upgrade_eth_bridge_to_cairo_1(
     account: &RpcAccount<'_>,
     rpc_provider_l2: &JsonRpcClient<HttpTransport>,

@@ -31,11 +31,6 @@ WORKDIR /app/
 RUN rm -rf build
 RUN ./build.sh
 
-# Create build directory and demo file
-RUN mkdir -p /app/build/Release
-RUN touch /app/build/Release/demo.txt
-RUN echo 'Hello, World2!' > /app/build/Release/demo.txt
-
 # Create a simpler entrypoint script
 RUN echo '#!/bin/sh' > /entrypoint.sh && \
     echo 'cp -r /app/build/Release/src/* /mnt/' >> /entrypoint.sh && \

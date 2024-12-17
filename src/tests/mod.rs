@@ -2,12 +2,13 @@ pub mod constants;
 mod erc20_bridge;
 mod eth_bridge;
 
+use std::future::Future;
 use std::process::Command;
 use std::time::Duration;
 use std::{env, fs};
 
 use rstest::rstest;
-use tokio::time::sleep;
+use url::Url;
 
 use crate::contract_clients::config::Clients;
 use crate::tests::erc20_bridge::erc20_bridge_test_helper;
@@ -30,7 +31,7 @@ async fn test_setup(args: &ConfigFile, clients: &Clients) -> BootstrapperOutput 
     wait_for_madara().await.expect("Failed to start madara!");
 
     // Setup L2 with the updated config
-    let l2_output = setup_l2(&config, clients).await;
+    let l2_output = setup_l2(&mut config, clients).await;
 
     BootstrapperOutput {
         starknet_contract_address: Some(core_contract_address),
@@ -44,9 +45,9 @@ async fn test_setup(args: &ConfigFile, clients: &Clients) -> BootstrapperOutput 
 #[ignore = "ignored because we have a e2e test, and this is for a local test"]
 async fn deploy_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
-    let config = get_test_config_file();
+    let mut config = get_test_config_file();
     let clients = Clients::init_from_config(&config).await;
-    bootstrap(&config, &clients).await;
+    bootstrap(&mut config, &clients).await;
 
     Ok(())
 }
@@ -56,9 +57,9 @@ async fn deploy_bridge() -> Result<(), anyhow::Error> {
 #[ignore = "ignored because we have a e2e test, and this is for a local test"]
 async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
-    let config = get_test_config_file();
+    let mut config = get_test_config_file();
     let clients = Clients::init_from_config(&config).await;
-    let out = bootstrap(&config, &clients).await;
+    let out = bootstrap(&mut config, &clients).await;
     let eth_bridge_setup = out.eth_bridge_setup_outputs.unwrap();
 
     let _ = eth_bridge_test_helper(
@@ -78,9 +79,9 @@ async fn deposit_and_withdraw_eth_bridge() -> Result<(), anyhow::Error> {
 #[ignore = "ignored because we have a e2e test, and this is for a local test"]
 async fn deposit_and_withdraw_erc20_bridge() -> Result<(), anyhow::Error> {
     env_logger::init();
-    let config = get_test_config_file();
+    let mut config = get_test_config_file();
     let clients = Clients::init_from_config(&config).await;
-    let out = bootstrap(&config, &clients).await;
+    let out = bootstrap(&mut config, &clients).await;
     let eth_token_setup = out.erc20_bridge_setup_outputs.unwrap();
 
     let _ = erc20_bridge_test_helper(
@@ -189,8 +190,7 @@ async fn wait_for_madara() -> color_eyre::Result<()> {
 
     env::set_current_dir("../").expect("Navigate back failed.");
 
-    // Madara build time (approx : 20 mins.)
-    sleep(Duration::from_secs(1200)).await;
+    wait_for_madara_to_be_ready(Url::parse("http://localhost:19944")?).await?;
 
     Ok(())
 }
@@ -203,4 +203,44 @@ fn ensure_toolchain() -> color_eyre::Result<()> {
         Command::new("rustup").arg("install").arg("1.81").status()?;
     }
     Ok(())
+}
+
+pub async fn wait_for_madara_to_be_ready(rpc_url: Url) -> color_eyre::Result<()> {
+    // We are fine with `expect` here as this function is called in the intial phases of the
+    // program execution
+    let endpoint = rpc_url.join("/health").expect("Request to health endpoint failed");
+    // We would wait for about 20-25 mins for madara to be ready
+    wait_for_cond(
+        || async {
+            let res = reqwest::get(endpoint.clone()).await?;
+            res.error_for_status()?;
+            Ok(true)
+        },
+        Duration::from_secs(5),
+        250,
+    )
+    .await
+    .expect("Could not get health of Madara");
+    Ok(())
+}
+
+pub async fn wait_for_cond<F: Future<Output = color_eyre::Result<bool>>>(
+    mut cond: impl FnMut() -> F,
+    duration: Duration,
+    attempt_number: usize,
+) -> color_eyre::Result<bool> {
+    let mut attempt = 0;
+    loop {
+        let err = match cond().await {
+            Ok(result) => return Ok(result),
+            Err(err) => err,
+        };
+
+        attempt += 1;
+        if attempt >= attempt_number {
+            panic!("No answer from the node after {attempt} attempts: {:#}", err)
+        }
+
+        tokio::time::sleep(duration).await;
+    }
 }
