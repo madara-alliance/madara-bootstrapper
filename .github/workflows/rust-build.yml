@@ -51,12 +51,13 @@ jobs:
           fi
 
       - name: ASDF install tools
-        if: ${{ steps.detect_tool_versions_file.outputs.exists == '1' }}
-        uses: asdf-vm/actions/install@6a442392015fbbdd8b48696d41e0051b2698b2e4
+        run: |
+          git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.14.1
+          . ~/.asdf/asdf.sh
       # ---------------------------------------------------
 
       - name: Build the project
         run: |
           git submodule update --init --recursive
-          make artifacts-linux
+          sudo make artifacts-linux
           cargo build --release --workspace
