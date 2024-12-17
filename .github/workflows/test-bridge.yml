@@ -88,10 +88,16 @@ jobs:
         run: |
           cargo llvm-cov clean --workspace
 
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
+          path: |
+            target/release/
+            target/artifacts/
+
       - name: Run llvm-cov
         run: |
-          git submodule update --init --recursive
-          make artifacts-linux
           cargo llvm-cov nextest --release --lcov --output-path lcov.info
 
       - name: Coveralls

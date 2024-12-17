@@ -61,3 +61,12 @@ jobs:
           git submodule update --init --recursive
           make artifacts-linux
           cargo build --release --workspace
+
+      # Add artifact upload step
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: |
+            target/release/
+            target/artifacts/
