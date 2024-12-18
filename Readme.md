@@ -1,39 +1,38 @@
-# Madara Bootstrapper 👾
+# Madara Bootstrapper
 
 [![Coverage Status](https://coveralls.io/repos/github/madara-alliance/madara-bootstrapper/badge.svg?branch=main)](https://coveralls.io/github/madara-alliance/madara-bootstrapper?branch=main)
 
 Madara Bootstrapper is a tool that helps to deploy the **Token Bridge** & **Eth Bridge** contract
 between a madara/katana Appchain and another L2 or L1 network. It will also declare wallet
 contracts from **OpenZappelin**, **Argent** and **Braavos**. You can find the full list of contracts
-in [Info](#info-ℹ)
+in the [Information](#information) section.
 
-## Index 📇
+## Index
 
-- [Madara Bootstrap 👾](#madara-bootstrap-)
-  - [Index 📇](#index-)
-  - [Testing 🛠️](#testing-)
-    - [IMP 🚨](#imp-)
-  - [Run 🚀](#run-)
-    - [Local 💻](#local-)
-    - [Docker 🐳](#docker-)
-  - [Info ℹ️](#info-ℹ)
-    - [Contract Descriptions 🗒️](#contract-descriptions-)
-    - [Generate Subxt Artifacts 🔨](#to-generate-the-madara-subxt-artifacts-)
+- [Madara Bootstrapper](#madara-bootstrapper)
+  - [Index](#index)
+  - [Testing](#testing)
+    - [Important Notes](#important-notes)
+  - [Run](#run)
+    - [Local](#local)
+    - [Docker](#docker)
+  - [Information](#information)
+    - [Contract Descriptions](#contract-descriptions)
 
-**Currently Supported :**
+**Currently Supported:**
 
 - Madara App Chain <----> Ethereum / EVM based chains
-- 👷🏼 more coming soon......
+- More coming soon...
 
-## Testing 🛠️
+## Testing
 
-There are three test in the repository :
+There are three test in the repository:
 
 - bridge deployment e2e
 - eth bridge deposit and claim
 - erc20 token bridge deposit and claim
 
-### IMP 🚨
+### Important Notes
 
 - You need to comment/remove the #[ignore] tags in [src/tests/mod.rs](src/tests/mod.rs) file
 - Only one test can be run at one time as all the tests are e2e tests.
@@ -54,9 +53,9 @@ There are three test in the repository :
 RUST_LOG=debug cargo test -- --nocapture
 ```
 
-## Run 🚀
+## Run
 
-### Local 💻
+### Local
 
 You can provide the env variables as arguments also, or you can also provide them in .env file.
 
@@ -76,7 +75,7 @@ RUST_LOG=info cargo run -- --dev
 
 **IMP 🚨** : It will store all the addresses in [data/addresses.json](data/addresses.json)
 
-### Docker 🐳
+### Docker
 
 1. You need to set up the .env file first. Fill all the variables in .env file
 
@@ -106,18 +105,21 @@ RUST_LOG=info cargo run -- --dev
 To run the Madara Bootstrapper on an Ubuntu machine with AMD architecture, please follow these steps:
 
 1. **Clone the Repository**: Start by cloning the Madara Bootstrapper repository.
+
    ```shell
    git clone https://github.com/madara-alliance/madara-bootstrapper.git
    cd madara-bootstrapper
    ```
 
 2. **Install Build Essentials**: Ensure you have the necessary build tools.
+
    ```shell
    sudo apt update
    sudo apt install build-essential
    ```
 
 3. **Install Docker**: Docker should be installed and running.
+
    ```shell
    sudo apt install docker.io
    sudo systemctl start docker
@@ -125,43 +127,51 @@ To run the Madara Bootstrapper on an Ubuntu machine with AMD architecture, pleas
    ```
 
 4. **Install Python**: Python3 and its virtual environment package are required.
+
    ```shell
    sudo apt install python3 python3-venv
    ```
 
 5. **Install Node.js and npm**: These are required for JavaScript dependencies.
+
    ```shell
    sudo apt install nodejs npm
    ```
 
 6. **Install asdf**: Use asdf for managing runtime versions.
+
    ```shell
    git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.14.1
    ```
 
 7. **Install Rust**: Use rustup to install Rust.
+
    ```shell
    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
    rustup show
    ```
 
 8. **Create a Python Virtual Environment**: Set up a virtual environment for Python dependencies.
+
    ```shell
    python3 -m venv venv
    source venv/bin/activate
    ```
 
 9. **Build Artifacts**: Use the `make` command to build the necessary artifacts within the Madara Bootstrapper repository.
+
    ```shell
    make artifacts-linux
    ```
 
 10. **Build the Rust Binary**: Compile the Rust project.
+
     ```shell
     cargo build --release
     ```
 
 11. **Run the Setup Command for L1**: Execute the following command to set up the L1 environment. Make sure to update the `devnet.json` file as per your needs.
+
     ```shell
     RUST_LOG=debug cargo run --release -- --mode setup-l1 --config src/configs/devnet.json
     ```
@@ -169,22 +179,25 @@ To run the Madara Bootstrapper on an Ubuntu machine with AMD architecture, pleas
     > **Note**: The default configuration file is located at `src/configs/devnet.json`. Please update it according to your requirements.
 
 12. **Update Configuration**: After running the `setup-l1` command, you will receive a response similar to the following:
+
     ```json
     {
       "starknet_contract_address": "STARKNET_CONTRACT_ADDRESS",
       "starknet_contract_implementation_address": "STARKNET_CONTRACT_IMPLEMENTATION_ADDRESS"
     }
     ```
+
     Update these values in your `devnet.json` or your specific configuration file before proceeding.
 
 13. **Run the Setup Command for L2**: Now, execute the following command to set up the L2 environment.
+
     ```shell
     RUST_LOG=debug cargo run --release -- --mode setup-l2 --config src/configs/devnet.json
     ```
 
-## Info ℹ️
+## Information
 
-### Contract Descriptions 🗒️
+### Contract Descriptions
 
 | Contract                                      | Source Link                                                                                             | Local Path                                                                                                       |
 | --------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
