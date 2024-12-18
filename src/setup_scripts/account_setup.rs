@@ -16,7 +16,7 @@ pub async fn account_init<'a>(clients: &'a Clients, arg_config: &'a ConfigFile) 
     // Making temp account for declaration of OZ account Cairo 1 contract
     let oz_account_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
         String::from(OZ_ACCOUNT_PATH),
-        arg_config.rollup_seq_url.clone(),
+        arg_config.rollup_declare_v0_seq_url.clone(),
         clients.provider_l2(),
     ))
     .await;
