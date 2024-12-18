@@ -21,6 +21,7 @@ setup-venv:
 	$(SOLC_SELECT) install 0.8.24
 	$(SOLC_SELECT) use 0.8.24
 	$(VENV_BIN)/solc --version
+
 ensure-asdf:
 	@if [ ! -f "$(HOME_DIR)/.asdf/asdf.sh" ]; then \
 		echo "Error: ASDF not found in $(HOME_DIR)/.asdf/"; \
@@ -137,7 +138,6 @@ build-contracts:
 	make starkgate-contracts-latest
 	make braavos-account-cairo
 	make argent-contracts-starknet
-
 
 artifacts-linux:
 	make setup-linux

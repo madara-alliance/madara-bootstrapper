@@ -19,5 +19,6 @@
   "operator_address": "0x000000000000000000000000000000000000abcd",
   "dev": false,
   "core_contract_address": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
-  "core_contract_implementation_address": "0x5fbdb2315678afecb367f032d93f642f64180aa3"
+  "core_contract_implementation_address": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+  "core_contract_mode": "Dev"
 }
