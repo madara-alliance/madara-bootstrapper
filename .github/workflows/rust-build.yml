@@ -39,34 +39,24 @@ jobs:
         with:
           version: nightly
 
-      # Install and setup ASDF
-      - name: Install ASDF and Scarb
+      # ---------------------------------------------------
+      # workaround : https://github.com/asdf-vm/actions/issues/562
+      # asdf installation
+      - name: Detect ASDF .tool-versions file in repo
+        shell: bash
+        id: detect_tool_versions_file
         run: |
-          git clone https://github.com/asdf-vm/asdf.git $HOME/.asdf --branch v0.14.1
-          echo '. "$HOME/.asdf/asdf.sh"' >> $HOME/.bashrc
-          echo '. "$HOME/.asdf/completions/asdf.bash"' >> $HOME/.bashrc
-          . $HOME/.asdf/asdf.sh
-          asdf plugin add scarb https://github.com/software-mansion/asdf-scarb.git
-          asdf install scarb 2.8.4
-          asdf install scarb 2.6.3
-          asdf global scarb 2.8.4
+          if [ -s .tool-versions ]; then
+          echo "exists=1" >> $GITHUB_OUTPUT
+          fi
 
-      # Update HOME_DIR in Makefile
-      - name: Update Makefile HOME_DIR
-        run: |
-          sed -i "s|HOME_DIR := /home/ubuntu|HOME_DIR := $HOME|" Makefile
+      - name: ASDF install tools
+        if: ${{ steps.detect_tool_versions_file.outputs.exists == '1' }}
+        uses: asdf-vm/actions/install@6a442392015fbbdd8b48696d41e0051b2698b2e4
+      # ---------------------------------------------------
 
       - name: Build the project
         run: |
           git submodule update --init --recursive
           make artifacts-linux
           cargo build --release --workspace
-
-      # Add artifact upload step
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: build-artifacts
-          path: |
-            target/release/karnot-bridge-deploy
-            artifacts/

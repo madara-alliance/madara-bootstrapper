@@ -74,7 +74,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: madara-alliance/madara
-          ref: "031da9ed68b540c0ab6e22e12bf1ca94222aa44a"
+          ref: "c89a4159b645438a9b84791bfe38cccf9f1602d5"
           path: madara
 
       - name: Run anvil
@@ -88,16 +88,10 @@ jobs:
         run: |
           cargo llvm-cov clean --workspace
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: build-artifacts
-          path: |
-            target/release/karnot-bridge-deploy
-            artifacts/
-
       - name: Run llvm-cov
         run: |
+          git submodule update --init --recursive
+          make artifacts-linux
           cargo llvm-cov nextest --release --lcov --output-path lcov.info
 
       - name: Coveralls

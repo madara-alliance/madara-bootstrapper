@@ -5,9 +5,9 @@ ARGENT_CONTRACTS_COMMIT_HASH="1352198956f36fb35fa544c4e46a3507a3ec20e3"
 BRAAVOS_CONTRACTS_COMMIT_HASH="12b82a87b93ba9bfdf2cbbde2566437df2e0c6c8"
 
 SHELL := /bin/bash
-HOME_DIR := /home/ubuntu
+HOME_DIR := $(HOME)
 
-VENV_DIR := $(PWD)/.venv
+VENV_DIR := $(PWD)/venv
 VENV_BIN := $(VENV_DIR)/bin
 PYTHON := $(VENV_BIN)/python
 PIP := $(VENV_BIN)/pip
@@ -23,16 +23,27 @@ setup-venv:
 	$(VENV_BIN)/solc --version
 
 ensure-asdf:
-	@if [ ! -f "$(HOME_DIR)/.asdf/asdf.sh" ]; then \
-		echo "Error: ASDF not found in $(HOME_DIR)/.asdf/"; \
-		echo "Please install ASDF first:"; \
-		echo "git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.14.1"; \
-		exit 1; \
-	fi
-	# Add scarb plugin if not already added
-	. $(HOME_DIR)/.asdf/asdf.sh && \
-	if ! asdf plugin list | grep -q scarb; then \
-		asdf plugin add scarb https://github.com/software-mansion/asdf-scarb.git; \
+	@if [ "$$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then \
+		BREW_ASDF_PATH="$$(brew --prefix asdf)/libexec/asdf.sh"; \
+		if [ ! -f "$$BREW_ASDF_PATH" ]; then \
+			echo "Installing ASDF via Homebrew on macOS..."; \
+			brew install asdf; \
+		fi; \
+		. "$$BREW_ASDF_PATH" && \
+		if ! asdf plugin list | grep -q scarb; then \
+			asdf plugin add scarb https://github.com/software-mansion/asdf-scarb.git; \
+		fi; \
+	else \
+		if [ ! -f "$(HOME_DIR)/.asdf/asdf.sh" ]; then \
+			echo "ASDF not found in $(HOME_DIR)/.asdf/"; \
+			echo "Please install ASDF first:"; \
+			echo "git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.14.1"; \
+			exit 1; \
+		fi; \
+		. "$(HOME_DIR)/.asdf/asdf.sh" && \
+		if ! asdf plugin list | grep -q scarb; then \
+			asdf plugin add scarb https://github.com/software-mansion/asdf-scarb.git; \
+		fi; \
 	fi
 
 # Setup cairo for mac os
@@ -108,12 +119,21 @@ starkgate-contracts-legacy:
 
 braavos-account-cairo: ensure-asdf
 	# Building
-	. $(HOME_DIR)/.asdf/asdf.sh && \
-	cd ./lib/braavos-account-cairo && \
-	git checkout $(BRAAVOS_CONTRACTS_COMMIT_HASH) && \
-	asdf install scarb 2.8.4 && \
-	asdf local scarb 2.8.4 && \
-	scarb build
+	@if [ "$$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then \
+		. "$$(brew --prefix asdf)/libexec/asdf.sh" && \
+		cd ./lib/braavos-account-cairo && \
+		git checkout $(BRAAVOS_CONTRACTS_COMMIT_HASH) && \
+		asdf install scarb 2.8.4 && \
+		asdf local scarb 2.8.4 && \
+		scarb build; \
+	else \
+		. "$(HOME_DIR)/.asdf/asdf.sh" && \
+		cd ./lib/braavos-account-cairo && \
+		git checkout $(BRAAVOS_CONTRACTS_COMMIT_HASH) && \
+		asdf install scarb 2.8.4 && \
+		asdf local scarb 2.8.4 && \
+		scarb build; \
+	fi
 	# Copying Contracts
 	cp ./lib/braavos-account-cairo/target/dev/braavos_account_BraavosAccount.contract_class.json ./artifacts/BraavosAccount.sierra.json
 	cp ./lib/braavos-account-cairo/target/dev/braavos_account_BraavosAccount.compiled_contract_class.json ./artifacts/BraavosAccount.casm.json
@@ -123,12 +143,21 @@ braavos-account-cairo: ensure-asdf
 
 argent-contracts-starknet: ensure-asdf
 	# Building
-	. $(HOME_DIR)/.asdf/asdf.sh && \
-	cd ./lib/argent-contracts-starknet && \
-	git checkout $(ARGENT_CONTRACTS_COMMIT_HASH) && \
-	asdf install scarb 2.6.3 && \
-	asdf local scarb 2.6.3 && \
-	scarb build
+	@if [ "$$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then \
+		. "$$(brew --prefix asdf)/libexec/asdf.sh" && \
+		cd ./lib/argent-contracts-starknet && \
+		git checkout $(ARGENT_CONTRACTS_COMMIT_HASH) && \
+		asdf install scarb 2.6.3 && \
+		asdf local scarb 2.6.3 && \
+		scarb build; \
+	else \
+		. "$(HOME_DIR)/.asdf/asdf.sh" && \
+		cd ./lib/argent-contracts-starknet && \
+		git checkout $(ARGENT_CONTRACTS_COMMIT_HASH) && \
+		asdf install scarb 2.6.3 && \
+		asdf local scarb 2.6.3 && \
+		scarb build; \
+	fi
 	# Copying Contracts
 	cp ./lib/argent-contracts-starknet/target/dev/argent_ArgentAccount.contract_class.json ./artifacts/ArgentAccount.sierra.json
 	cp ./lib/argent-contracts-starknet/target/dev/argent_ArgentAccount.compiled_contract_class.json ./artifacts/ArgentAccount.casm.json
