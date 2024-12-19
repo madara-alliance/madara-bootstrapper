@@ -123,14 +123,18 @@ braavos-account-cairo: ensure-asdf
 		. "$$(brew --prefix asdf)/libexec/asdf.sh" && \
 		cd ./lib/braavos-account-cairo && \
 		git checkout $(BRAAVOS_CONTRACTS_COMMIT_HASH) && \
+		. "$$(brew --prefix asdf)/libexec/asdf.sh" && \
 		asdf install scarb 2.8.4 && \
+		. "$$(brew --prefix asdf)/libexec/asdf.sh" && \
 		asdf local scarb 2.8.4 && \
 		scarb build; \
 	else \
 		. "$(HOME_DIR)/.asdf/asdf.sh" && \
 		cd ./lib/braavos-account-cairo && \
 		git checkout $(BRAAVOS_CONTRACTS_COMMIT_HASH) && \
+		. "$(HOME_DIR)/.asdf/asdf.sh" && \
 		asdf install scarb 2.8.4 && \
+		. "$(HOME_DIR)/.asdf/asdf.sh" && \
 		asdf local scarb 2.8.4 && \
 		scarb build; \
 	fi
