@@ -74,7 +74,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: madara-alliance/madara
-          ref: "d188aa91efa78bcc54f92aa1035295fd50e068d2"
+          ref: "c89a4159b645438a9b84791bfe38cccf9f1602d5"
           path: madara
 
       - name: Run anvil
