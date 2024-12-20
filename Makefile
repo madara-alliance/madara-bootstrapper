@@ -1,19 +1,39 @@
-.PHONY: setup setup-linux ensure-asdf  starkgate-contracts-latest braavos-account-cairo argent-contracts-starknet artifacts starkgate-contracts-legacy
+# =============================================================================
+# Starknet Contract Build System
+# =============================================================================
+# This Makefile manages the build process for various Starknet contracts including
+# StarkGate, Braavos, and Argent. It handles both legacy and latest versions,
+# supporting multiple architectures (amd64/arm64).
 
+.PHONY: setup setup-linux ensure-asdf starkgate-contracts-latest braavos-account-cairo argent-contracts-starknet artifacts starkgate-contracts-legacy
+
+# =============================================================================
+# Configuration Variables
+# =============================================================================
+
+# Contract version tags and commit hashes
 STARKGATE_CONTRACTS_VERSION_TAG="v2.0.1"
 ARGENT_CONTRACTS_COMMIT_HASH="1352198956f36fb35fa544c4e46a3507a3ec20e3"
 BRAAVOS_CONTRACTS_COMMIT_HASH="12b82a87b93ba9bfdf2cbbde2566437df2e0c6c8"
 
+# Environment setup
 SHELL := /bin/bash
 HOME_DIR := $(HOME)
 
+# Virtual environment paths
 VENV_DIR := $(PWD)/venv
 VENV_BIN := $(VENV_DIR)/bin
 PYTHON := $(VENV_BIN)/python
 PIP := $(VENV_BIN)/pip
 SOLC_SELECT := $(VENV_BIN)/solc-select
 SOLC := $(VENV_BIN)/solc
-# Add a target to create and setup virtual environment
+
+# =============================================================================
+# Virtual Environment Setup
+# =============================================================================
+
+# Target: setup-venv
+# Creates and configures Python virtual environment with required dependencies
 setup-venv:
 	python3 -m venv $(VENV_DIR)
 	$(PIP) install --upgrade pip
@@ -22,6 +42,13 @@ setup-venv:
 	$(SOLC_SELECT) use 0.8.24
 	$(VENV_BIN)/solc --version
 
+# =============================================================================
+# ASDF Version Manager Setup
+# =============================================================================
+
+# Target: ensure-asdf
+# Installs and configures ASDF version manager for Scarb
+# Handles both macOS (via Homebrew) and Linux installations
 ensure-asdf:
 	@if [ "$$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then \
 		BREW_ASDF_PATH="$$(brew --prefix asdf)/libexec/asdf.sh"; \
@@ -35,28 +62,48 @@ ensure-asdf:
 		fi; \
 	else \
 		if [ ! -f "$(HOME_DIR)/.asdf/asdf.sh" ]; then \
-			echo "ASDF not found in $(HOME_DIR)/.asdf/"; \
-			echo "Please install ASDF first:"; \
-			echo "git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.14.1"; \
-			exit 1; \
+			echo "Cleaning up existing ASDF installation..."; \
+			rm -rf $(HOME_DIR)/.asdf; \
+			echo "Installing ASDF..."; \
+			git clone https://github.com/asdf-vm/asdf.git $(HOME_DIR)/.asdf --branch v0.14.1; \
+			echo '. "$(HOME_DIR)/.asdf/asdf.sh"' >> $(HOME_DIR)/.bashrc; \
 		fi; \
-		. "$(HOME_DIR)/.asdf/asdf.sh" && \
-		if ! asdf plugin list | grep -q scarb; then \
-			asdf plugin add scarb https://github.com/software-mansion/asdf-scarb.git; \
+		if [ -f "$(HOME_DIR)/.asdf/asdf.sh" ]; then \
+			. "$(HOME_DIR)/.asdf/asdf.sh" && \
+			if ! asdf plugin list | grep -q scarb; then \
+				asdf plugin add scarb https://github.com/software-mansion/asdf-scarb.git; \
+			fi; \
+		else \
+			echo "Failed to install ASDF properly"; \
+			exit 1; \
 		fi; \
 	fi
 
-# Setup cairo for mac os
+# =============================================================================
+# Cairo Environment Setup
+# =============================================================================
+
+# Target: setup
+# Sets up Cairo environment for macOS (arm64/amd64)
 setup:
 	mkdir -p .cairo
 	cd .cairo && \
 	wget -c https://github.com/starkware-libs/cairo/releases/download/v2.3.0/release-aarch64-apple-darwin.tar -O - | tar -xz
 
+# Target: setup-linux
+# Sets up Cairo environment for Linux (x86_64)
 setup-linux:
 	mkdir -p .cairo
 	cd .cairo && \
-  	wget -c https://github.com/starkware-libs/cairo/releases/download/v2.3.0/release-x86_64-unknown-linux-musl.tar.gz -O - | tar -xz
+	wget -c https://github.com/starkware-libs/cairo/releases/download/v2.3.0/release-x86_64-unknown-linux-musl.tar.gz -O - | tar -xz
 
+# =============================================================================
+# Contract Building Targets
+# =============================================================================
+
+# Target: starkgate-contracts-latest
+# Builds the latest version of StarkGate contracts
+# Prerequisites: setup-venv
 starkgate-contracts-latest: setup-venv
 	# Building L2 contracts
 	# =====================
@@ -102,6 +149,8 @@ starkgate-contracts-latest: setup-venv
 	cp lib/starkgate-contracts-latest/artifacts/StarknetEthBridge.json artifacts/upgrade-contracts/eth_bridge_upgraded.json
 	cp lib/starkgate-contracts-latest/artifacts/StarkgateUpgradeAssistExternalInitializer.json artifacts/upgrade-contracts/eic_eth_bridge.json
 
+# Target: starkgate-contracts-legacy
+# Builds legacy StarkGate contracts using Docker
 starkgate-contracts-legacy:
 	# Building Contracts
 	rm -rf lib/starkgate-contracts-old/Dockerfile
@@ -116,7 +165,9 @@ starkgate-contracts-legacy:
 	cp ./lib/starkgate-contracts-old/starkgate-artifacts/starkware/starknet/std_contracts/upgradability_proxy/proxy.json ./artifacts/proxy_starkgate.json
 	cp ./lib/starkgate-contracts-old/starkgate-artifacts/starkware/starknet/std_contracts/ERC20/ERC20.json ./artifacts/ERC20.json
 
-
+# Target: braavos-account-cairo
+# Builds Braavos account contracts
+# Prerequisites: ensure-asdf
 braavos-account-cairo: ensure-asdf
 	# Building
 	@if [ "$$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then \
@@ -144,7 +195,9 @@ braavos-account-cairo: ensure-asdf
 	cp ./lib/braavos-account-cairo/target/dev/braavos_account_BraavosBaseAccount.contract_class.json ./artifacts/BraavosBaseAccount.sierra.json
 	cp ./lib/braavos-account-cairo/target/dev/braavos_account_BraavosBaseAccount.compiled_contract_class.json ./artifacts/BraavosBaseAccount.casm.json
 
-
+# Target: argent-contracts-starknet
+# Builds Argent account contracts
+# Prerequisites: ensure-asdf
 argent-contracts-starknet: ensure-asdf
 	# Building
 	@if [ "$$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then \
@@ -166,16 +219,26 @@ argent-contracts-starknet: ensure-asdf
 	cp ./lib/argent-contracts-starknet/target/dev/argent_ArgentAccount.contract_class.json ./artifacts/ArgentAccount.sierra.json
 	cp ./lib/argent-contracts-starknet/target/dev/argent_ArgentAccount.compiled_contract_class.json ./artifacts/ArgentAccount.casm.json
 
+# =============================================================================
+# Main Build Targets
+# =============================================================================
+
+# Target: build-contracts
+# Builds all contracts (legacy and latest versions)
 build-contracts:
 	make starkgate-contracts-legacy
 	make starkgate-contracts-latest
 	make braavos-account-cairo
 	make argent-contracts-starknet
 
+# Target: artifacts-linux
+# Builds all artifacts for Linux environment
 artifacts-linux:
 	make setup-linux
 	make build-contracts
 
+# Target: artifacts
+# Builds all artifacts for macOS environment
 artifacts:
 	make setup
 	make build-contracts

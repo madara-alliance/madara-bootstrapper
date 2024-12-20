@@ -161,8 +161,11 @@ To run the Madara Bootstrapper on an Ubuntu machine with AMD architecture, pleas
 9. **Build Artifacts**: Use the `make` command to build the necessary artifacts within the Madara Bootstrapper repository.
 
    ```shell
-   make artifacts-linux
+   make artifacts-linux # For Linux
+   make artifacts # For macOS
    ```
+
+   > **Note**: In case you get an error related to permission, try running the command with `sudo`
 
 10. **Build the Rust Binary**: Compile the Rust project.
 
