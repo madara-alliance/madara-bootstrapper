@@ -38,7 +38,7 @@ impl<'a> UdcSetup<'a> {
     pub async fn setup(&self) -> UdcSetupOutput {
         let udc_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(UDC_PATH),
-            self.arg_config.rollup_seq_url.clone(),
+            self.arg_config.rollup_declare_v0_seq_url.clone(),
             self.clients.provider_l2(),
         ))
         .await;
