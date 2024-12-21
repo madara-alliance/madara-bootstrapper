@@ -29,7 +29,7 @@ pub struct EthBridge<'a> {
     core_contract: &'a dyn CoreContract,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Clone)]
 pub struct EthBridgeSetupOutput {
     pub l2_legacy_proxy_class_hash: Felt,
     pub l2_erc20_legacy_class_hash: Felt,

@@ -25,6 +25,22 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
 
+      # ---------------------------------------------------
+      # workaround : https://github.com/asdf-vm/actions/issues/562
+      # asdf installation
+      - name: Detect ASDF .tool-versions file in repo
+        shell: bash
+        id: detect_tool_versions_file
+        run: |
+          if [ -s .tool-versions ]; then
+          echo "exists=1" >> $GITHUB_OUTPUT
+          fi
+
+      - name: ASDF install tools
+        if: ${{ steps.detect_tool_versions_file.outputs.exists == '1' }}
+        uses: asdf-vm/actions/install@6a442392015fbbdd8b48696d41e0051b2698b2e4
+      # ---------------------------------------------------
+
       - name: Setup build deps
         run: |
           sudo apt-get update
@@ -37,25 +53,29 @@ jobs:
         with:
           version: nightly
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install Ganache
+        run: |
+          npm install -g ganache@7.9.0
+          ganache --version
+
+      - name: Install Solc
+        run: |
+          pip install solc-select
+          solc-select install 0.8.19
+          solc-select use 0.8.19
+          solc --version
+
       - name: Checkout Madara
         uses: actions/checkout@v4
         with:
           repository: madara-alliance/madara
           ref: "d188aa91efa78bcc54f92aa1035295fd50e068d2"
           path: madara
-
-      - name: Move Madara Devnet config
-        working-directory: madara
-        run: |
-          ls
-          mv configs/presets/devnet.yaml ../bin/devnet.yaml
-
-      - name: Build Madara
-        working-directory: madara
-        run: |
-          cargo build
-          mv target/debug/madara ../bin/madara
-          cd ..
 
       - name: Run anvil
         run: |
@@ -70,6 +90,8 @@ jobs:
 
       - name: Run llvm-cov
         run: |
+          git submodule update --init --recursive
+          make artifacts-linux
           cargo llvm-cov nextest --release --lcov --output-path lcov.info
 
       - name: Coveralls
