@@ -86,7 +86,7 @@ pub async fn upgrade_eth_bridge_to_cairo_1(
     log::debug!("✅ new eth bridge contract address : {:?}", new_eth_bridge_contract_address);
     sleep(Duration::from_secs(5)).await;
 
-    let txn_1 = account
+    let eth_bridge_add_implementation_txn = account
         .invoke_contract(
             l2_eth_bridge_address,
             "add_implementation",
@@ -103,13 +103,15 @@ pub async fn upgrade_eth_bridge_to_cairo_1(
         .send()
         .await
         .expect("Error calling eth token proxy");
-    wait_for_transaction(rpc_provider_l2, txn_1.transaction_hash, "Interact ETH bridge").await.unwrap();
+    wait_for_transaction(rpc_provider_l2, eth_bridge_add_implementation_txn.transaction_hash, "Interact ETH bridge")
+        .await
+        .unwrap();
     log::debug!(
         "upgrade_eth_bridge_to_cairo_1 : add_implementation : eth bridge ✅, Txn hash : {:?}",
-        txn_1.transaction_hash
+        eth_bridge_add_implementation_txn.transaction_hash
     );
 
-    let txn_2 = account
+    let eth_bridge_upgrade_to_txn = account
         .invoke_contract(
             l2_eth_bridge_address,
             "upgrade_to",
@@ -126,32 +128,49 @@ pub async fn upgrade_eth_bridge_to_cairo_1(
         .send()
         .await
         .expect("Error calling eth token proxy");
-    wait_for_transaction(rpc_provider_l2, txn_2.transaction_hash, "Interact ETH bridge").await.unwrap();
-    log::debug!("upgrade_eth_bridge_to_cairo_1 : upgrade_to : eth bridge ✅, Txn hash : {:?}", txn_2.transaction_hash);
+    wait_for_transaction(rpc_provider_l2, eth_bridge_upgrade_to_txn.transaction_hash, "Interact ETH bridge")
+        .await
+        .unwrap();
+    log::debug!(
+        "upgrade_eth_bridge_to_cairo_1 : upgrade_to : eth bridge ✅, Txn hash : {:?}",
+        eth_bridge_upgrade_to_txn.transaction_hash
+    );
 
-    let txn_5 = account
+    let eth_bridge_register_governance_admin_txn = account
         .invoke_contract(l2_eth_bridge_address, "register_governance_admin", vec![account.address()], None)
         .send()
         .await
         .expect("Error calling eth token proxy");
-    wait_for_transaction(rpc_provider_l2, txn_5.transaction_hash, "Interact ETH bridge").await.unwrap();
+    wait_for_transaction(
+        rpc_provider_l2,
+        eth_bridge_register_governance_admin_txn.transaction_hash,
+        "Interact ETH bridge",
+    )
+    .await
+    .unwrap();
     log::debug!(
         "upgrade_eth_bridge_to_cairo_1 : register_governance_admin : eth bridge ✅, Txn hash : {:?}",
-        txn_5.transaction_hash
+        eth_bridge_register_governance_admin_txn.transaction_hash
     );
 
-    let txn_6 = account
+    let eth_bridge_register_upgrade_governor_txn = account
         .invoke_contract(l2_eth_bridge_address, "register_upgrade_governor", vec![account.address()], None)
         .send()
         .await
         .expect("Error calling eth token proxy");
-    wait_for_transaction(rpc_provider_l2, txn_6.transaction_hash, "Interact ETH bridge").await.unwrap();
+    wait_for_transaction(
+        rpc_provider_l2,
+        eth_bridge_register_upgrade_governor_txn.transaction_hash,
+        "Interact ETH bridge",
+    )
+    .await
+    .unwrap();
     log::debug!(
         "upgrade_eth_bridge_to_cairo_1 : register_upgrade_governor : eth bridge ✅, Txn hash : {:?}",
-        txn_6.transaction_hash
+        eth_bridge_register_upgrade_governor_txn.transaction_hash
     );
 
-    let txn_3 = account
+    let eth_bridge_add_new_implementation_txn = account
         .invoke_contract(
             l2_eth_bridge_address,
             "add_new_implementation",
@@ -161,13 +180,15 @@ pub async fn upgrade_eth_bridge_to_cairo_1(
         .send()
         .await
         .expect("Error calling eth token proxy");
-    wait_for_transaction(rpc_provider_l2, txn_3.transaction_hash, "Interact ETH token").await.unwrap();
+    wait_for_transaction(rpc_provider_l2, eth_bridge_add_new_implementation_txn.transaction_hash, "Interact ETH token")
+        .await
+        .unwrap();
     log::debug!(
         "upgrade_eth_bridge_to_cairo_1 : add_new_implementation : eth bridge ✅, Txn hash : {:?}",
-        txn_3.transaction_hash
+        eth_bridge_add_new_implementation_txn.transaction_hash
     );
 
-    let txn_4 = account
+    let eth_bridge_replace_to_txn = account
         .invoke_contract(
             l2_eth_bridge_address,
             "replace_to",
@@ -177,8 +198,13 @@ pub async fn upgrade_eth_bridge_to_cairo_1(
         .send()
         .await
         .expect("Error calling eth token proxy");
-    wait_for_transaction(rpc_provider_l2, txn_4.transaction_hash, "Interact ETH token").await.unwrap();
-    log::debug!("upgrade_eth_bridge_to_cairo_1 : replace_to : eth bridge ✅, Txn hash : {:?}", txn_4.transaction_hash);
+    wait_for_transaction(rpc_provider_l2, eth_bridge_replace_to_txn.transaction_hash, "Interact ETH token")
+        .await
+        .unwrap();
+    log::debug!(
+        "upgrade_eth_bridge_to_cairo_1 : replace_to : eth bridge ✅, Txn hash : {:?}",
+        eth_bridge_replace_to_txn.transaction_hash
+    );
 
     log::info!("Eth bridge L2 upgraded successfully ✅");
 }
