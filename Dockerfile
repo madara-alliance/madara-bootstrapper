@@ -102,7 +102,12 @@ RUN npm install -g --unsafe-perm ganache-cli@6.12.2
 # First run setup-linux
 RUN make setup-linux
 
-# Then build legacy contracts
+# Build legacy starkgate contracts
+# Note: This section implements the build steps for old starkgate contracts,
+# replacing 'make starkgate-contracts-legacy' from the Makefile. We include these steps
+# directly here because running the Makefile command would create a nested
+# Docker container inside this build.
+
 RUN cd lib/starkgate-contracts-old && \
     # First verify ganache-cli installation
     which ganache-cli && \
@@ -187,13 +192,13 @@ RUN . "$HOME/.asdf/asdf.sh" && \
     make argent-contracts-starknet
 
 # Build the Rust project with specific binary name
-RUN cargo build --release --workspace --bin karnot-bridge-deploy
+RUN cargo build --release --workspace --bin madara-bootstrapper
 
 # Runtime stage
 FROM debian:buster-slim
 
 # Copy only the compiled binary and artifacts
-COPY --from=builder /app/target/release/karnot-bridge-deploy /usr/local/bin/
+COPY --from=builder /app/target/release/madara-bootstrapper /usr/local/bin/
 COPY --from=builder /app/artifacts /app/artifacts
 
 # Set working directory
@@ -203,4 +208,4 @@ WORKDIR /app
 ENV RUST_LOG=info
 
 # Run the binary
-ENTRYPOINT ["/usr/local/bin/karnot-bridge-deploy"]
+ENTRYPOINT ["/usr/local/bin/madara-bootstrapper"]

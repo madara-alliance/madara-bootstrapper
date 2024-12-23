@@ -165,30 +165,26 @@ starkgate-contracts-legacy:
 	cp ./lib/starkgate-contracts-old/starkgate-artifacts/starkware/starknet/std_contracts/upgradability_proxy/proxy.json ./artifacts/proxy_starkgate.json
 	cp ./lib/starkgate-contracts-old/starkgate-artifacts/starkware/starknet/std_contracts/ERC20/ERC20.json ./artifacts/ERC20.json
 
+# Helper function for Scarb-based builds
+define scarb_build
+	@if [ "$$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then \
+		. "$$(brew --prefix asdf)/libexec/asdf.sh"; \
+	else \
+		. "$(HOME_DIR)/.asdf/asdf.sh"; \
+	fi && \
+	cd $(1) && \
+	git checkout $(2) && \
+	asdf install scarb $(3) && \
+	asdf local scarb $(3) && \
+	scarb build
+endef
+
 # Target: braavos-account-cairo
 # Builds Braavos account contracts
 # Prerequisites: ensure-asdf
 braavos-account-cairo: ensure-asdf
 	# Building
-	@if [ "$$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then \
-		. "$$(brew --prefix asdf)/libexec/asdf.sh" && \
-		cd ./lib/braavos-account-cairo && \
-		git checkout $(BRAAVOS_CONTRACTS_COMMIT_HASH) && \
-		. "$$(brew --prefix asdf)/libexec/asdf.sh" && \
-		asdf install scarb 2.8.4 && \
-		. "$$(brew --prefix asdf)/libexec/asdf.sh" && \
-		asdf local scarb 2.8.4 && \
-		scarb build; \
-	else \
-		. "$(HOME_DIR)/.asdf/asdf.sh" && \
-		cd ./lib/braavos-account-cairo && \
-		git checkout $(BRAAVOS_CONTRACTS_COMMIT_HASH) && \
-		. "$(HOME_DIR)/.asdf/asdf.sh" && \
-		asdf install scarb 2.8.4 && \
-		. "$(HOME_DIR)/.asdf/asdf.sh" && \
-		asdf local scarb 2.8.4 && \
-		scarb build; \
-	fi
+	$(call scarb_build,./lib/braavos-account-cairo,$(BRAAVOS_CONTRACTS_COMMIT_HASH),2.8.4)
 	# Copying Contracts
 	cp ./lib/braavos-account-cairo/target/dev/braavos_account_BraavosAccount.contract_class.json ./artifacts/BraavosAccount.sierra.json
 	cp ./lib/braavos-account-cairo/target/dev/braavos_account_BraavosAccount.compiled_contract_class.json ./artifacts/BraavosAccount.casm.json
@@ -200,21 +196,7 @@ braavos-account-cairo: ensure-asdf
 # Prerequisites: ensure-asdf
 argent-contracts-starknet: ensure-asdf
 	# Building
-	@if [ "$$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then \
-		. "$$(brew --prefix asdf)/libexec/asdf.sh" && \
-		cd ./lib/argent-contracts-starknet && \
-		git checkout $(ARGENT_CONTRACTS_COMMIT_HASH) && \
-		asdf install scarb 2.6.3 && \
-		asdf local scarb 2.6.3 && \
-		scarb build; \
-	else \
-		. "$(HOME_DIR)/.asdf/asdf.sh" && \
-		cd ./lib/argent-contracts-starknet && \
-		git checkout $(ARGENT_CONTRACTS_COMMIT_HASH) && \
-		asdf install scarb 2.6.3 && \
-		asdf local scarb 2.6.3 && \
-		scarb build; \
-	fi
+	$(call scarb_build,./lib/argent-contracts-starknet,$(ARGENT_CONTRACTS_COMMIT_HASH),2.6.3)
 	# Copying Contracts
 	cp ./lib/argent-contracts-starknet/target/dev/argent_ArgentAccount.contract_class.json ./artifacts/ArgentAccount.sierra.json
 	cp ./lib/argent-contracts-starknet/target/dev/argent_ArgentAccount.compiled_contract_class.json ./artifacts/ArgentAccount.casm.json

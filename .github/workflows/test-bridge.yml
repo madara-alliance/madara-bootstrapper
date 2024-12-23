@@ -45,7 +45,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y clang llvm libudev-dev protobuf-compiler
-    
+
       - uses: foundry-rs/foundry-toolchain@v1
         with:
           version: nightly
@@ -66,7 +66,7 @@ jobs:
           solc-select install 0.8.19
           solc-select use 0.8.19
           solc --version
-      
+
       - name: Checkout Madara
         uses: actions/checkout@v4
         with:
