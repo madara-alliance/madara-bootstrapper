@@ -25,6 +25,7 @@ pub trait BridgeDeployable {
     async fn deploy(client: Arc<LocalWalletSignerMiddleware>, is_dev: bool) -> Self;
 }
 
+#[derive(Clone)]
 pub struct StarknetLegacyEthBridge {
     eth_bridge: StarknetEthBridgeContractClient,
 }

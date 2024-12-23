@@ -15,9 +15,49 @@ jobs:
       # before the plugin, as the cache uses the current rustc version as its cache key
       - run: rustup show
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install Ganache
+        run: |
+          npm install -g ganache@7.9.0
+          ganache --version
+
+      - name: Install Solc
+        run: |
+          pip install solc-select
+          solc-select install 0.8.19
+          solc-select use 0.8.19
+          solc --version
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      # ---------------------------------------------------
+      # workaround : https://github.com/asdf-vm/actions/issues/562
+      # asdf installation
+      - name: Detect ASDF .tool-versions file in repo
+        shell: bash
+        id: detect_tool_versions_file
+        run: |
+          if [ -s .tool-versions ]; then
+          echo "exists=1" >> $GITHUB_OUTPUT
+          fi
+
+      - name: ASDF install tools
+        if: ${{ steps.detect_tool_versions_file.outputs.exists == '1' }}
+        uses: asdf-vm/actions/install@6a442392015fbbdd8b48696d41e0051b2698b2e4
+      # ---------------------------------------------------
+
       - uses: Swatinem/rust-cache@v2
       - name: Format and clippy
         run: |
+          git submodule update --init --recursive
+          make artifacts-linux
           cargo fmt -- --check
           cargo clippy --no-deps -- -D warnings
           cargo clippy --tests --no-deps -- -D warnings
