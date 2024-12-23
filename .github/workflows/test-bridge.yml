@@ -96,9 +96,3 @@ jobs:
         with:
           files: lcov.info
           debug: true
-
-      - name: Upload coverage report to Coveralls
-        uses: coverallsapp/github-action@v2
-        with:
-          files: lcov.info
-          debug: true

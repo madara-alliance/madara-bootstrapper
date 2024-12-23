@@ -181,9 +181,8 @@ async fn wait_for_madara() -> color_eyre::Result<()> {
         .arg("0")
         .arg("--blob-gas-price")
         .arg("0")
-        .arg("--rpc-admin")
-        .arg("--rpc-admin-port")
-        .arg("19943")
+        .arg("--rpc-methods")
+        .arg("unsafe")
         .arg("--l1-endpoint")
         .arg("http://localhost:8545")
         .spawn()?;

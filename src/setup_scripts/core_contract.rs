@@ -34,11 +34,23 @@ impl<'a> CoreContractStarknetL1<'a> {
         save_to_json("l1_core_contract_address", &JsonValueType::EthAddress(core_contract_client.address())).unwrap();
         let (program_hash, config_hash) = get_bridge_init_configs(self.arg_config);
 
+        // add_implementation(
+        //      call_data : [
+        //        0, : block number
+        //        0, : state root
+        //        0, : block hash
+        //        program_hash,
+        //        config_hash,
+        //        verifier_address
+        //      ],
+        //      implementation_address,
+        //      finalized_implementation_bool
+        // )
         core_contract_client
             .add_implementation_core_contract(
-                0u64.into(),
-                0u64.into(),
-                0u64.into(),
+                0u64.into(), // block number
+                0u64.into(), // state root
+                0u64.into(), // block hash
                 program_hash,
                 config_hash,
                 core_contract_client.implementation_address(),
@@ -46,11 +58,23 @@ impl<'a> CoreContractStarknetL1<'a> {
                 false,
             )
             .await;
+        // upgrade_to(
+        //      call_data : [
+        //        0, : block number
+        //        0, : state root
+        //        0, : block hash
+        //        program_hash,
+        //        config_hash,
+        //        verifier_address
+        //      ],
+        //      implementation_address,
+        //      finalized_implementation_bool
+        // )
         core_contract_client
             .upgrade_to_core_contract(
-                0u64.into(),
-                0u64.into(),
-                0u64.into(),
+                0u64.into(), // block number
+                0u64.into(), // state root
+                0u64.into(), // block hash
                 program_hash,
                 config_hash,
                 core_contract_client.implementation_address(),
