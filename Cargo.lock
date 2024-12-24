@@ -2454,57 +2454,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "karnot-bridge-deploy"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "assert_matches",
- "async-trait",
- "bytes",
- "clap",
- "color-eyre",
- "dotenv",
- "env_logger",
- "ethereum-instance",
- "ethers",
- "flate2",
- "hex",
- "indexmap 2.2.6",
- "inline_colorization",
- "lazy_static",
- "log",
- "num-bigint",
- "parity-scale-codec",
- "reqwest",
- "rstest",
- "scale-info",
- "serde",
- "serde_json",
- "serde_with 2.3.3",
- "starkgate-manager-client",
- "starkgate-registry-client",
- "starknet",
- "starknet-accounts 0.11.0",
- "starknet-core 0.11.1",
- "starknet-core-contract-client",
- "starknet-crypto 0.7.2",
- "starknet-erc20-client",
- "starknet-eth-bridge-client",
- "starknet-providers 0.11.0",
- "starknet-proxy-client",
- "starknet-signers 0.9.0",
- "starknet-token-bridge-client",
- "starknet-types-core",
- "starknet_api",
- "subxt-lightclient",
- "tempfile",
- "thiserror",
- "tokio",
- "url",
- "utils",
-]
-
-[[package]]
 name = "keccak"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2674,6 +2623,57 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d3262e75e648fce39813cb56ac41f3c3e3f65217ebf3844d818d1f9398cfb0dc"
 dependencies = [
  "hashbrown 0.14.5",
+]
+
+[[package]]
+name = "madara-bootstrapper"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "assert_matches",
+ "async-trait",
+ "bytes",
+ "clap",
+ "color-eyre",
+ "dotenv",
+ "env_logger",
+ "ethereum-instance",
+ "ethers",
+ "flate2",
+ "hex",
+ "indexmap 2.2.6",
+ "inline_colorization",
+ "lazy_static",
+ "log",
+ "num-bigint",
+ "parity-scale-codec",
+ "reqwest",
+ "rstest",
+ "scale-info",
+ "serde",
+ "serde_json",
+ "serde_with 2.3.3",
+ "starkgate-manager-client",
+ "starkgate-registry-client",
+ "starknet",
+ "starknet-accounts 0.11.0",
+ "starknet-core 0.11.1",
+ "starknet-core-contract-client",
+ "starknet-crypto 0.7.2",
+ "starknet-erc20-client",
+ "starknet-eth-bridge-client",
+ "starknet-providers 0.11.0",
+ "starknet-proxy-client",
+ "starknet-signers 0.9.0",
+ "starknet-token-bridge-client",
+ "starknet-types-core",
+ "starknet_api",
+ "subxt-lightclient",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "url",
+ "utils",
 ]
 
 [[package]]

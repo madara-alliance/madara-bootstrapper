@@ -59,7 +59,7 @@ impl<'a> BraavosSetup<'a> {
 
         let braavos_aggregator_class_hash = declare_contract(DeclarationInput::LegacyDeclarationInputs(
             String::from(BRAAVOS_AGGREGATOR_PATH),
-            self.arg_config.rollup_seq_url.clone(),
+            self.arg_config.rollup_declare_v0_seq_url.clone(),
             self.clients.provider_l2(),
         ))
         .await;
