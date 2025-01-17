@@ -6,6 +6,7 @@ use ethers::prelude::{abigen, Bytes, SignerMiddleware};
 use ethers::providers::{Http, Provider};
 use ethers::signers::{LocalWallet, Signer};
 use ethers::types::{Address, U256};
+use tokio::time::{sleep, Duration};
 
 use crate::ConfigFile;
 
@@ -71,20 +72,25 @@ pub async fn upgrade_l1_bridge(ethereum_bridge_address: Address, config_file: &C
         .send()
         .await?;
     log::debug!("New ETH bridge add_implementation ✅");
+    sleep(Duration::from_secs(20)).await;
     eth_bridge_proxy_client.upgrade_to(new_eth_bridge_client.address(), call_data, false).send().await?;
     log::debug!("New ETH bridge upgrade_to ✅");
+    sleep(Duration::from_secs(20)).await;
     new_eth_bridge_client
         .register_app_role_admin(Address::from_str(&config_file.l1_deployer_address.clone())?)
         .send()
         .await?;
+    sleep(Duration::from_secs(20)).await;
     new_eth_bridge_client
         .register_governance_admin(Address::from_str(&config_file.l1_deployer_address.clone())?)
         .send()
         .await?;
+    sleep(Duration::from_secs(20)).await;
     new_eth_bridge_client
         .register_app_governor(Address::from_str(&config_file.l1_deployer_address.clone())?)
         .send()
         .await?;
+    sleep(Duration::from_secs(20)).await;
     new_eth_bridge_client
         .set_max_total_balance(
             Address::from_str("0x0000000000000000000000000000000000455448").unwrap(),
