@@ -1,4 +1,6 @@
 use std::sync::Arc;
+use std::thread::sleep;
+use std::time::Duration;
 
 use ethers::types::U256;
 use hex::encode;
@@ -215,6 +217,8 @@ pub(crate) async fn deploy_account_using_priv_key(
         log::info!("ℹ️ Account is already deployed. Skipping....");
         return account_address;
     }
+
+    sleep(Duration::from_secs(10));
 
     let sent_txn = deploy_txn.send().await.expect("Error in deploying the OZ account");
 

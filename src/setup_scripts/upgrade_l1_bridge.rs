@@ -1,11 +1,13 @@
 use std::str::FromStr;
 use std::sync::Arc;
+use std::time::Duration;
 
 use ethereum_instance::Error;
 use ethers::prelude::{abigen, Bytes, SignerMiddleware};
 use ethers::providers::{Http, Provider};
 use ethers::signers::{LocalWallet, Signer};
 use ethers::types::{Address, U256};
+use tokio::time::sleep;
 
 use crate::ConfigFile;
 
@@ -47,9 +49,12 @@ pub async fn upgrade_l1_bridge(ethereum_bridge_address: Address, config_file: &C
     let signer_client =
         Arc::new(SignerMiddleware::new(provider.clone(), wallet.with_chain_id(config_file.eth_chain_id)));
 
+    sleep(Duration::from_secs(10)).await;
     let new_eth_bridge_client = EthereumNewBridge::deploy(signer_client.clone(), ())?.send().await?;
+    sleep(Duration::from_secs(10)).await;
     log::debug!("New ETH bridge deployed : {:?}", new_eth_bridge_client.address());
     let eic_eth_bridge_client = EthereumNewBridgeEIC::deploy(signer_client.clone(), ())?.send().await?;
+    sleep(Duration::from_secs(10)).await;
     log::debug!("New ETH bridge EIC deployed : {:?}", eic_eth_bridge_client.address());
 
     let eth_bridge_proxy_client = EthereumL1BridgeProxy::new(ethereum_bridge_address, signer_client.clone());
@@ -70,21 +75,26 @@ pub async fn upgrade_l1_bridge(ethereum_bridge_address: Address, config_file: &C
         .add_implementation(new_eth_bridge_client.address(), call_data.clone(), false)
         .send()
         .await?;
+    sleep(Duration::from_secs(10)).await;
     log::debug!("New ETH bridge add_implementation ✅");
     eth_bridge_proxy_client.upgrade_to(new_eth_bridge_client.address(), call_data, false).send().await?;
+    sleep(Duration::from_secs(10)).await;
     log::debug!("New ETH bridge upgrade_to ✅");
     new_eth_bridge_client
         .register_app_role_admin(Address::from_str(&config_file.l1_deployer_address.clone())?)
         .send()
         .await?;
+    sleep(Duration::from_secs(10)).await;
     new_eth_bridge_client
         .register_governance_admin(Address::from_str(&config_file.l1_deployer_address.clone())?)
         .send()
         .await?;
+    sleep(Duration::from_secs(10)).await;
     new_eth_bridge_client
         .register_app_governor(Address::from_str(&config_file.l1_deployer_address.clone())?)
         .send()
         .await?;
+    sleep(Duration::from_secs(10)).await;
     new_eth_bridge_client
         .set_max_total_balance(
             Address::from_str("0x0000000000000000000000000000000000455448").unwrap(),
@@ -92,6 +102,7 @@ pub async fn upgrade_l1_bridge(ethereum_bridge_address: Address, config_file: &C
         )
         .send()
         .await?;
+    sleep(Duration::from_secs(10)).await;
     log::debug!("New ETH bridge set_max_total_balance ✅");
 
     log::info!("Eth bridge L1 upgraded successfully ✅");
