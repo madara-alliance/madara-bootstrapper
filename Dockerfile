@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     libssl-dev \
     git \
+    sudo \
     python3 \
     python3-pip \
     python3-venv \
@@ -23,6 +24,7 @@ RUN apt-get update && apt-get install -y \
     g++ \
     unzip \
     cmake \
+    libboost-all-dev \
     software-properties-common \
     && rm -rf /var/lib/apt/lists/*
 
@@ -46,10 +48,15 @@ RUN curl https://bootstrap.pypa.io/pip/3.7/get-pip.py -o get-pip.py && \
 RUN python3.7 -m pip install --upgrade pip && \
     python3.7 -m pip install cmake==3.22
 
-# Install specific solc version for legacy build
-RUN curl https://binaries.soliditylang.org/linux-amd64/solc-linux-amd64-v0.6.12+commit.27d51765 -o /usr/local/bin/solc-0.6.12 && \
-    echo 'f6cb519b01dabc61cab4c184a3db11aa591d18151e362fcae850e42cffdfb09a /usr/local/bin/solc-0.6.12' | sha256sum --check && \
-    chmod +x /usr/local/bin/solc-0.6.12
+
+
+# Build solidity from source
+ENV SOLIDITY_VERSION=v0.8.20
+RUN git clone https://github.com/ethereum/solidity.git && \
+    cd solidity && \
+    git checkout ${SOLIDITY_VERSION} && \
+    ./scripts/build.sh && \
+    echo 'export PATH="/usr/local/bin:$PATH"' >> ~/.bashrc
 
 # Setup Python virtual environment for main build
 ENV VIRTUAL_ENV=/opt/venv
@@ -94,9 +101,6 @@ RUN git submodule update --init --recursive
 RUN apt-get update && apt-get install -y \
     wget
 
-RUN curl https://binaries.soliditylang.org/linux-amd64/solc-linux-amd64-v0.6.12+commit.27d51765 -o /usr/local/bin/solc-0.6.12
-RUN echo 'f6cb519b01dabc61cab4c184a3db11aa591d18151e362fcae850e42cffdfb09a /usr/local/bin/solc-0.6.12' | sha256sum --check
-RUN chmod +x /usr/local/bin/solc-0.6.12
 RUN npm install -g --unsafe-perm ganache-cli@6.12.2
 
 # First run setup-linux
@@ -182,27 +186,26 @@ RUN npm install -g --unsafe-perm ganache@7.9.0 && \
 
 # Generate other artifacts
 RUN . "$HOME/.asdf/asdf.sh" && \
-    ls -la /app/.cairo && \
-    ls -la /app/.cairo/cairo/bin && \
     export PATH="/app/.cairo/cairo/bin:$PATH" && \
-    echo $PATH && \
+    rm -rf venv \
     which starknet-compile && \
     make starkgate-contracts-latest && \
     make braavos-account-cairo && \
     make argent-contracts-starknet
 
-# Build the Rust project with specific binary name
-RUN cargo build --release --workspace --bin madara-bootstrapper
+# # Build the Rust project with specific binary name
+RUN export PATH="/usr/local/bin:$PATH" && cargo build --release --workspace --bin madara-bootstrapper
 
+COPY /app/target/release/madara-bootstrapper /usr/local/bin/
 # Runtime stage
-FROM debian:buster-slim
+# FROM debian:buster-slim
 
 # Copy only the compiled binary and artifacts
-COPY --from=builder /app/target/release/madara-bootstrapper /usr/local/bin/
-COPY --from=builder /app/artifacts /app/artifacts
+# COPY --from=builder /app/target/release/madara-bootstrapper /usr/local/bin/
+# COPY --from=builder /app/artifacts /app/artifacts
 
 # Set working directory
-WORKDIR /app
+# WORKDIR /app
 
 # Environment variables
 ENV RUST_LOG=info
