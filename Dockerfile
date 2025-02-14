@@ -194,18 +194,10 @@ RUN . "$HOME/.asdf/asdf.sh" && \
     make argent-contracts-starknet
 
 # # Build the Rust project with specific binary name
-RUN export PATH="/usr/local/bin:$PATH" && cargo build --release --workspace --bin madara-bootstrapper
-
-COPY /app/target/release/madara-bootstrapper /usr/local/bin/
-# Runtime stage
-# FROM debian:buster-slim
-
-# Copy only the compiled binary and artifacts
-# COPY --from=builder /app/target/release/madara-bootstrapper /usr/local/bin/
-# COPY --from=builder /app/artifacts /app/artifacts
+RUN export PATH="/usr/local/bin:$PATH" && cargo build --release --workspace --bin madara-bootstrapper && cp target/release/madara-bootstrapper /usr/local/bin
 
 # Set working directory
-# WORKDIR /app
+WORKDIR /usr/local/bin
 
 # Environment variables
 ENV RUST_LOG=info
