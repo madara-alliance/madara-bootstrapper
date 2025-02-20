@@ -26,7 +26,7 @@ VENV_BIN := $(VENV_DIR)/bin
 PYTHON := $(VENV_BIN)/python
 PIP := $(VENV_BIN)/pip
 SOLC_SELECT := $(VENV_BIN)/solc-select
-SOLC := $(VENV_BIN)/solc
+SOLC ?= $(VENV_BIN)/solc
 
 # =============================================================================
 # Virtual Environment Setup
@@ -40,7 +40,7 @@ setup-venv:
 	$(PIP) install solc-select
 	$(SOLC_SELECT) install 0.8.24
 	$(SOLC_SELECT) use 0.8.24
-	$(VENV_BIN)/solc --version
+	$(SOLC) --version
 
 # =============================================================================
 # ASDF Version Manager Setup
