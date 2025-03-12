@@ -76,7 +76,7 @@ jobs:
 
       - name: Run anvil
         run: |
-          anvil &
+          anvil --code-size-limit 300000 &
 
       - uses: taiki-e/install-action@cargo-llvm-cov
       - uses: taiki-e/install-action@nextest
