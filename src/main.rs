@@ -65,7 +65,7 @@ pub struct CliArgs {
     output_file: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub enum CoreContractMode {
     Production,
     Dev,
@@ -73,7 +73,7 @@ pub enum CoreContractMode {
 
 // TODO :                 There is a lot of optional stuff in the config which is needed if we run
 // TODO : (continued.)    individual commands. We need to think of a better design.
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct ConfigFile {
     pub eth_rpc: String,
     pub eth_priv_key: String,
@@ -352,11 +352,17 @@ async fn upgrade_eth_bridge<'a>(
         )?,
     )
     .await;
-    upgrade_l1_bridge(
-        Address::from_str(&config_file.l1_eth_bridge_address.clone().expect("l1_eth_bridge_address not in config."))?,
-        config_file,
-    )
-    .await?;
+
+    let bridge_address_str = format!(
+        "{:0>40}",
+        &config_file
+            .l1_eth_bridge_address
+            .clone()
+            .expect("l1_eth_bridge_address not in config.")
+            .trim_start_matches("0x")
+    );
+    let l1_eth_bridge_address = Address::from_str(&bridge_address_str)?;
+    upgrade_l1_bridge(l1_eth_bridge_address, config_file).await?;
 
     Ok(())
 }
