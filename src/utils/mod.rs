@@ -1,8 +1,9 @@
 use std::path::Path;
+use std::str::FromStr;
 use std::{fs, io};
 
 use ethers::abi::Address;
-use ethers::types::U256;
+use ethers::types::{H160, U256};
 use num_bigint::BigUint;
 use serde_json::{Map, Value};
 use starknet::accounts::ConnectedAccount;
@@ -41,7 +42,7 @@ pub fn pad_bytes(address: Address) -> Vec<u8> {
 
 pub fn hexstring_to_address(hex: &str) -> ethers::abi::Address {
     let hexstring = format!("0x{:0>40}", hex.strip_prefix("0x").unwrap_or(hex));
-    Address::from_slice(&hexstring.as_bytes()[2..])
+    Address::from_str(&hexstring).expect("Hexstring to Address conversion failed")
 }
 
 pub async fn wait_for_transaction(
