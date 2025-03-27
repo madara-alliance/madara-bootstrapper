@@ -97,12 +97,12 @@ impl<'a> Erc20Bridge<'a> {
 
         if self.arg_config.dev {
             token_bridge
-                .initialize(self.core_contract.address(), H160::from_str(&self.arg_config.l1_deployer_address).unwrap())
+                .initialize(self.core_contract.address(), hexstring_to_address(&self.arg_config.l1_deployer_address))
                 .await;
         } else {
             token_bridge
                 .setup_permissions_with_bridge_l1(
-                    H160::from_str(&self.arg_config.l1_deployer_address).unwrap(),
+                    hexstring_to_address(&self.arg_config.l1_deployer_address),
                     hexstring_to_address(&self.arg_config.l1_multisig_address),
                 )
                 .await;
