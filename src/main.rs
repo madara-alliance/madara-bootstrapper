@@ -39,7 +39,7 @@ use crate::setup_scripts::upgrade_eth_token::upgrade_eth_token_to_cairo_1;
 use crate::setup_scripts::upgrade_l1_bridge::upgrade_l1_bridge;
 use crate::setup_scripts::upgrade_l2_bridge::upgrade_eth_bridge_to_cairo_1;
 use crate::utils::banner::BANNER;
-use crate::utils::{save_to_json, JsonValueType};
+use crate::utils::{hexstring_to_address, save_to_json, JsonValueType};
 
 #[derive(Debug, Clone, Copy, ValueEnum)]
 enum BootstrapMode {
@@ -236,9 +236,9 @@ fn get_core_contract_client(config_file: &ConfigFile, clients: &Clients) -> Core
         panic!("Core contract implementation address is required for ETH bridge setup");
     };
     let core_contract_client = StarknetCoreContractClient::new(
-        Address::from_str(&core_contract_address).unwrap(),
+        hexstring_to_address(&core_contract_address),
         clients.eth_client().signer().clone(),
-        Address::from_str(&core_contract_implementation_address).unwrap(),
+        hexstring_to_address(&core_contract_implementation_address),
     );
     CoreContractStarknetL1Output { core_contract_client: Box::new(StarknetCoreContract { core_contract_client }) }
 }
@@ -353,15 +353,8 @@ async fn upgrade_eth_bridge<'a>(
     )
     .await;
 
-    let bridge_address_str = format!(
-        "{:0>40}",
-        &config_file
-            .l1_eth_bridge_address
-            .clone()
-            .expect("l1_eth_bridge_address not in config.")
-            .trim_start_matches("0x")
-    );
-    let l1_eth_bridge_address = Address::from_str(&bridge_address_str)?;
+    let l1_eth_bridge_address =
+        hexstring_to_address(&config_file.l1_eth_bridge_address.clone().expect("l1_eth_bridge_address not in config."));
     upgrade_l1_bridge(l1_eth_bridge_address, config_file).await?;
 
     Ok(())
