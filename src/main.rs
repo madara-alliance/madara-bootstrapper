@@ -65,7 +65,7 @@ pub struct CliArgs {
     output_file: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone)]
 pub enum CoreContractMode {
     Production,
     Dev,
@@ -73,7 +73,7 @@ pub enum CoreContractMode {
 
 // TODO :                 There is a lot of optional stuff in the config which is needed if we run
 // TODO : (continued.)    individual commands. We need to think of a better design.
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct ConfigFile {
     pub eth_rpc: String,
     pub eth_priv_key: String,
