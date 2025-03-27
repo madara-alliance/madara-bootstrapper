@@ -1,7 +1,7 @@
 use std::path::Path;
 use std::{fs, io};
 
-use ethers::addressbook::Address;
+use ethers::abi::Address;
 use ethers::types::U256;
 use num_bigint::BigUint;
 use serde_json::{Map, Value};
@@ -37,6 +37,11 @@ pub fn pad_bytes(address: Address) -> Vec<u8> {
     padded_address_bytes.extend(vec![0u8; 32 - address_bytes.len()]);
     padded_address_bytes.extend_from_slice(address_bytes);
     padded_address_bytes
+}
+
+pub fn hexstring_to_address(hex: &str) -> ethers::abi::Address {
+    let hexstring = format!("0x{:0>40}", hex.strip_prefix("0x").unwrap_or(hex));
+    Address::from_slice(&hexstring.as_bytes()[2..])
 }
 
 pub async fn wait_for_transaction(
