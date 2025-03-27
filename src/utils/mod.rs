@@ -3,7 +3,7 @@ use std::str::FromStr;
 use std::{fs, io};
 
 use ethers::abi::Address;
-use ethers::types::{H160, U256};
+use ethers::types::U256;
 use num_bigint::BigUint;
 use serde_json::{Map, Value};
 use starknet::accounts::ConnectedAccount;
