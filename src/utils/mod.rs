@@ -114,3 +114,56 @@ pub fn convert_to_hex(address: &str) -> String {
     let hex = big_uint.expect("error converting decimal string ---> hex string").to_str_radix(16);
     "0x".to_string() + &hex
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_hexstring_to_address() {
+        // Test full-length address with 0x prefix
+        assert_eq!(
+            hexstring_to_address("0x8464135c8F25Da09e49BC8782676a84730C318bC"),
+            Address::from_str("0x8464135c8F25Da09e49BC8782676a84730C318bC").unwrap()
+        );
+
+        // Test full-length address without 0x prefix
+        assert_eq!(
+            hexstring_to_address("8464135c8F25Da09e49BC8782676a84730C318bC"),
+            Address::from_str("0x8464135c8F25Da09e49BC8782676a84730C318bC").unwrap()
+        );
+
+        // Test short address that needs padding
+        assert_eq!(
+            hexstring_to_address("0xabcd"),
+            Address::from_str("0x000000000000000000000000000000000000abcd").unwrap()
+        );
+
+        // Test short address without 0x prefix
+        assert_eq!(
+            hexstring_to_address("abcd"),
+            Address::from_str("0x000000000000000000000000000000000000abcd").unwrap()
+        );
+
+        // Test empty string with 0x prefix
+        assert_eq!(
+            hexstring_to_address("0x"),
+            Address::from_str("0x0000000000000000000000000000000000000000").unwrap()
+        );
+
+        // Test empty string
+        assert_eq!(hexstring_to_address(""), Address::from_str("0x0000000000000000000000000000000000000000").unwrap());
+    }
+
+    #[test]
+    #[should_panic(expected = "Hexstring to Address conversion failed")]
+    fn test_invalid_hex_characters() {
+        hexstring_to_address("0xZZZZ"); // Invalid hex characters
+    }
+
+    #[test]
+    #[should_panic(expected = "Hexstring to Address conversion failed")]
+    fn test_oversized_input() {
+        hexstring_to_address("0x8464135c8F25Da09e49BC8782676a84730C318bCFF"); // Too long
+    }
+}
