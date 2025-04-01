@@ -52,6 +52,10 @@ setup-venv:
 ensure-asdf:
 	@if [ "$$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then \
 		BREW_ASDF_PATH="$$(brew --prefix asdf)/libexec/asdf.sh"; \
+		if [ ! -f "$$BREW_ASDF_PATH" ]; then \
+			echo "Installing ASDF via Homebrew on macOS..."; \
+			brew install asdf; \
+		fi; \
 		. "$$BREW_ASDF_PATH" && \
 		if ! asdf plugin list | grep -q scarb; then \
 			asdf plugin add scarb https://github.com/software-mansion/asdf-scarb.git; \
@@ -163,7 +167,11 @@ starkgate-contracts-legacy:
 
 # Helper function for Scarb-based builds
 define scarb_build
-	. "$(HOME_DIR)/.asdf/asdf.sh"; \
+	@if [ "$$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then \
+		. "$$(brew --prefix asdf)/libexec/asdf.sh"; \
+	else \
+		. "$(HOME_DIR)/.asdf/asdf.sh"; \
+	fi && \
 	cd $(1) && \
 	git checkout $(2) && \
 	asdf install scarb $(3) && \
