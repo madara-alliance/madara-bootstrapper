@@ -99,6 +99,7 @@ impl<'a> Erc20Bridge<'a> {
             token_bridge
                 .initialize(self.core_contract.address(), H160::from_str(&self.arg_config.l1_deployer_address).unwrap())
                 .await;
+            sleep(Duration::from_secs(20)).await;
         } else {
             token_bridge
                 .setup_permissions_with_bridge_l1(
@@ -106,8 +107,11 @@ impl<'a> Erc20Bridge<'a> {
                     Address::from_str(&self.arg_config.l1_multisig_address.to_string()).unwrap(),
                 )
                 .await;
+            sleep(Duration::from_secs(20)).await;
             token_bridge.add_implementation_token_bridge(self.core_contract.address()).await;
+            sleep(Duration::from_secs(20)).await;
             token_bridge.upgrade_to_token_bridge(self.core_contract.address()).await;
+            sleep(Duration::from_secs(20)).await;
         }
 
         token_bridge

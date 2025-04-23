@@ -57,6 +57,7 @@ impl BridgeDeployable for StarknetTokenBridge {
                 .await
                 .expect("Failed to deploy starkgate manager contract"),
         };
+        sleep(Duration::from_secs(20)).await;
         let registry = match is_dev {
             false => deploy_starkgate_registry_behind_safe_proxy(client.clone())
                 .await
@@ -65,6 +66,7 @@ impl BridgeDeployable for StarknetTokenBridge {
                 .await
                 .expect("Failed to deploy starkgate registry"),
         };
+        sleep(Duration::from_secs(20)).await;
         let token_bridge = match is_dev {
             false => deploy_starknet_token_bridge_behind_safe_proxy(client.clone())
                 .await
@@ -73,10 +75,12 @@ impl BridgeDeployable for StarknetTokenBridge {
                 .await
                 .expect("Failed to deploy starknet contract"),
         };
+        sleep(Duration::from_secs(20)).await;
 
         let erc20 = deploy_dai_test_erc20_behind_unsafe_proxy(client.clone())
             .await
             .expect("Failed to deploy dai erc20 contract");
+        sleep(Duration::from_secs(20)).await;
 
         Self { manager, registry, token_bridge, erc20 }
     }
@@ -309,7 +313,9 @@ impl StarknetTokenBridge {
     /// Deploys a test ERC20 token from L1 to L2
     pub async fn setup_l1_bridge(&self, fee: U256, l2_bridge: Felt) {
         self.token_bridge.set_l2_token_bridge(field_element_to_u256(l2_bridge)).await.unwrap();
+        sleep(Duration::from_secs(20)).await;
         self.manager.enroll_token_bridge(self.address(), fee).await.unwrap();
+        sleep(Duration::from_secs(20)).await;
     }
 
     pub async fn setup_l2_bridge(
