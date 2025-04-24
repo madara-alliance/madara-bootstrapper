@@ -322,9 +322,9 @@ impl StarknetTokenBridge {
 
         self.token_bridge.register_app_role_admin(l1_multisig_address).await.unwrap();
         log::debug!(
-            sleep(Duration::from_secs(20)).await;
             "setup_permissions_with_bridge_l1 : token_bridge : register_app_role_admin : l1_multisig_address ✅"
         );
+        sleep(Duration::from_secs(20)).await;
         self.manager.register_app_role_admin(l1_multisig_address).await.unwrap();
         log::debug!("setup_permissions_with_bridge_l1 : manager : register_app_role_admin : l1_multisig_address ✅");
         sleep(Duration::from_secs(20)).await;
