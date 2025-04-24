@@ -122,6 +122,8 @@ pub(crate) enum DeclarationInput<'a> {
 pub async fn declare_contract(input: DeclarationInput<'_>) -> Felt {
     match input {
         DeclarationInputs(sierra_path, casm_path, account) => {
+            log::info!("sierra_path: {:?}", sierra_path);
+            log::info!("casm_path: {:?}", casm_path);
             let contract_artifact: SierraClass =
                 serde_json::from_reader(std::fs::File::open(sierra_path).unwrap()).unwrap();
 
