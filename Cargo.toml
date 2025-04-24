@@ -16,15 +16,15 @@ serde_with = { version = "2.3.3", default-features = false }
 url = "2.4.1"
 
 # Zaun Deps
-ethereum-instance = { git = "https://github.com/karnotxyz/zaun", package = "ethereum-instance", rev = "34bda2ccb69fb26be9cdfe091c11f27480850c96" }
-starkgate-manager-client = { git = "https://github.com/karnotxyz/zaun", package = "starkgate-manager-client", rev = "34bda2ccb69fb26be9cdfe091c11f27480850c96" }
-starkgate-registry-client = { git = "https://github.com/karnotxyz/zaun", package = "starkgate-registry-client", rev = "34bda2ccb69fb26be9cdfe091c11f27480850c96" }
-starknet-core-contract-client = { git = "https://github.com/karnotxyz/zaun", package = "starknet-core-contract-client", rev = "34bda2ccb69fb26be9cdfe091c11f27480850c96" }
-starknet-erc20-client = { git = "https://github.com/karnotxyz/zaun", package = "starknet-erc20-client", rev = "34bda2ccb69fb26be9cdfe091c11f27480850c96" }
-starknet-eth-bridge-client = { git = "https://github.com/karnotxyz/zaun", package = "starknet-eth-bridge-client", rev = "34bda2ccb69fb26be9cdfe091c11f27480850c96" }
-starknet-proxy-client = { git = "https://github.com/karnotxyz/zaun", package = "starknet-proxy-client", rev = "34bda2ccb69fb26be9cdfe091c11f27480850c96" }
-starknet-token-bridge-client = { git = "https://github.com/karnotxyz/zaun", package = "starknet-token-bridge-client", rev = "34bda2ccb69fb26be9cdfe091c11f27480850c96" }
-zaun-utils = { git = "https://github.com/karnotxyz/zaun", package = "utils", rev = "34bda2ccb69fb26be9cdfe091c11f27480850c96" }
+ethereum-instance = { git = "https://github.com/keep-starknet-strange/zaun", package = "ethereum-instance", rev = "fa8a6428d97617e4ab27f9dcb660cd86bbd59321" }
+starkgate-manager-client = { git = "https://github.com/keep-starknet-strange/zaun", package = "starkgate-manager-client", rev = "fa8a6428d97617e4ab27f9dcb660cd86bbd59321" }
+starkgate-registry-client = { git = "https://github.com/keep-starknet-strange/zaun", package = "starkgate-registry-client", rev = "fa8a6428d97617e4ab27f9dcb660cd86bbd59321" }
+starknet-core-contract-client = { git = "https://github.com/keep-starknet-strange/zaun", package = "starknet-core-contract-client", rev = "fa8a6428d97617e4ab27f9dcb660cd86bbd59321" }
+starknet-erc20-client = { git = "https://github.com/keep-starknet-strange/zaun", package = "starknet-erc20-client", rev = "fa8a6428d97617e4ab27f9dcb660cd86bbd59321" }
+starknet-eth-bridge-client = { git = "https://github.com/keep-starknet-strange/zaun", package = "starknet-eth-bridge-client", rev = "fa8a6428d97617e4ab27f9dcb660cd86bbd59321" }
+starknet-proxy-client = { git = "https://github.com/keep-starknet-strange/zaun", package = "starknet-proxy-client", rev = "fa8a6428d97617e4ab27f9dcb660cd86bbd59321" }
+starknet-token-bridge-client = { git = "https://github.com/keep-starknet-strange/zaun", package = "starknet-token-bridge-client", rev = "fa8a6428d97617e4ab27f9dcb660cd86bbd59321" }
+zaun-utils = { git = "https://github.com/keep-starknet-strange/zaun", package = "utils", rev = "fa8a6428d97617e4ab27f9dcb660cd86bbd59321" }
 
 # Starknet Deps
 starknet = "0.11.0"
