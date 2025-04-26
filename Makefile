@@ -48,35 +48,23 @@ setup-venv:
 
 # Target: ensure-asdf
 # Installs and configures ASDF version manager for Scarb
-# Handles both macOS (via Homebrew) and Linux installations
+# Uses direct git clone installation for all platforms (macOS/Linux)
 ensure-asdf:
-	@if [ "$$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then \
-		BREW_ASDF_PATH="$$(brew --prefix asdf)/libexec/asdf.sh"; \
-		if [ ! -f "$$BREW_ASDF_PATH" ]; then \
-			echo "Installing ASDF via Homebrew on macOS..."; \
-			brew install asdf; \
-		fi; \
-		. "$$BREW_ASDF_PATH" && \
+	@if [ ! -f "$(HOME_DIR)/.asdf/asdf.sh" ]; then \
+		echo "Cleaning up existing ASDF installation..."; \
+		rm -rf $(HOME_DIR)/.asdf; \
+		echo "Installing ASDF..."; \
+		git clone https://github.com/asdf-vm/asdf.git $(HOME_DIR)/.asdf --branch v0.14.1; \
+		echo '. "$(HOME_DIR)/.asdf/asdf.sh"' >> $(HOME_DIR)/.bashrc; \
+	fi; \
+	if [ -f "$(HOME_DIR)/.asdf/asdf.sh" ]; then \
+		. "$(HOME_DIR)/.asdf/asdf.sh" && \
 		if ! asdf plugin list | grep -q scarb; then \
 			asdf plugin add scarb https://github.com/software-mansion/asdf-scarb.git; \
 		fi; \
 	else \
-		if [ ! -f "$(HOME_DIR)/.asdf/asdf.sh" ]; then \
-			echo "Cleaning up existing ASDF installation..."; \
-			rm -rf $(HOME_DIR)/.asdf; \
-			echo "Installing ASDF..."; \
-			git clone https://github.com/asdf-vm/asdf.git $(HOME_DIR)/.asdf --branch v0.14.1; \
-			echo '. "$(HOME_DIR)/.asdf/asdf.sh"' >> $(HOME_DIR)/.bashrc; \
-		fi; \
-		if [ -f "$(HOME_DIR)/.asdf/asdf.sh" ]; then \
-			. "$(HOME_DIR)/.asdf/asdf.sh" && \
-			if ! asdf plugin list | grep -q scarb; then \
-				asdf plugin add scarb https://github.com/software-mansion/asdf-scarb.git; \
-			fi; \
-		else \
-			echo "Failed to install ASDF properly"; \
-			exit 1; \
-		fi; \
+		echo "Failed to install ASDF properly"; \
+		exit 1; \
 	fi
 
 # =============================================================================
@@ -167,15 +155,11 @@ starkgate-contracts-legacy:
 
 # Helper function for Scarb-based builds
 define scarb_build
-	@if [ "$$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then \
-		. "$$(brew --prefix asdf)/libexec/asdf.sh"; \
-	else \
-		. "$(HOME_DIR)/.asdf/asdf.sh"; \
-	fi && \
+	@. "$(HOME_DIR)/.asdf/asdf.sh" && \
 	cd $(1) && \
 	git checkout $(2) && \
 	asdf install scarb $(3) && \
-	asdf local scarb $(3) && \
+	echo "scarb $(3)" > .tool-versions && \
 	scarb build
 endef
 

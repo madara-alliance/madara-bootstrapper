@@ -1,7 +1,8 @@
 use std::path::Path;
+use std::str::FromStr;
 use std::{fs, io};
 
-use ethers::addressbook::Address;
+use ethers::abi::Address;
 use ethers::types::U256;
 use num_bigint::BigUint;
 use serde_json::{Map, Value};
@@ -37,6 +38,11 @@ pub fn pad_bytes(address: Address) -> Vec<u8> {
     padded_address_bytes.extend(vec![0u8; 32 - address_bytes.len()]);
     padded_address_bytes.extend_from_slice(address_bytes);
     padded_address_bytes
+}
+
+pub fn hexstring_to_address(hex: &str) -> ethers::abi::Address {
+    let hexstring = format!("0x{:0>40}", hex.strip_prefix("0x").unwrap_or(hex));
+    Address::from_str(&hexstring).expect("Hexstring to Address conversion failed")
 }
 
 pub async fn wait_for_transaction(
@@ -107,4 +113,57 @@ pub fn convert_to_hex(address: &str) -> String {
     let big_uint = address.parse::<BigUint>().map_err(|_| "Invalid number");
     let hex = big_uint.expect("error converting decimal string ---> hex string").to_str_radix(16);
     "0x".to_string() + &hex
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_hexstring_to_address() {
+        // Test full-length address with 0x prefix
+        assert_eq!(
+            hexstring_to_address("0x8464135c8F25Da09e49BC8782676a84730C318bC"),
+            Address::from_str("0x8464135c8F25Da09e49BC8782676a84730C318bC").unwrap()
+        );
+
+        // Test full-length address without 0x prefix
+        assert_eq!(
+            hexstring_to_address("8464135c8F25Da09e49BC8782676a84730C318bC"),
+            Address::from_str("0x8464135c8F25Da09e49BC8782676a84730C318bC").unwrap()
+        );
+
+        // Test short address that needs padding
+        assert_eq!(
+            hexstring_to_address("0xabcd"),
+            Address::from_str("0x000000000000000000000000000000000000abcd").unwrap()
+        );
+
+        // Test short address without 0x prefix
+        assert_eq!(
+            hexstring_to_address("abcd"),
+            Address::from_str("0x000000000000000000000000000000000000abcd").unwrap()
+        );
+
+        // Test empty string with 0x prefix
+        assert_eq!(
+            hexstring_to_address("0x"),
+            Address::from_str("0x0000000000000000000000000000000000000000").unwrap()
+        );
+
+        // Test empty string
+        assert_eq!(hexstring_to_address(""), Address::from_str("0x0000000000000000000000000000000000000000").unwrap());
+    }
+
+    #[test]
+    #[should_panic(expected = "Hexstring to Address conversion failed")]
+    fn test_invalid_hex_characters() {
+        hexstring_to_address("0xZZZZ"); // Invalid hex characters
+    }
+
+    #[test]
+    #[should_panic(expected = "Hexstring to Address conversion failed")]
+    fn test_oversized_input() {
+        hexstring_to_address("0x8464135c8F25Da09e49BC8782676a84730C318bCFF"); // Too long
+    }
 }
