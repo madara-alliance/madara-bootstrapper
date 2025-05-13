@@ -2,6 +2,7 @@ use std::str::FromStr;
 use std::time::Duration;
 
 use ethers::abi::Address;
+use ethers::types::I256;
 use tokio::time::sleep;
 
 use crate::contract_clients::config::Clients;
@@ -51,9 +52,9 @@ impl<'a> CoreContractStarknetL1<'a> {
         sleep(Duration::from_secs(5)).await;
         core_contract_client
             .add_implementation_core_contract(
-                -1i64.into(), // block number
-                0u64.into(),  // state root
-                0u64.into(),  // block hash
+                I256::from_str("-1").unwrap(),
+                0u64.into(), // state root
+                0u64.into(), // block hash
                 program_hash,
                 config_hash,
                 core_contract_client.implementation_address(),
@@ -76,9 +77,9 @@ impl<'a> CoreContractStarknetL1<'a> {
         // )
         core_contract_client
             .upgrade_to_core_contract(
-                -1i64.into(), // block number
-                0u64.into(),  // state root
-                0u64.into(),  // block hash
+                I256::from_str("-1").unwrap(),
+                0u64.into(), // state root
+                0u64.into(), // block hash
                 program_hash,
                 config_hash,
                 core_contract_client.implementation_address(),
