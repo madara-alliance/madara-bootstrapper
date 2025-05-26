@@ -1,13 +1,9 @@
-use std::str::FromStr;
-
-use ethers::abi::Address;
-
 use crate::contract_clients::config::Clients;
 use crate::contract_clients::core_contract::{CoreContract, CoreContractDeploy};
 use crate::contract_clients::starknet_core_contract::StarknetCoreContract;
 use crate::contract_clients::starknet_dev_core_contract::StarknetDevCoreContract;
 use crate::contract_clients::utils::get_bridge_init_configs;
-use crate::utils::{save_to_json, JsonValueType};
+use crate::utils::{hexstring_to_address, save_to_json, JsonValueType};
 use crate::{ConfigFile, CoreContractMode};
 
 pub struct CoreContractStarknetL1<'a> {
@@ -54,7 +50,7 @@ impl<'a> CoreContractStarknetL1<'a> {
                 program_hash,
                 config_hash,
                 core_contract_client.implementation_address(),
-                Address::from_str(&self.arg_config.verifier_address.clone()).unwrap(),
+                hexstring_to_address(&self.arg_config.verifier_address),
                 false,
             )
             .await;
@@ -78,20 +74,18 @@ impl<'a> CoreContractStarknetL1<'a> {
                 program_hash,
                 config_hash,
                 core_contract_client.implementation_address(),
-                Address::from_str(&self.arg_config.verifier_address.clone()).unwrap(),
+                hexstring_to_address(&self.arg_config.verifier_address),
                 false,
             )
             .await;
         core_contract_client
-            .register_operator_core_contract(Address::from_str(&self.arg_config.operator_address.clone()).unwrap())
+            .register_operator_core_contract(hexstring_to_address(&self.arg_config.operator_address))
             .await;
         core_contract_client
-            .nominate_governor_core_contract(Address::from_str(&self.arg_config.l1_multisig_address.clone()).unwrap())
+            .nominate_governor_core_contract(hexstring_to_address(&self.arg_config.l1_multisig_address))
             .await;
         core_contract_client
-            .nominate_governor_core_contract_proxy(
-                Address::from_str(&self.arg_config.l1_multisig_address.clone()).unwrap(),
-            )
+            .nominate_governor_core_contract_proxy(hexstring_to_address(&self.arg_config.l1_multisig_address))
             .await;
 
         CoreContractStarknetL1Output { core_contract_client }

@@ -1,4 +1,3 @@
-use std::str::FromStr;
 use std::time::Duration;
 
 use ethers::abi::Address;
@@ -17,7 +16,7 @@ use crate::contract_clients::eth_bridge::BridgeDeployable;
 use crate::contract_clients::token_bridge::StarknetTokenBridge;
 use crate::contract_clients::utils::{build_single_owner_account, declare_contract, DeclarationInput, RpcAccount};
 use crate::utils::constants::{ERC20_CASM_PATH, ERC20_SIERRA_PATH};
-use crate::utils::{convert_to_hex, save_to_json, JsonValueType};
+use crate::utils::{convert_to_hex, hexstring_to_address, save_to_json, JsonValueType};
 use crate::ConfigFile;
 
 pub struct Erc20Bridge<'a> {
@@ -97,13 +96,13 @@ impl<'a> Erc20Bridge<'a> {
 
         if self.arg_config.dev {
             token_bridge
-                .initialize(self.core_contract.address(), H160::from_str(&self.arg_config.l1_deployer_address).unwrap())
+                .initialize(self.core_contract.address(), hexstring_to_address(&self.arg_config.l1_deployer_address))
                 .await;
         } else {
             token_bridge
                 .setup_permissions_with_bridge_l1(
-                    H160::from_str(&self.arg_config.l1_deployer_address).unwrap(),
-                    Address::from_str(&self.arg_config.l1_multisig_address.to_string()).unwrap(),
+                    hexstring_to_address(&self.arg_config.l1_deployer_address),
+                    hexstring_to_address(&self.arg_config.l1_multisig_address),
                 )
                 .await;
             token_bridge.add_implementation_token_bridge(self.core_contract.address()).await;
