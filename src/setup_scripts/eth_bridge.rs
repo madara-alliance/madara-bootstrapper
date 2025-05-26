@@ -18,7 +18,9 @@ use crate::contract_clients::utils::{
 };
 use crate::helpers::account_actions::{get_contract_address_from_deploy_tx, AccountActions};
 use crate::utils::constants::{ERC20_LEGACY_PATH, LEGACY_BRIDGE_PATH, PROXY_LEGACY_PATH, STARKGATE_PROXY_PATH};
-use crate::utils::{convert_to_hex, invoke_contract, save_to_json, wait_for_transaction, JsonValueType};
+use crate::utils::{
+    convert_to_hex, hexstring_to_address, invoke_contract, save_to_json, wait_for_transaction, JsonValueType,
+};
 use crate::ConfigFile;
 
 pub struct EthBridge<'a> {
@@ -178,7 +180,9 @@ impl<'a> EthBridge<'a> {
             eth_bridge.initialize(self.core_contract.address()).await;
         } else {
             eth_bridge.add_implementation_eth_bridge(self.core_contract.address()).await;
+            sleep(Duration::from_secs(20)).await;
             eth_bridge.upgrade_to_eth_bridge(self.core_contract.address()).await;
+            sleep(Duration::from_secs(20)).await;
         }
         log::info!("✴️ ETH Bridge initialization on L1 completed");
 
@@ -200,7 +204,7 @@ impl<'a> EthBridge<'a> {
                 "10000000000000000000000000000000000000000",
                 "10000000000000000000000000000000000000000",
                 l2_bridge_address,
-                Address::from_str(&self.arg_config.l1_multisig_address.to_string()).unwrap(),
+                hexstring_to_address(&self.arg_config.l1_multisig_address),
                 self.arg_config.dev,
             )
             .await;
